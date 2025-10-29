@@ -7,15 +7,19 @@ const HomePage = () => {
 
   // Fetch de productos y categorías
   const {
-    data: products,
+    data: productsData,
     loading: productsLoading,
     error: productsError,
   } = useFetch('/api/products/');
 
   const {
-    data: categories,
+    data: categoriesData,
     loading: categoriesLoading,
   } = useFetch('/api/categories/');
+
+  // Extraer los arrays de results de la respuesta paginada
+  const products = productsData?.results || [];
+  const categories = categoriesData?.results || [];
 
   // Filtrar productos por categoría seleccionada
   const filteredProducts = useMemo(() => {
@@ -31,8 +35,6 @@ const HomePage = () => {
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
   };
-console.log(selectedCategory);
-console.log(products);
 
   return (
     <div className="min-h-screen">
