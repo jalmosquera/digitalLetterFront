@@ -11,17 +11,15 @@ import {
   faLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const Footer = ({ company }) => {
   const currentYear = new Date().getFullYear();
+  const { getTranslation } = useLanguage();
 
   // Extract company data
-  const companyName = company?.translations?.es?.name ||
-                      company?.translations?.en?.name ||
-                      'Digital Letter';
-  const companyAddress = company?.translations?.es?.address ||
-                         company?.translations?.en?.address ||
-                         '123 Food Street, Restaurant City, RC 12345';
+  const companyName = getTranslation(company?.translations, 'name') || 'Digital Letter';
+  const companyAddress = getTranslation(company?.translations, 'address') || '123 Food Street, Restaurant City, RC 12345';
   const companyEmail = company?.email || 'hello@digitalletter.com';
   const companyPhone = company?.phone || '+1 (555) 123-4567';
 

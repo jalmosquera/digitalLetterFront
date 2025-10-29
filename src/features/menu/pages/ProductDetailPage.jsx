@@ -10,11 +10,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import useFetch from '@/shared/hooks/useFetch';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
+  const { getTranslation } = useLanguage();
 
   // Fetch del producto
   const {
@@ -104,9 +106,9 @@ const ProductDetailPage = () => {
     ingredients = [],
   } = productData;
 
-  // Extraer datos de traducción (priorizar español)
-  const name = translations?.es?.name || translations?.en?.name || 'Sin nombre';
-  const description = translations?.es?.description || translations?.en?.description || '';
+  // Extraer datos de traducción usando el idioma actual
+  const name = getTranslation(translations, 'name') || 'Sin nombre';
+  const description = getTranslation(translations, 'description') || '';
 
   // Imagen placeholder
   const productImage = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225"%3E%3Crect width="400" height="225" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="%23999"%3ESin Imagen%3C/text%3E%3C/svg%3E';
@@ -186,7 +188,7 @@ const ProductDetailPage = () => {
                     key={category.id}
                     className="inline-block px-3 py-1 bg-white dark:bg-gray-800 text-pepper-orange text-sm font-gabarito font-semibold rounded-full border-2 border-pepper-orange"
                   >
-                    {category.translations?.es?.name || category.translations?.en?.name || 'Sin categoría'}
+                    {getTranslation(category.translations, 'name') || 'Sin categoría'}
                   </span>
                 ))}
               </div>
@@ -218,7 +220,7 @@ const ProductDetailPage = () => {
                     >
                       <span className="text-2xl">{ingredient.icon}</span>
                       <span className="font-gabarito font-semibold text-pepper-charcoal dark:text-white">
-                        {ingredient.translations?.es?.name || ingredient.translations?.en?.name || 'Ingrediente'}
+                        {getTranslation(ingredient.translations, 'name') || 'Ingrediente'}
                       </span>
                     </div>
                   ))}

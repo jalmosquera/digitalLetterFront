@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faMoon, faSun, faGlobe } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import { useTheme } from '@shared/contexts/ThemeContext';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { language, changeLanguage } = useLanguage();
+
+  const toggleLanguage = () => {
+    changeLanguage(language === 'es' ? 'en' : 'es');
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -59,6 +65,18 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
 
           {/* CTA Button (Desktop) */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Language Toggle (Desktop) */}
+            <button
+              onClick={toggleLanguage}
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              aria-label="Toggle language"
+              title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+            >
+              <FontAwesomeIcon icon={faGlobe} size="lg" />
+              <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
+                {language.toUpperCase()}
+              </span>
+            </button>
             {/* Dark Mode Toggle (Desktop) */}
             <button
               onClick={toggleTheme}
@@ -72,8 +90,20 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             </Link>
           </div>
 
-          {/* Mobile Controls: Dark Mode + Menu */}
+          {/* Mobile Controls: Language + Dark Mode + Menu */}
           <div className="flex md:hidden items-center space-x-2">
+            {/* Language Toggle (Mobile) */}
+            <button
+              onClick={toggleLanguage}
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              aria-label="Toggle language"
+              title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+            >
+              <FontAwesomeIcon icon={faGlobe} size="lg" />
+              <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
+                {language.toUpperCase()}
+              </span>
+            </button>
             {/* Dark Mode Toggle (Mobile) */}
             <button
               onClick={toggleTheme}

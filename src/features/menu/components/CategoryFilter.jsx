@@ -8,8 +8,11 @@ import {
   faBurger,
   faBowlFood,
 } from '@fortawesome/free-solid-svg-icons';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loading }) => {
+  const { getTranslation } = useLanguage();
+
   // Mapeo de iconos por nombre de categoría
   const iconMap = {
     comida: faUtensils,
@@ -22,9 +25,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
 
   // Función para obtener el nombre de la categoría desde translations
   const getCategoryName = (category) => {
-    return category?.translations?.es?.name ||
-           category?.translations?.en?.name ||
-           'Sin nombre';
+    return getTranslation(category?.translations, 'name') || 'Sin nombre';
   };
 
   // Función para obtener el icono según el nombre de la categoría
