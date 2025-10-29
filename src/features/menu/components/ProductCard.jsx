@@ -13,8 +13,8 @@ const ProductCard = ({ product }) => {
     available = true,
   } = product;
 
-  // Imagen placeholder si no hay imagen
-  const productImage = image || 'https://via.placeholder.com/400x225?text=Sin+Imagen';
+  // Imagen placeholder si no hay imagen (SVG inline)
+  const productImage = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225"%3E%3Crect width="400" height="225" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="%23999"%3ESin Imagen%3C/text%3E%3C/svg%3E';
 
   // Formatear precio
   const formattedPrice = new Intl.NumberFormat('es-CO', {

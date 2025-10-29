@@ -22,6 +22,9 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
 
   // Función para obtener el icono según el nombre de la categoría
   const getCategoryIcon = (categoryName) => {
+    if (!categoryName || typeof categoryName !== 'string') {
+      return iconMap.default;
+    }
     const name = categoryName.toLowerCase();
     return iconMap[name] || iconMap.default;
   };
@@ -34,7 +37,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
     );
   }
 
-  if (!categories || categories.length === 0) {
+  if (!categories || !Array.isArray(categories) || categories.length === 0) {
     return null;
   }
 
