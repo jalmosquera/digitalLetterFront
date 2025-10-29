@@ -122,12 +122,12 @@ const ProductDetailPage = () => {
 
   
   return (
-    <div className="min-h-screen bg-pepper-light py-8">
+    <div className="min-h-screen bg-pepper-light dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="container-pepper">
         {/* Botón volver */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center space-x-2 text-pepper-orange hover:text-pepper-charcoal transition-colors mb-6"
+          className="flex items-center space-x-2 text-pepper-orange hover:text-pepper-charcoal dark:hover:text-white transition-colors mb-6"
         >
           <FontAwesomeIcon icon={faArrowLeft} />
           <span className="font-gabarito font-semibold">Volver</span>
@@ -137,7 +137,7 @@ const ProductDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Imagen del producto */}
           <div className="relative">
-            <div className="card-pepper overflow-hidden relative">
+            <div className="card-pepper overflow-hidden relative bg-white dark:bg-gray-800">
               {/* Badges */}
               {(is_popular || is_new) && (
                 <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2">
@@ -184,7 +184,7 @@ const ProductDetailPage = () => {
                 {categories.map((category) => (
                   <span
                     key={category.id}
-                    className="inline-block px-3 py-1 bg-white text-pepper-orange text-sm font-gabarito font-semibold rounded-full border-2 border-pepper-orange"
+                    className="inline-block px-3 py-1 bg-white dark:bg-gray-800 text-pepper-orange text-sm font-gabarito font-semibold rounded-full border-2 border-pepper-orange"
                   >
                     {category.translations?.es?.name || category.translations?.en?.name || 'Sin categoría'}
                   </span>
@@ -193,13 +193,13 @@ const ProductDetailPage = () => {
             )}
 
             {/* Nombre */}
-            <h1 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-pepper-charcoal mb-4">
+            <h1 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-pepper-charcoal dark:text-white mb-4">
               {name}
             </h1>
 
             {/* Descripción */}
             {description && (
-              <p className="font-inter text-lg text-gray-600 mb-6 leading-relaxed">
+              <p className="font-inter text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                 {description}
               </p>
             )}
@@ -207,17 +207,17 @@ const ProductDetailPage = () => {
             {/* Ingredientes */}
             {ingredients && ingredients.length > 0 && (
               <div className="mb-6">
-                <h3 className="font-gabarito font-bold text-xl text-pepper-charcoal mb-3">
+                <h3 className="font-gabarito font-bold text-xl text-pepper-charcoal dark:text-white mb-3">
                   Ingredientes:
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {ingredients.map((ingredient, index) => (
                     <div
                       key={ingredient.id || index}
-                      className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg border-2 border-pepper-gray-light hover:border-pepper-orange transition-colors"
+                      className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border-2 border-pepper-gray-light dark:border-gray-600 hover:border-pepper-orange transition-colors"
                     >
                       <span className="text-2xl">{ingredient.icon}</span>
-                      <span className="font-gabarito font-semibold text-pepper-charcoal">
+                      <span className="font-gabarito font-semibold text-pepper-charcoal dark:text-white">
                         {ingredient.translations?.es?.name || ingredient.translations?.en?.name || 'Ingrediente'}
                       </span>
                     </div>
@@ -238,32 +238,32 @@ const ProductDetailPage = () => {
               <div className="space-y-4">
                 {/* Selector de cantidad */}
                 <div className="flex items-center space-x-4">
-                  <span className="font-gabarito font-semibold text-pepper-charcoal">
+                  <span className="font-gabarito font-semibold text-pepper-charcoal dark:text-white">
                     Cantidad:
                   </span>
                   <div className="flex items-center space-x-3">
                     <button
                       onClick={handleDecrement}
-                      className="w-10 h-10 flex items-center justify-center bg-white border-2 border-pepper-gray-light rounded-lg hover:border-pepper-orange transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-pepper-gray-light dark:border-gray-600 rounded-lg hover:border-pepper-orange transition-colors"
                       disabled={quantity <= 1}
                     >
-                      <FontAwesomeIcon icon={faMinus} className="text-pepper-charcoal" />
+                      <FontAwesomeIcon icon={faMinus} className="text-pepper-charcoal dark:text-white" />
                     </button>
-                    <span className="font-gabarito font-bold text-2xl text-pepper-charcoal min-w-[3rem] text-center">
+                    <span className="font-gabarito font-bold text-2xl text-pepper-charcoal dark:text-white min-w-[3rem] text-center">
                       {quantity}
                     </span>
                     <button
                       onClick={handleIncrement}
-                      className="w-10 h-10 flex items-center justify-center bg-white border-2 border-pepper-gray-light rounded-lg hover:border-pepper-orange transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-white dark:bg-gray-800 border-2 border-pepper-gray-light dark:border-gray-600 rounded-lg hover:border-pepper-orange transition-colors"
                     >
-                      <FontAwesomeIcon icon={faPlus} className="text-pepper-charcoal" />
+                      <FontAwesomeIcon icon={faPlus} className="text-pepper-charcoal dark:text-white" />
                     </button>
                   </div>
                 </div>
 
                 {/* Total */}
-                <div className="flex items-center justify-between py-4 px-6 bg-white rounded-lg border-2 border-pepper-gray-light">
-                  <span className="font-gabarito font-semibold text-lg text-pepper-charcoal">
+                <div className="flex items-center justify-between py-4 px-6 bg-white dark:bg-gray-800 rounded-lg border-2 border-pepper-gray-light dark:border-gray-600">
+                  <span className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white">
                     Total:
                   </span>
                   <span className="font-gabarito font-black text-2xl text-pepper-orange">
@@ -281,8 +281,8 @@ const ProductDetailPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="py-6 px-8 bg-gray-100 rounded-lg text-center">
-                <p className="font-gabarito font-bold text-xl text-gray-600">
+              <div className="py-6 px-8 bg-gray-100 dark:bg-gray-800 rounded-lg text-center">
+                <p className="font-gabarito font-bold text-xl text-gray-600 dark:text-gray-300">
                   Este producto no está disponible en este momento
                 </p>
               </div>

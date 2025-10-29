@@ -71,12 +71,12 @@ const HomePage = () => {
       
 
       {/* Menu Section - NUEVA */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white dark:bg-gray-900 transition-colors duration-200">
         <div className="container-pepper">
-          <h2 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-center text-pepper-charcoal mb-4">
+          <h2 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-center text-pepper-charcoal dark:text-white mb-4">
             Nuestro Menú
           </h2>
-          <p className="font-inter text-lg md:text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+          <p className="font-inter text-lg md:text-xl text-gray-600 dark:text-gray-300 text-center mb-12 max-w-2xl mx-auto">
             Descubre nuestra selección de platillos deliciosos preparados con
             amor.
           </p>

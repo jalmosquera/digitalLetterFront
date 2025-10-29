@@ -50,7 +50,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
 
   return (
     <div className="mb-12">
-      <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal mb-6 text-center">
+      <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal dark:text-white mb-6 text-center">
         Categorías
       </h2>
 
@@ -63,7 +63,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
             className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
               selectedCategory === null
                 ? 'bg-pepper-orange text-white shadow-lg scale-105'
-                : 'bg-white text-pepper-charcoal hover:bg-pepper-light border-2 border-pepper-gray-light'
+                : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
             }`}
           >
             <div className="w-12 h-12 flex items-center justify-center">
@@ -85,7 +85,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
                 className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
                   selectedCategory === category.id
                     ? 'bg-pepper-orange text-white shadow-lg scale-105'
-                    : 'bg-white text-pepper-charcoal hover:bg-pepper-light border-2 border-pepper-gray-light'
+                    : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
                 }`}
               >
                 <div className="w-12 h-12 flex items-center justify-center">

@@ -42,7 +42,7 @@ const ProductCard = ({ product }) => {
   return (
     <div
       onClick={handleCardClick}
-      className="card-pepper overflow-hidden group cursor-pointer relative transition-all duration-200 hover:shadow-xl"
+      className="card-pepper overflow-hidden group cursor-pointer relative transition-all duration-200 hover:shadow-xl bg-white dark:bg-gray-800 dark:border-gray-700"
     >
       {/* Badge - Popular o Nuevo */}
       {(is_popular || is_new) && (
@@ -86,13 +86,13 @@ const ProductCard = ({ product }) => {
       {/* Contenido */}
       <div className="p-4">
         {/* Nombre del producto */}
-        <h3 className="font-gabarito font-bold text-lg md:text-xl text-pepper-charcoal mb-2 line-clamp-1">
+        <h3 className="font-gabarito font-bold text-lg md:text-xl text-pepper-charcoal dark:text-white mb-2 line-clamp-1">
           {name}
         </h3>
 
         {/* Descripción */}
         {description && (
-          <p className="font-inter text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="font-inter text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
             {description}
           </p>
         )}
