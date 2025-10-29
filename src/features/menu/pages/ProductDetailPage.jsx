@@ -120,7 +120,6 @@ const ProductDetailPage = () => {
 
 
 
-  console.log(productData);
   
   return (
     <div className="min-h-screen bg-pepper-light py-8">

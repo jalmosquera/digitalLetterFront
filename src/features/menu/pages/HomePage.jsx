@@ -47,7 +47,6 @@ const HomePage = () => {
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
   };
-console.log(companyData);
 
   
 
