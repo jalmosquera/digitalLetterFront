@@ -101,6 +101,7 @@ const ProductDetailPage = () => {
     is_new = false,
     available = true,
     categories = [],
+    ingredients = [],
   } = productData;
 
   // Extraer datos de traducción (priorizar español)
@@ -117,6 +118,10 @@ const ProductDetailPage = () => {
   const priceNumber = parseFloat(price?.replace(/[^\d.]/g, '') || 0);
   const totalPrice = priceNumber * quantity + ' €';
 
+
+
+  console.log(productData);
+  
   return (
     <div className="min-h-screen bg-pepper-light py-8">
       <div className="container-pepper">
@@ -198,6 +203,28 @@ const ProductDetailPage = () => {
               <p className="font-inter text-lg text-gray-600 mb-6 leading-relaxed">
                 {description}
               </p>
+            )}
+
+            {/* Ingredientes */}
+            {ingredients && ingredients.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-gabarito font-bold text-xl text-pepper-charcoal mb-3">
+                  Ingredientes:
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {ingredients.map((ingredient, index) => (
+                    <div
+                      key={ingredient.id || index}
+                      className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg border-2 border-pepper-gray-light hover:border-pepper-orange transition-colors"
+                    >
+                      <span className="text-2xl">{ingredient.icon}</span>
+                      <span className="font-gabarito font-semibold text-pepper-charcoal">
+                        {ingredient.translations?.es?.name || ingredient.translations?.en?.name || 'Ingrediente'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Precio */}

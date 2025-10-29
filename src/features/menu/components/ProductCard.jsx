@@ -10,6 +10,7 @@ const ProductCard = ({ product }) => {
     translations,
     price,
     image,
+    ingredients = [],
     is_popular = false,
     is_new = false,
     available = true,
@@ -96,6 +97,26 @@ const ProductCard = ({ product }) => {
           </p>
         )}
 
+        {/* Ingredientes (iconos) */}
+        {ingredients && ingredients.length > 0 && (
+          <div className="flex items-center gap-1 mb-3 flex-wrap">
+            {ingredients.slice(0, 5).map((ingredient, index) => (
+              <span
+                key={ingredient.id || index}
+                className="text-xl"
+                title={ingredient.translations?.es?.name || ingredient.translations?.en?.name || 'Ingrediente'}
+              >
+                {ingredient.icon}
+              </span>
+            ))}
+            {ingredients.length > 5 && (
+              <span className="text-xs text-gray-500 ml-1">
+                +{ingredients.length - 5}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Precio */}
         <div className="flex items-center justify-between">
           <span className="font-gabarito font-bold text-2xl text-pepper-orange">
@@ -121,10 +142,32 @@ const ProductCard = ({ product }) => {
 ProductCard.propTypes = {
   product: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    price: PropTypes.number.isRequired,
+    translations: PropTypes.shape({
+      es: PropTypes.shape({
+        name: PropTypes.string,
+        description: PropTypes.string,
+      }),
+      en: PropTypes.shape({
+        name: PropTypes.string,
+        description: PropTypes.string,
+      }),
+    }),
+    price: PropTypes.string,
     image: PropTypes.string,
+    ingredients: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        icon: PropTypes.string,
+        translations: PropTypes.shape({
+          es: PropTypes.shape({
+            name: PropTypes.string,
+          }),
+          en: PropTypes.shape({
+            name: PropTypes.string,
+          }),
+        }),
+      })
+    ),
     is_popular: PropTypes.bool,
     is_new: PropTypes.bool,
     available: PropTypes.bool,

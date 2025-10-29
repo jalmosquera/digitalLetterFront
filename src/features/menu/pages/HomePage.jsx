@@ -25,11 +25,12 @@ const HomePage = () => {
   // Extraer los arrays de results de la respuesta paginada
   const products = productsData?.results || [];
   const categories = categoriesData?.results || [];
+  const company = companyData?.results?.[0]; // Primer elemento del array
 
   // Extraer nombre de la compañía (con fallback)
-  const companyName = companyData?.translations?.es?.name ||
-                      companyData?.translations?.en?.name ||
-                      companyData?.name ||
+  const companyName = company?.translations?.es?.name ||
+                      company?.translations?.en?.name ||
+                      company?.name ||
                       'Digital Letter';
 
   // Filtrar productos por categoría seleccionada
@@ -46,6 +47,9 @@ const HomePage = () => {
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
   };
+console.log(companyData);
+
+  
 
   return (
     <div className="min-h-screen">

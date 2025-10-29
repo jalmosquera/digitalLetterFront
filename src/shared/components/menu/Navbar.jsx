@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
-const Navbar = () => {
+const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -31,7 +32,7 @@ const Navbar = () => {
             onClick={closeMenu}
           >
             <span className="text-2xl lg:text-3xl font-cherry-bomb text-pepper-orange">
-              Digital Letter
+              {companyName}
             </span>
           </Link>
 
@@ -106,6 +107,10 @@ const Navbar = () => {
       </div>
     </nav>
   );
+};
+
+Navbar.propTypes = {
+  companyName: PropTypes.string,
 };
 
 export default Navbar;
