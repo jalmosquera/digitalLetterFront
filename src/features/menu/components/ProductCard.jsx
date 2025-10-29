@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faFire } from '@fortawesome/free-solid-svg-icons';
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const {
-    name,
-    description,
+    id,
+    translations,
     price,
     image,
     is_popular = false,
@@ -13,18 +15,34 @@ const ProductCard = ({ product }) => {
     available = true,
   } = product;
 
+  // Extraer datos de traducción (priorizar español)
+  const name = translations?.es?.name || translations?.en?.name || 'Sin nombre';
+  const description = translations?.es?.description || translations?.en?.description || '';
+
+  // Navegar a detalle del producto
+  const handleCardClick = () => {
+    navigate(`/product/${id}`);
+  };
+
+  // Manejar agregar al carrito (previene navegación)
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    // TODO: Implementar funcionalidad de carrito
+    console.log('Agregar al carrito:', product);
+    alert(`${name} agregado al carrito`);
+  };
+
   // Imagen placeholder si no hay imagen (SVG inline)
   const productImage = image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="225" viewBox="0 0 400 225"%3E%3Crect width="400" height="225" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="%23999"%3ESin Imagen%3C/text%3E%3C/svg%3E';
 
-  // Formatear precio
-  const formattedPrice = new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-  }).format(price);
+  // El precio ya viene formateado desde la API
+  const formattedPrice = price;
 
   return (
-    <div className="card-pepper overflow-hidden group cursor-pointer relative">
+    <div
+      onClick={handleCardClick}
+      className="card-pepper overflow-hidden group cursor-pointer relative transition-all duration-200 hover:shadow-xl"
+    >
       {/* Badge - Popular o Nuevo */}
       {(is_popular || is_new) && (
         <div className="absolute top-3 right-3 z-10">
@@ -87,6 +105,7 @@ const ProductCard = ({ product }) => {
           {/* Botón de acción */}
           {available && (
             <button
+              onClick={handleAddToCart}
               className="px-4 py-2 bg-pepper-orange text-white rounded-lg font-gabarito font-semibold text-sm hover:bg-opacity-90 transition-all duration-200 hover:-translate-y-0.5 shadow-md"
               aria-label={`Agregar ${name} al carrito`}
             >
