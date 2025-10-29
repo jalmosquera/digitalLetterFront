@@ -2,9 +2,11 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faFire } from '@fortawesome/free-solid-svg-icons';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
+  const { getTranslation } = useLanguage();
   const {
     id,
     translations,
@@ -16,9 +18,9 @@ const ProductCard = ({ product }) => {
     available = true,
   } = product;
 
-  // Extraer datos de traducción (priorizar español)
-  const name = translations?.es?.name || translations?.en?.name || 'Sin nombre';
-  const description = translations?.es?.description || translations?.en?.description || '';
+  // Extraer datos de traducción usando el idioma actual
+  const name = getTranslation(translations, 'name') || 'Sin nombre';
+  const description = getTranslation(translations, 'description') || '';
 
   // Navegar a detalle del producto
   const handleCardClick = () => {
@@ -104,7 +106,7 @@ const ProductCard = ({ product }) => {
               <span
                 key={ingredient.id || index}
                 className="text-xl"
-                title={ingredient.translations?.es?.name || ingredient.translations?.en?.name || 'Ingrediente'}
+                title={getTranslation(ingredient.translations, 'name') || 'Ingrediente'}
               >
                 {ingredient.icon}
               </span>
