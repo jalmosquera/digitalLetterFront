@@ -20,6 +20,13 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
     default: faBowlFood,
   };
 
+  // Función para obtener el nombre de la categoría desde translations
+  const getCategoryName = (category) => {
+    return category?.translations?.es?.name ||
+           category?.translations?.en?.name ||
+           'Sin nombre';
+  };
+
   // Función para obtener el icono según el nombre de la categoría
   const getCategoryIcon = (categoryName) => {
     if (!categoryName || typeof categoryName !== 'string') {
@@ -69,27 +76,30 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
           </button>
 
           {/* Categorías dinámicas */}
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => onCategoryChange(category.id)}
-              className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
-                selectedCategory === category.id
-                  ? 'bg-pepper-orange text-white shadow-lg scale-105'
-                  : 'bg-white text-pepper-charcoal hover:bg-pepper-light border-2 border-pepper-gray-light'
-              }`}
-            >
-              <div className="w-12 h-12 flex items-center justify-center">
-                <FontAwesomeIcon
-                  icon={getCategoryIcon(category.name)}
-                  className="text-2xl"
-                />
-              </div>
-              <span className="font-gabarito font-semibold text-sm">
-                {category.name}
-              </span>
-            </button>
-          ))}
+          {categories.map((category) => {
+            const categoryName = getCategoryName(category);
+            return (
+              <button
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
+                  selectedCategory === category.id
+                    ? 'bg-pepper-orange text-white shadow-lg scale-105'
+                    : 'bg-white text-pepper-charcoal hover:bg-pepper-light border-2 border-pepper-gray-light'
+                }`}
+              >
+                <div className="w-12 h-12 flex items-center justify-center">
+                  <FontAwesomeIcon
+                    icon={getCategoryIcon(categoryName)}
+                    className="text-2xl"
+                  />
+                </div>
+                <span className="font-gabarito font-semibold text-sm">
+                  {categoryName}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -100,8 +110,17 @@ CategoryFilter.propTypes = {
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      name: PropTypes.string.isRequired,
+      translations: PropTypes.shape({
+        es: PropTypes.shape({
+          name: PropTypes.string,
+          description: PropTypes.string,
+        }),
+        en: PropTypes.shape({
+          name: PropTypes.string,
       description: PropTypes.string,
+        }),
+      }),
+      image: PropTypes.string,
     })
   ),
   selectedCategory: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
