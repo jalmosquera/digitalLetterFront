@@ -15,7 +15,6 @@ const HomePage = () => {
   const {
     data: categories,
     loading: categoriesLoading,
-    error: categoriesError,
   } = useFetch('/api/categories/');
 
   // Filtrar productos por categoría seleccionada
@@ -32,6 +31,8 @@ const HomePage = () => {
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
   };
+console.log(selectedCategory);
+console.log(products);
 
   return (
     <div className="min-h-screen">
