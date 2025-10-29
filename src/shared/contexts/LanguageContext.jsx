@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { getStaticTranslation } from '@shared/locales/translations';
 
 const LanguageContext = createContext();
 
@@ -56,10 +57,16 @@ export const LanguageProvider = ({ children }) => {
     return '';
   };
 
+  // Helper function to get static UI translations
+  const t = (keyPath) => {
+    return getStaticTranslation(language, keyPath);
+  };
+
   const value = {
     language,
     changeLanguage,
     getTranslation,
+    t, // Static translations
     isSpanish: language === 'es',
     isEnglish: language === 'en',
   };

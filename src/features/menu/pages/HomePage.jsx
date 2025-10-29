@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import useFetch from '@/shared/hooks/useFetch';
 import { ProductGrid, CategoryFilter } from '../components';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const { t } = useLanguage();
 
   // Fetch de productos y categorías
   const {
@@ -56,14 +58,13 @@ const HomePage = () => {
       <section className="bg-pepper-orange text-white py-20 lg:py-32">
         <div className="container-pepper text-center">
           <h1 className="font-cherry-bomb text-4xl md:text-6xl lg:text-7xl mb-6 animate-fade-in-up">
-            Welcome to {companyName}
+            {t('home.welcome')} {companyName}
           </h1>
           <p className="font-inter text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto opacity-95">
-            Experience the future of dining with our digital menu. Browse
-            delicious dishes and order with ease.
+            {t('home.heroDescription')}
           </p>
           <button className="btn-pepper-primary bg-white text-pepper-orange hover:bg-pepper-light text-lg px-8 py-4">
-            Explore Menu
+            {t('home.exploreMenu')}
           </button>
         </div>
       </section>
@@ -74,11 +75,10 @@ const HomePage = () => {
       <section className="py-16 lg:py-24 bg-white dark:bg-gray-900 transition-colors duration-200">
         <div className="container-pepper">
           <h2 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-center text-pepper-charcoal dark:text-white mb-4">
-            Nuestro Menú
+            {t('home.ourMenu')}
           </h2>
           <p className="font-inter text-lg md:text-xl text-gray-600 dark:text-gray-300 text-center mb-12 max-w-2xl mx-auto">
-            Descubre nuestra selección de platillos deliciosos preparados con
-            amor.
+            {t('home.menuDescription')}
           </p>
 
           {/* Filtro de categorías */}
