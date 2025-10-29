@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import { useTheme } from '@shared/contexts/ThemeContext';
 
 const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,7 +24,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-pepper-charcoal shadow-sm dark:shadow-gray-800 transition-colors duration-200">
       <div className="container-pepper">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -46,7 +48,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
                   `font-gabarito font-semibold text-base transition-colors duration-200 ${
                     isActive
                       ? 'text-pepper-orange'
-                      : 'text-pepper-charcoal hover:text-pepper-orange'
+                      : 'text-pepper-charcoal dark:text-white hover:text-pepper-orange'
                   }`
                 }
               >
@@ -56,20 +58,39 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           </div>
 
           {/* CTA Button (Desktop) */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Dark Mode Toggle (Desktop) */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              aria-label="Toggle dark mode"
+            >
+              <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
+            </button>
             <Link to="/" className="btn-pepper-primary">
               Order Now
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200"
-            aria-label="Toggle menu"
-          >
-            <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
-          </button>
+          {/* Mobile Controls: Dark Mode + Menu */}
+          <div className="flex md:hidden items-center space-x-2">
+            {/* Dark Mode Toggle (Mobile) */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              aria-label="Toggle dark mode"
+            >
+              <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
+            </button>
+            {/* Mobile Menu Button */}
+            <button
+              onClick={toggleMenu}
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              aria-label="Toggle menu"
+            >
+              <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -79,7 +100,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-4 pt-2 pb-4 space-y-3 bg-white border-t border-pepper-gray-light">
+        <div className="px-4 pt-2 pb-4 space-y-3 bg-white dark:bg-pepper-charcoal border-t border-pepper-gray-light dark:border-gray-700">
           {navLinks.map(link => (
             <NavLink
               key={link.to}
@@ -89,7 +110,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
                 `block px-4 py-3 rounded-lg font-gabarito font-semibold text-base transition-colors duration-200 ${
                   isActive
                     ? 'bg-pepper-orange text-white'
-                    : 'text-pepper-charcoal hover:bg-pepper-light'
+                    : 'text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700'
                 }`
               }
             >
