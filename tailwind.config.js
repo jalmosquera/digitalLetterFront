@@ -10,7 +10,7 @@ export default {
       colors: {
         // Pepper colors (Public Menu)
         pepper: {
-          orange: '#ff9100',
+          orange: '#F76511',
           yellow: '#ffcc00',
           red: '#ff003c',
           green: '#0a9900',
