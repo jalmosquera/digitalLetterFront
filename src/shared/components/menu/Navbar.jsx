@@ -9,7 +9,7 @@ import { useLanguage } from '@shared/contexts/LanguageContext';
 const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { language, changeLanguage } = useLanguage();
+  const { language, changeLanguage, t } = useLanguage();
 
   const toggleLanguage = () => {
     changeLanguage(language === 'es' ? 'en' : 'es');
@@ -24,9 +24,9 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
   };
 
   const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/contact', label: 'Contact' },
-    { to: '/privacy', label: 'Privacy' },
+    { to: '/', label: t('nav.home') },
+    { to: '/contact', label: t('nav.contact') },
+    { to: '/privacy', label: t('nav.privacy') },
   ];
 
   return (
@@ -70,7 +70,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
               onClick={toggleLanguage}
               className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
               aria-label="Toggle language"
-              title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+              title={t('nav.changeLanguage')}
             >
               <FontAwesomeIcon icon={faGlobe} size="lg" />
               <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
@@ -86,7 +86,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
             </button>
             <Link to="/" className="btn-pepper-primary">
-              Order Now
+              {t('nav.orderNow')}
             </Link>
           </div>
 
@@ -97,7 +97,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
               onClick={toggleLanguage}
               className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
               aria-label="Toggle language"
-              title={language === 'es' ? 'Cambiar a inglés' : 'Switch to Spanish'}
+              title={t('nav.changeLanguage')}
             >
               <FontAwesomeIcon icon={faGlobe} size="lg" />
               <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
@@ -152,7 +152,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             onClick={closeMenu}
             className="block w-full text-center btn-pepper-primary"
           >
-            Order Now
+            {t('nav.orderNow')}
           </Link>
         </div>
       </div>

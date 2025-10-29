@@ -50,12 +50,23 @@ const HomePage = () => {
     setSelectedCategory(categoryId);
   };
 
-  
+  // Handler para scroll suave hacia el menú
+  const handleExploreMenu = () => {
+    const menuSection = document.getElementById('menu-section');
+    if (menuSection) {
+      menuSection.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
+
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-pepper-orange text-white py-20 lg:py-32">
+      {/* <section className="bg-pepper-orange text-white py-20 lg:py-32">
         <div className="container-pepper text-center">
           <h1 className="font-cherry-bomb text-4xl md:text-6xl lg:text-7xl mb-6 animate-fade-in-up">
             {t('home.welcome')} {companyName}
@@ -63,16 +74,22 @@ const HomePage = () => {
           <p className="font-inter text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto opacity-95">
             {t('home.heroDescription')}
           </p>
-          <button className="btn-pepper-primary bg-white text-pepper-orange hover:bg-pepper-light text-lg px-8 py-4">
+          <button
+            onClick={handleExploreMenu}
+            className="btn-pepper-primary bg-white text-pepper-orange hover:bg-pepper-light text-lg px-8 py-4"
+          >
             {t('home.exploreMenu')}
           </button>
         </div>
-      </section>
+      </section> */}
 
       
 
       {/* Menu Section - NUEVA */}
-      <section className="py-16 lg:py-24 bg-white dark:bg-gray-900 transition-colors duration-200">
+      <section
+        id="menu-section"
+        className="py-16 lg:py-24 bg-white dark:bg-gray-900 transition-colors duration-200"
+      >
         <div className="container-pepper">
           <h2 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-center text-pepper-charcoal dark:text-white mb-4">
             {t('home.ourMenu')}
@@ -98,22 +115,9 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 lg:py-24 bg-pepper-light">
-        <div className="container-pepper text-center">
-          <h2 className="font-gabarito font-black text-3xl md:text-4xl lg:text-5xl text-pepper-charcoal mb-6">
-            Ready to Order?
-          </h2>
-          <p className="font-inter text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Browse our menu and discover amazing dishes waiting for you.
-          </p>
-          <button className="btn-pepper-primary text-lg px-8 py-4">
-            View Full Menu
-          </button>
-        </div>
-      </section>
     </div>
   );
 };
 
 export default HomePage;
+ 

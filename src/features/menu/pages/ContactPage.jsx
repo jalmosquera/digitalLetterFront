@@ -5,27 +5,39 @@ import {
   faLocationDot,
   faClock,
 } from '@fortawesome/free-solid-svg-icons';
+import useFetch from '@/shared/hooks/useFetch';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const ContactPage = () => {
+  const { getTranslation, t } = useLanguage();
+
+  // Fetch company data
+  const { data: companyData } = useFetch('/api/company/');
+  const company = companyData?.results?.[0];
+
+  // Extract company information with fallbacks
+  const companyAddress = getTranslation(company?.translations, 'address') || '123 Food Street, Restaurant City, RC 12345';
+  const companyEmail = company?.email || 'hello@digitalletter.com';
+  const companyPhone = company?.phone || '+1 (555) 123-4567';
+
   return (
-    <div className="min-h-screen py-12 lg:py-20">
+    <div className="min-h-screen py-12 lg:py-20 bg-white dark:bg-gray-900 transition-colors duration-200">
       <div className="container-pepper">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="font-gabarito font-black text-4xl md:text-5xl lg:text-6xl text-pepper-charcoal mb-4">
-            Get in Touch
+          <h1 className="font-gabarito font-black text-4xl md:text-5xl lg:text-6xl text-pepper-charcoal dark:text-white mb-4">
+            {t('contact.title')}
           </h1>
-          <p className="font-inter text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and
-            we'll respond as soon as possible.
+          <p className="font-inter text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {t('contact.description')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
           <div>
-            <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal mb-6">
-              Contact Information
+            <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal dark:text-white mb-6">
+              {t('contact.contactInfo')}
             </h2>
             <div className="space-y-6">
               {/* Address */}
@@ -38,11 +50,11 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal mb-1">
-                    Address
+                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                    {t('contact.address')}
                   </h3>
-                  <p className="text-gray-600">
-                    123 Food Street, Restaurant City, RC 12345
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {companyAddress}
                   </p>
                 </div>
               </div>
@@ -57,11 +69,10 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal mb-1">
-                    Phone
+                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                    {t('contact.phone')}
                   </h3>
-                  <p className="text-gray-600">+1 (555) 123-4567</p>
-                  <p className="text-gray-600">+1 (555) 765-4321</p>
+                  <p className="text-gray-600 dark:text-gray-300">{companyPhone}</p>
                 </div>
               </div>
 
@@ -75,11 +86,10 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal mb-1">
-                    Email
+                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                    {t('contact.email')}
                   </h3>
-                  <p className="text-gray-600">hello@digitalletter.com</p>
-                  <p className="text-gray-600">support@digitalletter.com</p>
+                  <p className="text-gray-600 dark:text-gray-300">{companyEmail}</p>
                 </div>
               </div>
 
@@ -93,35 +103,35 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal mb-1">
-                    Business Hours
+                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                    {t('contact.hours')}
                   </h3>
-                  <p className="text-gray-600">Monday - Friday: 10:00 AM - 10:00 PM</p>
-                  <p className="text-gray-600">Saturday - Sunday: 11:00 AM - 11:00 PM</p>
+                  <p className="text-gray-600 dark:text-gray-300">{t('contact.weekdays')}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{t('contact.weekends')}</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="card-pepper p-8">
-            <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal mb-6">
-              Send us a Message
+          <div className="card-pepper p-8 dark:bg-gray-800">
+            <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal dark:text-white mb-6">
+              {t('contact.formTitle')}
             </h2>
             <form className="space-y-4">
               {/* Name */}
               <div>
                 <label
                   htmlFor="name"
-                  className="block font-inter font-medium text-pepper-charcoal mb-2"
+                  className="block font-inter font-medium text-pepper-charcoal dark:text-gray-200 mb-2"
                 >
-                  Your Name
+                  {t('contact.yourName')}
                 </label>
                 <input
                   type="text"
                   id="name"
-                  className="input-pepper"
-                  placeholder="John Doe"
+                  className="input-pepper dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  placeholder={t('contact.namePlaceholder')}
                 />
               </div>
 
@@ -129,15 +139,15 @@ const ContactPage = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block font-inter font-medium text-pepper-charcoal mb-2"
+                  className="block font-inter font-medium text-pepper-charcoal dark:text-gray-200 mb-2"
                 >
-                  Email Address
+                  {t('contact.emailAddress')}
                 </label>
                 <input
                   type="email"
                   id="email"
-                  className="input-pepper"
-                  placeholder="john@example.com"
+                  className="input-pepper dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  placeholder={t('contact.emailPlaceholder')}
                 />
               </div>
 
@@ -145,15 +155,15 @@ const ContactPage = () => {
               <div>
                 <label
                   htmlFor="subject"
-                  className="block font-inter font-medium text-pepper-charcoal mb-2"
+                  className="block font-inter font-medium text-pepper-charcoal dark:text-gray-200 mb-2"
                 >
-                  Subject
+                  {t('contact.subject')}
                 </label>
                 <input
                   type="text"
                   id="subject"
-                  className="input-pepper"
-                  placeholder="How can we help?"
+                  className="input-pepper dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  placeholder={t('contact.subjectPlaceholder')}
                 />
               </div>
 
@@ -161,21 +171,21 @@ const ContactPage = () => {
               <div>
                 <label
                   htmlFor="message"
-                  className="block font-inter font-medium text-pepper-charcoal mb-2"
+                  className="block font-inter font-medium text-pepper-charcoal dark:text-gray-200 mb-2"
                 >
-                  Message
+                  {t('contact.message')}
                 </label>
                 <textarea
                   id="message"
                   rows="4"
-                  className="input-pepper resize-none"
-                  placeholder="Tell us more about your inquiry..."
+                  className="input-pepper resize-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  placeholder={t('contact.messagePlaceholder')}
                 ></textarea>
               </div>
 
               {/* Submit Button */}
               <button type="submit" className="w-full btn-pepper-primary">
-                Send Message
+                {t('contact.sendMessage')}
               </button>
             </form>
           </div>
