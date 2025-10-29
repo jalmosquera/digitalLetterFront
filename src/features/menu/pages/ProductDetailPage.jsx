@@ -8,7 +8,7 @@ import {
   faMinus,
   faShoppingCart
 } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useFetch from '@/shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 
@@ -17,6 +17,11 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const { getTranslation } = useLanguage();
+
+  // Scroll to top when component mounts or ID changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
 
   // Fetch del producto
   const {
@@ -132,7 +137,7 @@ const ProductDetailPage = () => {
           className="flex items-center space-x-2 text-pepper-orange hover:text-pepper-charcoal dark:hover:text-white transition-colors mb-6"
         >
           <FontAwesomeIcon icon={faArrowLeft} />
-          <span className="font-gabarito font-semibold">Volver</span>
+          <span className="font-gabarito font-semibold"></span>
         </button>
 
         {/* Contenido principal */}

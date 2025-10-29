@@ -61,7 +61,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
           {/* Opción "Todos" */}
           <button
             onClick={() => onCategoryChange(null)}
-            className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
+            className={`flex  items-center space-y-2 px-4 py-1 rounded-xl transition-all duration-200 min-w-[100px] ${
               selectedCategory === null
                 ? 'bg-pepper-orange text-white shadow-lg scale-105'
                 : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
@@ -83,7 +83,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
               <button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
-                className={`flex flex-col items-center space-y-2 px-6 py-4 rounded-xl transition-all duration-200 min-w-[100px] ${
+                className={`flex  items-center space-y-2 px-2 py-1 rounded-xl transition-all duration-200 min-w-[100px] ${
                   selectedCategory === category.id
                     ? 'bg-pepper-orange text-white shadow-lg scale-105'
                     : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
