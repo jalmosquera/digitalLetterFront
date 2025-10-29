@@ -10,9 +10,20 @@ import {
   faPhone,
   faLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
-const Footer = () => {
+const Footer = ({ company }) => {
   const currentYear = new Date().getFullYear();
+
+  // Extract company data
+  const companyName = company?.translations?.es?.name ||
+                      company?.translations?.en?.name ||
+                      'Digital Letter';
+  const companyAddress = company?.translations?.es?.address ||
+                         company?.translations?.en?.address ||
+                         '123 Food Street, Restaurant City, RC 12345';
+  const companyEmail = company?.email || 'hello@digitalletter.com';
+  const companyPhone = company?.phone || '+1 (555) 123-4567';
 
   return (
     <footer className="bg-pepper-charcoal text-white">
@@ -21,7 +32,7 @@ const Footer = () => {
           {/* About Section */}
           <div>
             <h3 className="font-cherry-bomb text-2xl text-pepper-orange mb-4">
-              Digital Letter
+              {companyName}
             </h3>
             <p className="text-gray-300 text-sm leading-relaxed">
               Experience the best digital menu for restaurants. Browse, order,
@@ -29,39 +40,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-gabarito font-bold text-lg mb-4">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/"
-                  className="text-gray-300 hover:text-pepper-orange transition-colors duration-200 text-sm"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className="text-gray-300 hover:text-pepper-orange transition-colors duration-200 text-sm"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/privacy"
-                  className="text-gray-300 hover:text-pepper-orange transition-colors duration-200 text-sm"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-
+         
           {/* Contact Info */}
           <div>
             <h4 className="font-gabarito font-bold text-lg mb-4">
@@ -74,7 +53,7 @@ const Footer = () => {
                   className="text-pepper-orange mt-1"
                 />
                 <span className="text-gray-300 text-sm">
-                  123 Food Street, Restaurant City, RC 12345
+                  {companyAddress}
                 </span>
               </li>
               <li className="flex items-center space-x-3">
@@ -82,7 +61,7 @@ const Footer = () => {
                   icon={faPhone}
                   className="text-pepper-orange"
                 />
-                <span className="text-gray-300 text-sm">+1 (555) 123-4567</span>
+                <span className="text-gray-300 text-sm">{companyPhone}</span>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon
@@ -90,14 +69,14 @@ const Footer = () => {
                   className="text-pepper-orange"
                 />
                 <span className="text-gray-300 text-sm">
-                  hello@digitalletter.com
+                  {companyEmail}
                 </span>
               </li>
             </ul>
           </div>
 
           {/* Social Media */}
-          <div>
+          <div className="flex flex-col items-center justify-center">
             <h4 className="font-gabarito font-bold text-lg mb-4">Follow Us</h4>
             <div className="flex space-x-4">
               <a
@@ -137,12 +116,29 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            &copy; {currentYear} Digital Letter. All rights reserved.
+            &copy; {currentYear} {companyName}. All rights reserved.
           </p>
         </div>
       </div>
     </footer>
   );
+};
+
+Footer.propTypes = {
+  company: PropTypes.shape({
+    translations: PropTypes.shape({
+      es: PropTypes.shape({
+        name: PropTypes.string,
+        address: PropTypes.string,
+      }),
+      en: PropTypes.shape({
+        name: PropTypes.string,
+        address: PropTypes.string,
+      }),
+    }),
+    email: PropTypes.string,
+    phone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
 };
 
 export default Footer;

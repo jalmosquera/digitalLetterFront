@@ -25,7 +25,7 @@ const MenuLayout = () => {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer company={company} />
     </div>
   );
 };
