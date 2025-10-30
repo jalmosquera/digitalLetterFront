@@ -41,7 +41,7 @@ const authService = {
     localStorage.setItem('refresh_token', refresh);
 
     // Get user data
-    const userResponse = await api.get('/users/me/');
+    const userResponse = await api.get('/me/');
     const user = userResponse.data;
 
     // Store user data
