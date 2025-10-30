@@ -5,6 +5,8 @@ import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
 import ContactPage from '@features/menu/pages/ContactPage';
 import PrivacyPage from '@features/menu/pages/PrivacyPage';
 import { LoginPage, RegisterPage } from '@features/auth/pages';
+import CartPage from '@features/cart/pages/CartPage';
+import CheckoutPage from '@features/cart/pages/CheckoutPage';
 import NotFoundPage from '@pages/NotFoundPage';
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
           <Route path="product/:id" element={<ProductDetailPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="checkout" element={<CheckoutPage />} />
         </Route>
 
         {/* 404 */}

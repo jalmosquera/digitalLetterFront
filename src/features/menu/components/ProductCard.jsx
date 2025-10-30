@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faFire } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
+import { useCart } from '@shared/contexts/CartContext';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  const { getTranslation } = useLanguage();
+  const { getTranslation, t } = useLanguage();
+  const { addToCart } = useCart();
   const {
     id,
     translations,
@@ -30,9 +32,7 @@ const ProductCard = ({ product }) => {
   // Manejar agregar al carrito (previene navegación)
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // TODO: Implementar funcionalidad de carrito
-    console.log('Agregar al carrito:', product);
-    alert(`${name} agregado al carrito`);
+    addToCart(product, 1);
   };
 
   // Imagen placeholder si no hay imagen (SVG inline)
@@ -130,9 +130,9 @@ const ProductCard = ({ product }) => {
             <button
               onClick={handleAddToCart}
               className="px-4 py-2 bg-pepper-orange text-white rounded-lg font-gabarito font-semibold text-sm hover:bg-opacity-90 transition-all duration-200 hover:-translate-y-0.5 shadow-md"
-              aria-label={`Agregar ${name} al carrito`}
+              aria-label={`${t('product.addToCart')} ${name}`}
             >
-              Agregar
+              {t('product.addToCart')}
             </button>
           )}
         </div>
