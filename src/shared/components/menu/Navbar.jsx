@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes, faMoon, faSun, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faTimes, faMoon, faSun, faGlobe, faUser, faSignOutAlt, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import { useTheme } from '@shared/contexts/ThemeContext';
 import { useLanguage } from '@shared/contexts/LanguageContext';
+import { useAuth } from '@shared/contexts/AuthContext';
+import { useCart } from '@shared/contexts/CartContext';
 
 const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage, t } = useLanguage();
+  const { user, logout, isAuthenticated } = useAuth();
+  const { itemCount } = useCart();
 
   const toggleLanguage = () => {
     changeLanguage(language === 'es' ? 'en' : 'es');
@@ -21,6 +25,11 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    closeMenu();
   };
 
   const navLinks = [
@@ -85,12 +94,49 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             >
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
             </button>
-            <Link to="/" className="btn-pepper-primary">
-              {t('nav.orderNow')}
+
+            {/* Cart Button (Desktop) */}
+            <Link
+              to="/cart"
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
+            >
+              <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-pepper-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
             </Link>
+
+            {/* Auth Buttons */}
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm text-pepper-charcoal dark:text-white font-gabarito">
+                  <FontAwesomeIcon icon={faUser} className="mr-2" />
+                  {user?.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="btn-pepper-secondary flex items-center space-x-2"
+                >
+                  <FontAwesomeIcon icon={faSignOutAlt} />
+                  <span>{t('auth.logout')}</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="btn-pepper-secondary">
+                  {t('auth.login')}
+                </Link>
+                <Link to="/register" className="btn-pepper-primary">
+                  {t('auth.register')}
+                </Link>
+              </>
+            )}
           </div>
 
-          {/* Mobile Controls: Language + Dark Mode + Menu */}
+          {/* Mobile Controls: Language + Dark Mode + Cart + Menu */}
           <div className="flex md:hidden items-center space-x-2">
             {/* Language Toggle (Mobile) */}
             <button
@@ -112,6 +158,19 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             >
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
             </button>
+            {/* Cart Button (Mobile) */}
+            <Link
+              to="/cart"
+              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
+            >
+              <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+              {itemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-pepper-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {itemCount}
+                </span>
+              )}
+            </Link>
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMenu}
@@ -147,13 +206,40 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
               {link.label}
             </NavLink>
           ))}
-          <Link
-            to="/"
-            onClick={closeMenu}
-            className="block w-full text-center btn-pepper-primary"
-          >
-            {t('nav.orderNow')}
-          </Link>
+
+          {/* Auth Buttons Mobile */}
+          {isAuthenticated ? (
+            <>
+              <div className="px-4 py-3 text-center text-sm text-pepper-charcoal dark:text-white font-gabarito">
+                <FontAwesomeIcon icon={faUser} className="mr-2" />
+                {user?.name}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-center btn-pepper-secondary"
+              >
+                <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" />
+                {t('auth.logout')}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                onClick={closeMenu}
+                className="block w-full text-center btn-pepper-secondary"
+              >
+                {t('auth.login')}
+              </Link>
+              <Link
+                to="/register"
+                onClick={closeMenu}
+                className="block w-full text-center btn-pepper-primary"
+              >
+                {t('auth.register')}
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
