@@ -11,12 +11,14 @@ import {
 import { useState, useEffect } from 'react';
 import useFetch from '@/shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
+import { useCart } from '@shared/contexts/CartContext';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const { getTranslation } = useLanguage();
+  const { addToCart } = useCart();
 
   // Scroll to top when component mounts or ID changes
   useEffect(() => {
@@ -44,9 +46,9 @@ const ProductDetailPage = () => {
 
   // Manejar agregar al carrito
   const handleAddToCart = () => {
-    // TODO: Implementar funcionalidad de carrito
-    console.log('Agregar al carrito:', { product: productData, quantity });
-    alert(`${quantity} ${productData.name} agregado al carrito`);
+    addToCart(productData, quantity);
+    // Reset quantity to 1 after adding
+    setQuantity(1);
   };
 
   // Estado de carga
