@@ -4,12 +4,17 @@ import HomePage from '@features/menu/pages/HomePage';
 import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
 import ContactPage from '@features/menu/pages/ContactPage';
 import PrivacyPage from '@features/menu/pages/PrivacyPage';
+import { LoginPage, RegisterPage } from '@features/auth/pages';
 import NotFoundPage from '@pages/NotFoundPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
         {/* Public Routes (Pepper Design) */}
         <Route path="/" element={<MenuLayout />}>
           <Route index element={<HomePage />} />
