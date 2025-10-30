@@ -43,7 +43,10 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        run: npm run test || echo "No tests found, skipping..."
+        run: npm run test
+
+      - name: Generate coverage
+        run: npm run test:coverage
         continue-on-error: true
 
       - name: Upload coverage reports

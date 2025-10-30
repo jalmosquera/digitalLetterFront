@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ProductCard from '../ProductCard';
 import { LanguageProvider } from '@shared/contexts/LanguageContext';
+import { CartProvider } from '@shared/contexts/CartContext';
 
 const mockProduct = {
   id: 1,
@@ -27,7 +28,9 @@ const renderWithProviders = (component) => {
   return render(
     <BrowserRouter>
       <LanguageProvider>
-        {component}
+        <CartProvider>
+          {component}
+        </CartProvider>
       </LanguageProvider>
     </BrowserRouter>
   );

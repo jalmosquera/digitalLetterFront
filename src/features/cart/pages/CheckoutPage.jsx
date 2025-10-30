@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -15,9 +15,9 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [deliveryInfo, setDeliveryInfo] = useState({
-    delivery_address: '',
+    delivery_street: '',
+    delivery_house_number: '',
     delivery_location: '',
-    delivery_province: '',
     phone: user?.phone || '',
     notes: '',
   });
@@ -26,15 +26,13 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
 
   // Redirect if not authenticated or cart is empty
-  if (!isAuthenticated) {
-    navigate('/login');
-    return null;
-  }
-
-  if (items.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else if (items.length === 0) {
+      navigate('/cart');
+    }
+  }, [isAuthenticated, items.length, navigate]);
 
   const totalPrice = getTotalPrice();
 
@@ -56,11 +54,15 @@ const CheckoutPage = () => {
   const validate = () => {
     const newErrors = {};
 
-    if (!deliveryInfo.delivery_address.trim()) {
-      newErrors.delivery_address = t('auth.requiredField');
+    if (!deliveryInfo.delivery_street.trim()) {
+      newErrors.delivery_street = t('auth.requiredField');
     }
 
-    if (!deliveryInfo.delivery_location.trim()) {
+    if (!deliveryInfo.delivery_house_number.trim()) {
+      newErrors.delivery_house_number = t('auth.requiredField');
+    }
+
+    if (!deliveryInfo.delivery_location) {
       newErrors.delivery_location = t('auth.requiredField');
     }
 
@@ -133,33 +135,59 @@ const CheckoutPage = () => {
               </h2>
 
               <div className="space-y-4">
-                {/* Delivery Address */}
+                {/* Delivery Street */}
                 <div>
                   <label
-                    htmlFor="delivery_address"
+                    htmlFor="delivery_street"
                     className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                   >
-                    {t('checkout.deliveryAddress')} *
+                    {t('checkout.deliveryStreet')} *
                   </label>
                   <input
-                    id="delivery_address"
-                    name="delivery_address"
+                    id="delivery_street"
+                    name="delivery_street"
                     type="text"
-                    value={deliveryInfo.delivery_address}
+                    value={deliveryInfo.delivery_street}
                     onChange={handleChange}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
-                      errors.delivery_address ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors`}
-                    placeholder={t('checkout.addressPlaceholder')}
+                      errors.delivery_street ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors`}
+                    placeholder={t('checkout.streetPlaceholder')}
                   />
-                  {errors.delivery_address && (
+                  {errors.delivery_street && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                      {errors.delivery_address}
+                      {errors.delivery_street}
                     </p>
                   )}
                 </div>
 
-                {/* Delivery Location */}
+                {/* House Number */}
+                <div>
+                  <label
+                    htmlFor="delivery_house_number"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    {t('checkout.deliveryHouseNumber')} *
+                  </label>
+                  <input
+                    id="delivery_house_number"
+                    name="delivery_house_number"
+                    type="text"
+                    value={deliveryInfo.delivery_house_number}
+                    onChange={handleChange}
+                    className={`appearance-none relative block w-full px-3 py-2 border ${
+                      errors.delivery_house_number ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors`}
+                    placeholder={t('checkout.houseNumberPlaceholder')}
+                  />
+                  {errors.delivery_house_number && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                      {errors.delivery_house_number}
+                    </p>
+                  )}
+                </div>
+
+                {/* Delivery Location - Select */}
                 <div>
                   <label
                     htmlFor="delivery_location"
@@ -167,41 +195,24 @@ const CheckoutPage = () => {
                   >
                     {t('checkout.deliveryLocation')} *
                   </label>
-                  <input
+                  <select
                     id="delivery_location"
                     name="delivery_location"
-                    type="text"
                     value={deliveryInfo.delivery_location}
                     onChange={handleChange}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
                       errors.delivery_location ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors`}
-                    placeholder={t('checkout.locationPlaceholder')}
-                  />
+                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors`}
+                  >
+                    <option value="">{t('checkout.selectLocation')}</option>
+                    <option value="ardales">{t('checkout.ardales')}</option>
+                    <option value="carratraca">{t('checkout.carratraca')}</option>
+                  </select>
                   {errors.delivery_location && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                       {errors.delivery_location}
                     </p>
                   )}
-                </div>
-
-                {/* Delivery Province */}
-                <div>
-                  <label
-                    htmlFor="delivery_province"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    {t('checkout.deliveryProvince')}
-                  </label>
-                  <input
-                    id="delivery_province"
-                    name="delivery_province"
-                    type="text"
-                    value={deliveryInfo.delivery_province}
-                    onChange={handleChange}
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors"
-                    placeholder={t('checkout.provincePlaceholder')}
-                  />
                 </div>
 
                 {/* Phone */}
@@ -220,7 +231,7 @@ const CheckoutPage = () => {
                     onChange={handleChange}
                     className={`appearance-none relative block w-full px-3 py-2 border ${
                       errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors`}
+                    } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors`}
                     placeholder={t('auth.phonePlaceholder')}
                   />
                   {errors.phone && (
@@ -244,7 +255,7 @@ const CheckoutPage = () => {
                     rows="3"
                     value={deliveryInfo.notes}
                     onChange={handleChange}
-                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors resize-none"
+                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors resize-none"
                     placeholder={t('checkout.notesPlaceholder')}
                   />
                 </div>
@@ -285,13 +296,13 @@ const CheckoutPage = () => {
 
               {/* Items */}
               <div className="space-y-3 mb-6">
-                {items.map(({ product, quantity }) => {
+                {items.map(({ id, product, quantity }) => {
                   const name = getTranslation(product.translations, 'name') || 'Sin nombre';
                   const price = parseFloat(product.price) || 0;
                   const subtotal = price * quantity;
 
                   return (
-                    <div key={product.id} className="flex justify-between text-sm">
+                    <div key={id} className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
                         {quantity}x {name}
                       </span>
