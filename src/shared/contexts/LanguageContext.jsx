@@ -4,6 +4,7 @@ import { getStaticTranslation } from '@shared/locales/translations';
 
 const LanguageContext = createContext();
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
   if (!context) {
