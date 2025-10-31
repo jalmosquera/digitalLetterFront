@@ -15,7 +15,7 @@ import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const Footer = ({ company }) => {
   const currentYear = new Date().getFullYear();
-  const { getTranslation } = useLanguage();
+  const { getTranslation, t } = useLanguage();
 
   // Extract company data
   const companyName = getTranslation(company?.translations, 'name') || 'Digital Letter';
@@ -45,7 +45,7 @@ const Footer = ({ company }) => {
           {/* Contact Info */}
           <div>
   <h4 className="font-gabarito font-bold text-lg mb-4 text-center">
-    Contact Us
+    {t('footer.contactUs')}
   </h4>
   <ul className="flex flex-col items-center space-y-3">
     <li className="flex items-center space-x-3">
@@ -88,7 +88,7 @@ const Footer = ({ company }) => {
 
           {/* Social Media */}
           <div className="flex flex-col items-center justify-center">
-            <h4 className="font-gabarito font-bold text-lg mb-4">Follow Us</h4>
+            <h4 className="font-gabarito font-bold text-lg mb-4">{t('footer.followUs')}</h4>
             <div className="flex space-x-4">
               <a
                 href="https://facebook.com"
@@ -125,7 +125,7 @@ const Footer = ({ company }) => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
           <p className="text-gray-400 text-sm">
-            &copy; {currentYear} {companyName}. All rights reserved.
+            &copy; {currentYear} {companyName}. {t('footer.allRightsReserved')}
           </p>
         </div>
       </div>

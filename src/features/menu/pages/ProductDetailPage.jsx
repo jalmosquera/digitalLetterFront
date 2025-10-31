@@ -313,8 +313,10 @@ const ProductDetailPage = () => {
 
                 {/* Campo para ingredientes adicionales */}
                 <div className="mt-4">
-                  <label htmlFor="additionalNotes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('productDetail.additionalIngredients')}
+                  <label htmlFor="additionalNotes" className="block text-sm font-medium mb-2">
+                    <span className="inline-block bg-yellow-200 dark:bg-yellow-500/30 text-gray-800 dark:text-gray-200 px-3 py-2 rounded-lg leading-relaxed text-justify">
+                      {t('productDetail.additionalIngredients')}
+                    </span>
                   </label>
                   <input
                     id="additionalNotes"
