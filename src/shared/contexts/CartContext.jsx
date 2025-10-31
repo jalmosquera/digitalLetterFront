@@ -33,50 +33,62 @@ export const CartProvider = ({ children }) => {
   }, [items]);
 
   /**
-   * Add item to cart or increment quantity if already exists
+   * Add item to cart with optional customization
    * @param {Object} product - Product object with id, name, price, image, translations
    * @param {number} quantity - Quantity to add (default 1)
+   * @param {Object} customization - Optional customization {selectedIngredients, additionalNotes}
    */
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = (product, quantity = 1, customization = null) => {
     setItems((prevItems) => {
-      const existingItem = prevItems.find(item => item.product.id === product.id);
+      // Generate unique ID for the cart item
+      const cartItemId = Date.now() + Math.random();
+
+      // If customization exists, always add as new item (don't merge)
+      if (customization) {
+        return [...prevItems, { id: cartItemId, product, quantity, customization }];
+      }
+
+      // Otherwise, check if product exists and merge quantities
+      const existingItem = prevItems.find(item =>
+        item.product.id === product.id && !item.customization
+      );
 
       if (existingItem) {
-        // Update quantity if product already in cart
+        // Update quantity if product already in cart without customization
         return prevItems.map(item =>
-          item.product.id === product.id
+          item.product.id === product.id && !item.customization
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
         // Add new product to cart
-        return [...prevItems, { product, quantity }];
+        return [...prevItems, { id: cartItemId, product, quantity, customization: null }];
       }
     });
   };
 
   /**
    * Remove item from cart completely
-   * @param {number} productId - ID of product to remove
+   * @param {number} itemId - Unique ID of cart item to remove
    */
-  const removeFromCart = (productId) => {
-    setItems((prevItems) => prevItems.filter(item => item.product.id !== productId));
+  const removeFromCart = (itemId) => {
+    setItems((prevItems) => prevItems.filter(item => item.id !== itemId));
   };
 
   /**
    * Update quantity of item in cart
-   * @param {number} productId - ID of product to update
+   * @param {number} itemId - Unique ID of cart item to update
    * @param {number} quantity - New quantity (must be >= 1)
    */
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (itemId, quantity) => {
     if (quantity < 1) {
-      removeFromCart(productId);
+      removeFromCart(itemId);
       return;
     }
 
     setItems((prevItems) =>
       prevItems.map(item =>
-        item.product.id === productId
+        item.id === itemId
           ? { ...item, quantity }
           : item
       )
@@ -85,12 +97,12 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Increment quantity of item in cart
-   * @param {number} productId - ID of product to increment
+   * @param {number} itemId - Unique ID of cart item to increment
    */
-  const incrementQuantity = (productId) => {
+  const incrementQuantity = (itemId) => {
     setItems((prevItems) =>
       prevItems.map(item =>
-        item.product.id === productId
+        item.id === itemId
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
@@ -99,19 +111,19 @@ export const CartProvider = ({ children }) => {
 
   /**
    * Decrement quantity of item in cart (removes if quantity becomes 0)
-   * @param {number} productId - ID of product to decrement
+   * @param {number} itemId - Unique ID of cart item to decrement
    */
-  const decrementQuantity = (productId) => {
+  const decrementQuantity = (itemId) => {
     setItems((prevItems) => {
-      const item = prevItems.find(i => i.product.id === productId);
+      const item = prevItems.find(i => i.id === itemId);
       if (!item) return prevItems;
 
       if (item.quantity <= 1) {
-        return prevItems.filter(i => i.product.id !== productId);
+        return prevItems.filter(i => i.id !== itemId);
       }
 
       return prevItems.map(i =>
-        i.product.id === productId
+        i.id === itemId
           ? { ...i, quantity: i.quantity - 1 }
           : i
       );

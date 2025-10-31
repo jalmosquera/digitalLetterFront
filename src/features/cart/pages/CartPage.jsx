@@ -68,70 +68,108 @@ const CartPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {items.map(({ product, quantity }) => {
+            {items.map((item) => {
+              const { id: itemId, product, quantity, customization } = item;
               const name = getTranslation(product.translations, 'name') || 'Sin nombre';
               const productImage = product.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23999"%3ENo img%3C/text%3E%3C/svg%3E';
               const price = parseFloat(product.price) || 0;
               const subtotal = price * quantity;
 
+              // Get customized ingredients if any
+              const hasCustomization = customization && (
+                (customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0)) ||
+                customization.additionalNotes
+              );
+
               return (
                 <div
-                  key={product.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex gap-4"
+                  key={itemId}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col gap-4"
                 >
-                  {/* Product Image */}
-                  <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
-                    <img
-                      src={productImage}
-                      alt={name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  <div className="flex gap-4">
+                    {/* Product Image */}
+                    <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
+                      <img
+                        src={productImage}
+                        alt={name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
-                  {/* Product Info */}
-                  <div className="flex-grow">
-                    <h3 className="font-gabarito font-bold text-lg text-pepper-charcoal dark:text-white mb-1">
-                      {name}
-                    </h3>
-                    <p className="text-pepper-orange font-bold text-xl mb-3">
-                      €{price.toFixed(2)}
-                    </p>
+                    {/* Product Info */}
+                    <div className="flex-grow">
+                      <h3 className="font-gabarito font-bold text-lg text-pepper-charcoal dark:text-white mb-1">
+                        {name}
+                      </h3>
+                      <p className="text-pepper-orange font-bold text-xl mb-3">
+                        €{price.toFixed(2)}
+                      </p>
 
-                    {/* Quantity Controls */}
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => decrementQuantity(product.id)}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                        aria-label="Decrease quantity"
-                      >
-                        <FontAwesomeIcon icon={faMinus} className="text-sm" />
-                      </button>
-                      <span className="w-12 text-center font-gabarito font-bold text-pepper-charcoal dark:text-white">
-                        {quantity}
-                      </span>
-                      <button
-                        onClick={() => incrementQuantity(product.id)}
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                        aria-label="Increase quantity"
-                      >
-                        <FontAwesomeIcon icon={faPlus} className="text-sm" />
-                      </button>
-                      <button
-                        onClick={() => removeFromCart(product.id)}
-                        className="ml-auto text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                        aria-label="Remove item"
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => decrementQuantity(itemId)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <FontAwesomeIcon icon={faMinus} className="text-sm" />
+                        </button>
+                        <span className="w-12 text-center font-gabarito font-bold text-pepper-charcoal dark:text-white">
+                          {quantity}
+                        </span>
+                        <button
+                          onClick={() => incrementQuantity(itemId)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          <FontAwesomeIcon icon={faPlus} className="text-sm" />
+                        </button>
+                        <button
+                          onClick={() => removeFromCart(itemId)}
+                          className="ml-auto text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                          aria-label="Remove item"
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Subtotal */}
+                    <div className="flex-shrink-0 text-right">
+                      <p className="font-gabarito font-bold text-xl text-pepper-charcoal dark:text-white">
+                        €{subtotal.toFixed(2)}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Subtotal */}
-                  <div className="flex-shrink-0 text-right">
-                    <p className="font-gabarito font-bold text-xl text-pepper-charcoal dark:text-white">
-                      €{subtotal.toFixed(2)}
-                    </p>
-                  </div>
+                  {/* Show customization details if any */}
+                  {hasCustomization && (
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-3 text-sm">
+                      {customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0) && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">
+                            {t('cart.customIngredients')}:
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">
+                            {product.ingredients
+                              ?.filter(ing => customization.selectedIngredients.includes(ing.id))
+                              .map(ing => getTranslation(ing.translations, 'name'))
+                              .join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {customization.additionalNotes && (
+                        <div>
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">
+                            {t('cart.extraNotes')}:
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">
+                            {customization.additionalNotes}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}

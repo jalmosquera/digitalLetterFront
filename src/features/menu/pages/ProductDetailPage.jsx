@@ -17,13 +17,10 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const { getTranslation } = useLanguage();
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [additionalNotes, setAdditionalNotes] = useState('');
+  const { getTranslation, t } = useLanguage();
   const { addToCart } = useCart();
-
-  // Scroll to top when component mounts or ID changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [id]);
 
   // Fetch del producto
   const {
@@ -31,6 +28,19 @@ const ProductDetailPage = () => {
     loading,
     error,
   } = useFetch(`/api/products/${id}/`);
+
+  // Scroll to top when component mounts or ID changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
+
+  // Initialize selected ingredients when product loads (all selected by default)
+  useEffect(() => {
+    if (productData && productData.ingredients) {
+      const allIngredientIds = productData.ingredients.map(ing => ing.id);
+      setSelectedIngredients(allIngredientIds);
+    }
+  }, [productData]);
 
   // Manejar incremento de cantidad
   const handleIncrement = () => {
@@ -44,11 +54,31 @@ const ProductDetailPage = () => {
     }
   };
 
+  // Toggle ingredient selection
+  const toggleIngredient = (ingredientId) => {
+    setSelectedIngredients(prev => {
+      if (prev.includes(ingredientId)) {
+        return prev.filter(id => id !== ingredientId);
+      } else {
+        return [...prev, ingredientId];
+      }
+    });
+  };
+
   // Manejar agregar al carrito
   const handleAddToCart = () => {
-    addToCart(productData, quantity);
-    // Reset quantity to 1 after adding
+    const customization = {
+      selectedIngredients,
+      additionalNotes: additionalNotes.trim(),
+    };
+    addToCart(productData, quantity, customization);
+    // Reset to defaults after adding
     setQuantity(1);
+    setAdditionalNotes('');
+    if (productData && productData.ingredients) {
+      const allIngredientIds = productData.ingredients.map(ing => ing.id);
+      setSelectedIngredients(allIngredientIds);
+    }
   };
 
   // Estado de carga
@@ -213,24 +243,57 @@ const ProductDetailPage = () => {
               </p>
             )}
 
-            {/* Ingredientes */}
+            {/* Ingredientes con checkboxes */}
             {ingredients && ingredients.length > 0 && (
               <div className="mb-6">
                 <h3 className="font-gabarito font-bold text-xl text-pepper-charcoal dark:text-white mb-3">
-                  Ingredientes:
+                  {t('productDetail.ingredients')}:
                 </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  {t('productDetail.selectIngredients')}
+                </p>
                 <div className="flex flex-wrap gap-3">
-                  {ingredients.map((ingredient, index) => (
-                    <div
-                      key={ingredient.id || index}
-                      className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border-2 border-pepper-gray-light dark:border-gray-600 hover:border-pepper-orange transition-colors"
-                    >
-                      <span className="text-2xl">{ingredient.icon}</span>
-                      <span className="font-gabarito font-semibold text-pepper-charcoal dark:text-white">
-                        {getTranslation(ingredient.translations, 'name') || 'Ingrediente'}
-                      </span>
-                    </div>
-                  ))}
+                  {ingredients.map((ingredient, index) => {
+                    const ingredientName = getTranslation(ingredient.translations, 'name') || 'Ingrediente';
+                    const isSelected = selectedIngredients.includes(ingredient.id);
+
+                    return (
+                      <label
+                        key={ingredient.id || index}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-pepper-orange border-pepper-orange text-white'
+                            : 'bg-white dark:bg-gray-800 border-pepper-gray-light dark:border-gray-600 text-pepper-charcoal dark:text-white hover:border-pepper-orange'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleIngredient(ingredient.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-pepper-orange focus:ring-pepper-orange"
+                        />
+                        <span className="text-2xl">{ingredient.icon}</span>
+                        <span className="font-gabarito font-semibold">
+                          {ingredientName}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* Campo para ingredientes adicionales */}
+                <div className="mt-4">
+                  <label htmlFor="additionalNotes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('productDetail.additionalIngredients')}
+                  </label>
+                  <input
+                    id="additionalNotes"
+                    type="text"
+                    value={additionalNotes}
+                    onChange={(e) => setAdditionalNotes(e.target.value)}
+                    placeholder={t('productDetail.additionalIngredientsPlaceholder')}
+                    className="w-full px-4 py-2 border-2 border-pepper-gray-light dark:border-gray-600 rounded-lg focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white transition-colors"
+                  />
                 </div>
               </div>
             )}

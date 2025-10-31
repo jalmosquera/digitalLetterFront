@@ -23,14 +23,18 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
       customer: '👤 *Cliente:*',
       phone: '📱 *Teléfono:*',
       delivery: '📍 *Dirección de Entrega:*',
-      address: 'Dirección',
+      street: 'Calle',
+      houseNumber: 'Número',
       location: 'Localidad',
-      province: 'Provincia',
+      ardales: 'Ardales',
+      carratraca: 'Carratraca',
       notes: '📝 *Notas:*',
       order: '🍕 *Pedido:*',
       quantity: 'Cantidad',
       unitPrice: 'Precio unitario',
       subtotal: 'Subtotal',
+      ingredients: 'Ingredientes',
+      additionalIngredients: 'Ingredientes adicionales',
       total: '💰 *TOTAL:*',
     },
     en: {
@@ -38,14 +42,18 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
       customer: '👤 *Customer:*',
       phone: '📱 *Phone:*',
       delivery: '📍 *Delivery Address:*',
-      address: 'Address',
-      location: 'City',
-      province: 'Province',
+      street: 'Street',
+      houseNumber: 'Number',
+      location: 'Location',
+      ardales: 'Ardales',
+      carratraca: 'Carratraca',
       notes: '📝 *Notes:*',
       order: '🍕 *Order:*',
       quantity: 'Quantity',
       unitPrice: 'Unit price',
       subtotal: 'Subtotal',
+      ingredients: 'Ingredients',
+      additionalIngredients: 'Additional ingredients',
       total: '💰 *TOTAL:*',
     },
   };
@@ -61,11 +69,12 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
 
   // Delivery address
   message += `${t.delivery}\n`;
-  message += `${t.address}: ${deliveryInfo.delivery_address}\n`;
-  message += `${t.location}: ${deliveryInfo.delivery_location}\n`;
-  if (deliveryInfo.delivery_province) {
-    message += `${t.province}: ${deliveryInfo.delivery_province}\n`;
-  }
+  message += `${t.street}: ${deliveryInfo.delivery_street}\n`;
+  message += `${t.houseNumber}: ${deliveryInfo.delivery_house_number}\n`;
+
+  // Location with translation
+  const locationText = deliveryInfo.delivery_location === 'ardales' ? t.ardales : t.carratraca;
+  message += `${t.location}: ${locationText}\n`;
 
   // Notes
   if (deliveryInfo.notes) {
@@ -84,7 +93,32 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
     message += `${index + 1}. *${productName}*\n`;
     message += `   ${t.quantity}: ${item.quantity}\n`;
     message += `   ${t.unitPrice}: €${price.toFixed(2)}\n`;
-    message += `   ${t.subtotal}: €${itemSubtotal.toFixed(2)}\n\n`;
+    message += `   ${t.subtotal}: €${itemSubtotal.toFixed(2)}\n`;
+
+    // Add ingredient customization if customer deselected any
+    if (item.customization) {
+      const { selectedIngredients, additionalNotes } = item.customization;
+      const totalIngredients = item.product.ingredients?.length || 0;
+
+      // Only show ingredients if customer deselected any
+      if (selectedIngredients && selectedIngredients.length < totalIngredients && totalIngredients > 0) {
+        const selectedIngredientNames = item.product.ingredients
+          .filter(ing => selectedIngredients.includes(ing.id))
+          .map(ing => getTranslation(ing.translations, 'name'))
+          .join(', ');
+
+        if (selectedIngredientNames) {
+          message += `   ${t.ingredients}: ${selectedIngredientNames}\n`;
+        }
+      }
+
+      // Add additional ingredients if provided
+      if (additionalNotes && additionalNotes.trim()) {
+        message += `   ${t.additionalIngredients}: ${additionalNotes}\n`;
+      }
+    }
+
+    message += '\n';
   });
 
   message += '━━━━━━━━━━━━━━━━━━━━\n';
