@@ -23,55 +23,68 @@ const Footer = ({ company }) => {
   const companyEmail = company?.email || 'hello@digitalletter.com';
   const companyPhone = company?.phone || '+1 (555) 123-4567';
 
+  // Generate interactive links
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyAddress)}`;
+  const whatsappUrl = `https://wa.me/${String(companyPhone).replace(/[^0-9+]/g, '')}`;
+  const mailtoUrl = `mailto:${companyEmail}`;
+
   return (
     <footer className="bg-pepper-charcoal text-white">
       <div className="container-pepper py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
-          <div>
+          <div className='flex flex-col items-center justify-center'>
             <h3 className="font-cherry-bomb text-2xl text-pepper-orange mb-4">
               {companyName}
             </h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
-              Experience the best digital menu for restaurants. Browse, order,
-              and enjoy delicious food with just a few clicks.
-            </p>
+
+            
           </div>
 
          
           {/* Contact Info */}
           <div>
-            <h4 className="font-gabarito font-bold text-lg mb-4">
-              Contact Us
-            </h4>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-3">
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className="text-pepper-orange mt-1"
-                />
-                <span className="text-gray-300 text-sm">
-                  {companyAddress}
-                </span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <FontAwesomeIcon
-                  icon={faPhone}
-                  className="text-pepper-orange"
-                />
-                <span className="text-gray-300 text-sm">{companyPhone}</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <FontAwesomeIcon
-                  icon={faEnvelope}
-                  className="text-pepper-orange"
-                />
-                <span className="text-gray-300 text-sm">
-                  {companyEmail}
-                </span>
-              </li>
-            </ul>
-          </div>
+  <h4 className="font-gabarito font-bold text-lg mb-4 text-center">
+    Contact Us
+  </h4>
+  <ul className="flex flex-col items-center space-y-3">
+    <li className="flex items-center space-x-3">
+      <FontAwesomeIcon
+        icon={faLocationDot}
+        className="text-pepper-orange mt-1"
+      />
+      <a
+        href={googleMapsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+      >
+        {companyAddress}
+      </a>
+    </li>
+    <li className="flex items-center space-x-3">
+      <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+      >
+        {companyPhone}
+      </a>
+    </li>
+    <li className="flex items-center space-x-3">
+      <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
+      <a
+        href={mailtoUrl}
+        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+      >
+        {companyEmail}
+      </a>
+    </li>
+  </ul>
+</div>
+
 
           {/* Social Media */}
           <div className="flex flex-col items-center justify-center">
@@ -105,9 +118,7 @@ const Footer = ({ company }) => {
                 <FontAwesomeIcon icon={faTwitter} size="lg" />
               </a>
             </div>
-            <p className="text-gray-400 text-xs mt-6 leading-relaxed">
-              Stay updated with our latest news, offers, and menu items.
-            </p>
+
           </div>
         </div>
 
