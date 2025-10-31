@@ -322,7 +322,7 @@ const ProductDetailPage = () => {
                     value={additionalNotes}
                     onChange={(e) => setAdditionalNotes(e.target.value)}
                     placeholder={t('productDetail.additionalIngredientsPlaceholder')}
-                    className="w-full px-4 py-2 border-2 border-pepper-gray-light dark:border-gray-600 rounded-lg focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white transition-colors"
+                    className="w-full px-4 py-2 border-2 border-pepper-gray-light dark:border-gray-600 rounded-lg focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white transition-colors "
                   />
                 </div>
               </div>
