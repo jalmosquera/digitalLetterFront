@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
@@ -96,6 +97,12 @@ const CheckoutPage = () => {
       // Send via WhatsApp
       sendOrderViaWhatsApp(orderData, language, getTranslation);
 
+      // Show success notification
+      toast.success(t('checkout.orderSuccess'), {
+        icon: '📱',
+        duration: 4000,
+      });
+
       // Clear cart after successful order
       setTimeout(() => {
         clearCart();
@@ -103,7 +110,7 @@ const CheckoutPage = () => {
       }, 1000);
     } catch (error) {
       console.error('Error sending order:', error);
-      alert(t('checkout.orderError'));
+      toast.error(t('checkout.orderError'));
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faFire } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
@@ -33,6 +34,11 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = (e) => {
     e.stopPropagation();
     addToCart(product, 1);
+
+    // Show success notification
+    toast.success(t('cart.addedToCart'), {
+      icon: '🛒',
+    });
   };
 
   // Imagen placeholder si no hay imagen (SVG inline)

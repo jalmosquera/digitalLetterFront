@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import MenuLayout from '@shared/components/layout/MenuLayout';
 import HomePage from '@features/menu/pages/HomePage';
 import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
@@ -12,6 +13,29 @@ import NotFoundPage from '@pages/NotFoundPage';
 function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+            padding: '16px',
+            borderRadius: '8px',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#FF6B35',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+          },
+        }}
+      />
       <Routes>
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />} />

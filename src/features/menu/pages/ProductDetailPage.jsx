@@ -9,6 +9,7 @@ import {
   faShoppingCart
 } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import useFetch from '@/shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useCart } from '@shared/contexts/CartContext';
@@ -19,6 +20,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const { getTranslation, t } = useLanguage();
   const { addToCart } = useCart();
 
@@ -72,6 +74,12 @@ const ProductDetailPage = () => {
       additionalNotes: additionalNotes.trim(),
     };
     addToCart(productData, quantity, customization);
+
+    // Show success notification
+    toast.success(t('cart.addedToCart'), {
+      icon: '🛒',
+    });
+
     // Reset to defaults after adding
     setQuantity(1);
     setAdditionalNotes('');
@@ -176,7 +184,10 @@ const ProductDetailPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Imagen del producto */}
           <div className="relative">
-            <div className="card-pepper overflow-hidden relative bg-white dark:bg-gray-800">
+            <div
+              className="card-pepper overflow-hidden relative bg-white dark:bg-gray-800 cursor-pointer group/image"
+              onClick={() => setIsImageModalOpen(true)}
+            >
               {/* Badges */}
               {(is_popular || is_new) && (
                 <div className="absolute top-4 right-4 z-10 flex flex-col space-y-2">
@@ -207,11 +218,30 @@ const ProductDetailPage = () => {
               <img
                 src={productImage}
                 alt={name}
-                className={`w-full h-auto object-cover ${
+                className={`w-full h-auto object-cover transition-transform duration-300 group-hover/image:scale-105 ${
                   !available ? 'opacity-60 grayscale' : ''
                 }`}
                 style={{ aspectRatio: '16/9' }}
               />
+
+              {/* Overlay hover indicator */}
+              <div className="absolute inset-0 bg-black opacity-0 group-hover/image:opacity-10 transition-opacity duration-300 flex items-center justify-center">
+                <div className="bg-white dark:bg-gray-800 rounded-full p-3 opacity-0 group-hover/image:opacity-100 transform scale-75 group-hover/image:scale-100 transition-all duration-300">
+                  <svg
+                    className="w-6 h-6 text-pepper-orange"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -362,6 +392,59 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Modal with Blur Background */}
+      {isImageModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fadeIn"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <div
+            className="relative max-w-7xl max-h-[90vh] animate-scaleIn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute -top-12 right-0 text-white hover:text-pepper-orange transition-colors p-2"
+              aria-label="Cerrar"
+            >
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Image */}
+            <img
+              src={productImage}
+              alt={name}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
+
+            {/* Image info overlay */}
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-lg">
+              <h3 className="font-gabarito font-bold text-2xl text-white">
+                {name}
+              </h3>
+              {description && (
+                <p className="font-inter text-sm text-gray-200 mt-2">
+                  {description}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
