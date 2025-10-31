@@ -245,7 +245,7 @@ describe('WhatsApp Service', () => {
   describe('sendWhatsAppMessage', () => {
     beforeEach(() => {
       // Mock window.open
-      global.window.open = vi.fn();
+      window.open = vi.fn();
     });
 
     it('should open WhatsApp URL with encoded message', () => {
