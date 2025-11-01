@@ -32,8 +32,12 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
     closeMenu();
   };
 
+  // Check if user is admin (boss or employee)
+  const isAdmin = user?.role === 'boss' || user?.role === 'employee';
+
   const navLinks = [
     { to: '/', label: t('nav.home') },
+    ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
     { to: '/contact', label: t('nav.contact') },
     { to: '/privacy', label: t('nav.privacy') },
   ];

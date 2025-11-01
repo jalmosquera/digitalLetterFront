@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import MenuLayout from '@shared/components/layout/MenuLayout';
+import AdminLayout from '@shared/components/layout/AdminLayout';
 import HomePage from '@features/menu/pages/HomePage';
 import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
 import ContactPage from '@features/menu/pages/ContactPage';
@@ -9,6 +10,8 @@ import PrivacyPage from '@features/menu/pages/PrivacyPage';
 import { LoginPage, RegisterPage } from '@features/auth/pages';
 import CartPage from '@features/cart/pages/CartPage';
 import CheckoutPage from '@features/cart/pages/CheckoutPage';
+import DashboardPage from '@features/admin/pages/DashboardPage';
+import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
 
 function App() {
@@ -71,6 +74,18 @@ function App() {
           <Route path="privacy" element={<PrivacyPage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
+        </Route>
+
+        {/* Admin Routes (Riday Design) - Protected */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['boss', 'employee']}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardPage />} />
         </Route>
 
         {/* 404 */}
