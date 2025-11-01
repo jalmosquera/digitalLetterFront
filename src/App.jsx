@@ -11,6 +11,10 @@ import { LoginPage, RegisterPage } from '@features/auth/pages';
 import CartPage from '@features/cart/pages/CartPage';
 import CheckoutPage from '@features/cart/pages/CheckoutPage';
 import DashboardPage from '@features/admin/pages/DashboardPage';
+import ProductsPage from '@features/admin/pages/ProductsPage';
+import CategoriesPage from '@features/admin/pages/CategoriesPage';
+import IngredientsPage from '@features/admin/pages/IngredientsPage';
+import UsersPage from '@features/admin/pages/UsersPage';
 import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
 
@@ -86,6 +90,10 @@ function App() {
           }
         >
           <Route index element={<DashboardPage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="categories" element={<CategoriesPage />} />
+          <Route path="ingredients" element={<IngredientsPage />} />
+          <Route path="users" element={<UsersPage />} />
         </Route>
 
         {/* 404 */}
