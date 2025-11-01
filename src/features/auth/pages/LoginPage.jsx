@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@shared/contexts/AuthContext';
 import { useLanguage } from '@shared/contexts/LanguageContext';
+import authService from '@shared/services/authService';
 
 const LoginPage = () => {
-  const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
@@ -54,8 +53,14 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(formData.username, formData.password);
-      navigate('/');
+      const { user: loggedUser } = await authService.login(formData.username, formData.password);
+
+      // Redirect based on user role
+      if (loggedUser.role === 'boss' || loggedUser.role === 'employee') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       setErrorMessage(error.message || t('auth.loginError'));
     } finally {
