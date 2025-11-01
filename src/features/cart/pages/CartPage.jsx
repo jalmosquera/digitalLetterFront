@@ -88,19 +88,24 @@ const CartPage = () => {
                 >
                   <div className="flex gap-4">
                     {/* Product Image */}
-                    <div className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    >
                       <img
                         src={productImage}
                         alt={name}
                         className="w-full h-full object-cover"
                       />
-                    </div>
+                    </Link>
 
                     {/* Product Info */}
                     <div className="flex-grow">
-                      <h3 className="font-gabarito font-bold text-lg text-pepper-charcoal dark:text-white mb-1">
-                        {name}
-                      </h3>
+                      <Link to={`/product/${product.id}`}>
+                        <h3 className="font-gabarito font-bold text-lg text-pepper-charcoal dark:text-white mb-1 hover:text-pepper-orange transition-colors cursor-pointer">
+                          {name}
+                        </h3>
+                      </Link>
                       <p className="text-pepper-orange font-bold text-xl mb-3">
                         €{price.toFixed(2)}
                       </p>
