@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBars,
   faTachometerAlt,
+  faShoppingCart,
   faUtensils,
   faUsers,
   faList,
@@ -15,9 +16,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
+
 const Sidebar = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
+
 
   const menuItems = [
     {
@@ -25,6 +28,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       label: 'Dashboard',
       icon: faTachometerAlt,
       path: '/admin',
+    },
+    {
+      id: 'orders',
+      label: 'Pedidos',
+      icon: faShoppingCart,
+      path: '/admin/orders',
     },
     {
       id: 'products',
@@ -56,13 +65,14 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       icon: faChartLine,
       path: '/admin/analytics',
     },
-    {
-      id: 'settings',
-      label: 'Configuración',
-      icon: faCog,
-      path: '/admin/settings',
-    },
+    // {
+    //   id: 'settings',
+    //   label: 'Configuración',
+    //   icon: faCog,
+    //   path: '/admin/settings',
+    // },
   ];
+
 
   const isActive = (path) => {
     if (path === '/admin') {
@@ -71,10 +81,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
     return location.pathname.startsWith(path);
   };
 
+
   const toggleSubmenu = (id) => {
     if (isCollapsed) return;
     setOpenSubmenu(openSubmenu === id ? null : id);
   };
+
 
   return (
     <aside
@@ -87,18 +99,19 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       {/* Logo & Toggle */}
       <div className="h-[70px] flex items-center justify-between px-4 bg-white dark:bg-dark-header border-b border-gray-200 dark:border-dark-border">
         {!isCollapsed && (
-          <h1 className="font-bold text-xl text-pepper-orange">
+          <h1 className="text-xl font-bold text-pepper-orange">
             Equus
           </h1>
         )}
         <button
           onClick={onToggle}
-          className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-200 dark:hover:bg-dark-card transition-colors text-gray-600 dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary"
+          className="flex items-center justify-center w-10 h-10 text-gray-600 transition-colors rounded-lg hover:bg-gray-200 dark:hover:bg-dark-card dark:text-text-secondary hover:text-gray-900 dark:hover:text-text-primary"
           aria-label="Toggle sidebar"
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
       </div>
+
 
       {/* Navigation */}
       <nav className="py-4">
@@ -107,7 +120,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
           <li>
             <Link
               to="/"
-              className="flex items-center px-4 py-3 mx-2 rounded-lg transition-all duration-200 text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary border-b border-gray-200 dark:border-dark-border mb-2"
+              className="flex items-center px-4 py-3 mx-2 mb-2 text-gray-600 transition-all duration-200 border-b border-gray-200 rounded-lg dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary dark:border-dark-border"
             >
               <FontAwesomeIcon
                 icon={faStore}
@@ -120,6 +133,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
           </li>
           {menuItems.map((item) => {
             const active = isActive(item.path);
+
 
             return (
               <li key={item.id}>
@@ -155,9 +169,10 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
                   )}
                 </Link>
 
+
                 {/* Submenu */}
                 {!isCollapsed && item.submenu && openSubmenu === item.id && (
-                  <ul className="ml-4 mt-1 space-y-1">
+                  <ul className="mt-1 ml-4 space-y-1">
                     {item.submenu.map((subItem) => (
                       <li key={subItem.id}>
                         <Link
@@ -186,9 +201,11 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   );
 };
 
+
 Sidebar.propTypes = {
   isCollapsed: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
 };
+
 
 export default Sidebar;

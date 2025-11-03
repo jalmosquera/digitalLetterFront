@@ -41,8 +41,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
     { to: '/contact', label: t('nav.contact') },
     { to: '/privacy', label: t('nav.privacy') },
   ];
-console.log("Navbar isAuthenticated:", isAuthenticated);
-console.log("Navbar user:", user);
+
 
   return (
     <nav className="sticky top-0 z-50 transition-colors duration-200 bg-white shadow-sm dark:bg-pepper-charcoal dark:shadow-gray-800">

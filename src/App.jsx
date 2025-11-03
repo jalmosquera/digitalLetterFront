@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
+
 // Context providers
 import { AuthProvider } from '@shared/contexts/AuthContext';
 import { ThemeProvider } from '@shared/contexts/ThemeContext';
 import { LanguageProvider } from '@shared/contexts/LanguageContext';
 import { CartProvider } from '@shared/contexts/CartContext';
+
 
 // Layouts y páginas
 import MenuLayout from '@shared/components/layout/MenuLayout';
@@ -19,15 +21,19 @@ import { LoginPage, RegisterPage } from '@features/auth/pages';
 import CartPage from '@features/cart/pages/CartPage';
 import CheckoutPage from '@features/cart/pages/CheckoutPage';
 import DashboardPage from '@features/admin/pages/DashboardPage';
+import OrdersPage from '@features/admin/pages/OrdersPage';
 import ProductsPage from '@features/admin/pages/ProductsPage';
 import CategoriesPage from '@features/admin/pages/CategoriesPage';
 import IngredientsPage from '@features/admin/pages/IngredientsPage';
 import UsersPage from '@features/admin/pages/UsersPage';
 import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
+import AnalyticsPage from './features/admin/pages/AnalyticsPage';
+
 
 function App() {
   const [isDark, setIsDark] = useState(false);
+
 
   useEffect(() => {
     const checkTheme = () => {
@@ -41,6 +47,7 @@ function App() {
     });
     return () => observer.disconnect();
   }, []);
+
 
   return (
     <ThemeProvider>
@@ -75,10 +82,12 @@ function App() {
                 }}
               />
 
+
               <Routes>
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+
 
                 {/* Público */}
                 <Route path="/" element={<MenuLayout />}>
@@ -90,6 +99,7 @@ function App() {
                   <Route path="checkout" element={<CheckoutPage />} />
                 </Route>
 
+
                 {/* Admin (protegido) */}
                 <Route
                   path="/admin"
@@ -100,11 +110,14 @@ function App() {
                   }
                 >
                   <Route index element={<DashboardPage />} />
+                  <Route path="orders" element={<OrdersPage />} />
                   <Route path="products" element={<ProductsPage />} />
                   <Route path="categories" element={<CategoriesPage />} />
                   <Route path="ingredients" element={<IngredientsPage />} />
                   <Route path="users" element={<UsersPage />} />
+                  <Route path="analytics" element={<AnalyticsPage />} />
                 </Route>
+
 
                 {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
@@ -116,5 +129,6 @@ function App() {
     </ThemeProvider>
   );
 }
+
 
 export default App;

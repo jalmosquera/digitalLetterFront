@@ -14,6 +14,16 @@ const useFetch = (url, options = {}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Si no hay URL, no hacer nada
+    if (!url) {
+      setLoading(false);
+      setData(null);
+      setError(null);
+      return;
+    }
+
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -21,43 +31,73 @@ const useFetch = (url, options = {}) => {
 
         const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+        // Obtener headers
+        const headers = getAuthHeaders(options.headers);
+
         const config = {
           ...options,
-          headers: getAuthHeaders(options.headers),
+          headers,
         };
 
         const response = await axios.get(`${baseURL}${url}`, config);
 
-        setData(response.data);
+        if (isMounted) {
+          setData(response.data);
+          setError(null);
+        }
       } catch (err) {
-        setError(err.response?.data?.message || err.message || 'Error al cargar datos');
-        console.error('Error en useFetch:', err);
+        if (isMounted) {
+          const errorMessage =
+            err.response?.data?.message ||
+            err.response?.data?.detail ||
+            err.message ||
+            'Error al cargar datos';
+          setError(errorMessage);
+          setData(null);
+          console.error('Error en useFetch:', err);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [url]); // ← SOLO url como dependencia, NO options
 
   // Función para refetch manual
   const refetch = async () => {
-    setLoading(true);
-    setError(null);
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-    const config = {
-      ...options,
-      headers: getAuthHeaders(options.headers),
-    };
+    if (!url) return;
 
     try {
+      setLoading(true);
+      setError(null);
+
+      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const headers = getAuthHeaders(options.headers);
+
+      const config = {
+        ...options,
+        headers,
+      };
+
       const response = await axios.get(`${baseURL}${url}`, config);
       setData(response.data);
+      setError(null);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Error al cargar datos');
-      console.error('Error en useFetch:', err);
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
+        err.message ||
+        'Error al cargar datos';
+      setError(errorMessage);
+      console.error('Error en refetch:', err);
     } finally {
       setLoading(false);
     }

@@ -63,27 +63,17 @@ export const AuthProvider = ({ children }) => {
    * @param {string} password - Password
    * @returns {Promise<void>}
    */
- const login = async (username, password) => {
-  try {
-    const { token, user: loggedUser } = await authService.login(username, password);
-
-    // Guarda token y usuario en localStorage
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(loggedUser));
-
-    // Actualiza estado global
-    setUser(loggedUser);
-
-    return loggedUser; // opcional, por si quieres usarlo en LoginPage
-  } catch (error) {
-    const message =
-      error.response?.data?.detail ||
-      error.response?.data?.message ||
-      'Error al iniciar sesión';
-    throw new Error(message);
-  }
-};
-
+  const login = async (username, password) => {
+    try {
+      const { user: loggedUser } = await authService.login(username, password);
+      setUser(loggedUser);
+    } catch (error) {
+      const message = error.response?.data?.detail ||
+                     error.response?.data?.message ||
+                     'Error al iniciar sesión';
+      throw new Error(message);
+    }
+  };
 
   /**
    * Logout user
