@@ -4,12 +4,10 @@ import { useLanguage } from '@shared/contexts/LanguageContext';
 import authService from '@shared/services/authService';
 import { useAuth } from '@shared/contexts/AuthContext';
 
-
 const LoginPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { login } = useAuth();
-
 
   const [formData, setFormData] = useState({
     username: '',
@@ -19,14 +17,14 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -37,39 +35,34 @@ const LoginPage = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  setErrorMessage('');
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setErrorMessage('');
 
-  const newErrors = validate();
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-  }
-
-  setLoading(true);
-  try {
-    // 👇 Usamos el login del contexto
-    const loggedUser = await login(formData.username, formData.password);
-
-    console.log('loggedUser.role:', loggedUser.role);
-
-    if (loggedUser.role === 'boss' || loggedUser.role === 'employee') {
-      console.log('navegando a /admin');
-      navigate('/admin');
-    } else {
-      console.log('navegando a /');
-      navigate('/');
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-  } catch (error) {
-    console.error('Error en login:', error);
-    setErrorMessage(error.message || t('auth.loginError'));
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      // 👇 Usamos el login del contexto
+      const loggedUser = await login(formData.username, formData.password);
 
+      if (loggedUser.role === 'boss' || loggedUser.role === 'employee') {
+        navigate('/admin');
+      } else {
+        console.log('navegando a /');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Error en login:', error);
+      setErrorMessage(error.message || t('auth.loginError'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 dark:bg-gray-900 sm:px-6 lg:px-8">
@@ -86,13 +79,18 @@ const LoginPage = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {errorMessage && (
             <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20">
-              <p className="text-sm text-red-800 dark:text-red-400">{errorMessage}</p>
+              <p className="text-sm text-red-800 dark:text-red-400">
+                {errorMessage}
+              </p>
             </div>
           )}
 
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
-              <label htmlFor="username" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="username"
+                className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 {t('auth.username')}
               </label>
               <input
@@ -102,15 +100,24 @@ const LoginPage = () => {
                 value={formData.username}
                 onChange={handleChange}
                 className={`appearance-none w-full px-3 py-2 border ${
-                  errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  errors.username
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600'
                 } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
                 placeholder={t('auth.usernamePlaceholder')}
               />
-              {errors.username && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username}</p>}
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.username}
+                </p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="password"
+                className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 {t('auth.password')}
               </label>
               <input
@@ -120,11 +127,17 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`appearance-none w-full px-3 py-2 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  errors.password
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600'
                 } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
                 placeholder={t('auth.passwordPlaceholder')}
               />
-              {errors.password && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>}
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.password}
+                </p>
+              )}
             </div>
           </div>
 
@@ -136,9 +149,23 @@ const LoginPage = () => {
             >
               {loading ? (
                 <span className="flex items-center">
-                  <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z" />
+                  <svg
+                    className="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"
+                    />
                   </svg>
                   {t('auth.loginButton')}...
                 </span>
@@ -151,7 +178,10 @@ const LoginPage = () => {
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {t('auth.noAccount')}{' '}
-              <Link to="/register" className="font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark">
+              <Link
+                to="/register"
+                className="font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark"
+              >
                 {t('auth.registerHere')}
               </Link>
             </p>
