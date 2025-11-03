@@ -67,10 +67,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       // authService.login devuelve { access_token, user }
-      const { access_token, user: loggedUser } = await authService.login(
-        username,
-        password
-      );
+      const { user: loggedUser } = await authService.login(username, password);
 
       if (!loggedUser) {
         throw new Error('No se recibieron datos del usuario');

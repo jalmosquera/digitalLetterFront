@@ -8,6 +8,7 @@ import { getAuthHeaders } from '@shared/utils/auth';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRole, setSelectedRole] = useState(''); // ✅ Nuevo estado para rol
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const { data: usersData, loading, error, refetch } = useFetch('/api/users-list/');
@@ -45,11 +46,16 @@ const UsersPage = () => {
     }
   };
 
+  // ✅ Filtro por nombre Y rol
   const filteredUsers = users.filter(user => {
     const username = user.username?.toLowerCase() || '';
     const email = user.email?.toLowerCase() || '';
     const search = searchTerm.toLowerCase();
-    return username.includes(search) || email.includes(search);
+    
+    const matchesSearch = username.includes(search) || email.includes(search);
+    const matchesRole = selectedRole === '' || user.role === selectedRole;
+    
+    return matchesSearch && matchesRole;
   });
 
   const getRoleLabel = (role) => {
@@ -89,9 +95,9 @@ const UsersPage = () => {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-text-primary mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-text-primary">
             Usuarios
           </h1>
           <p className="text-gray-600 dark:text-text-secondary">
@@ -100,49 +106,62 @@ const UsersPage = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="btn-pepper-primary flex items-center space-x-2"
+          className="flex items-center space-x-2 btn-pepper-primary"
         >
           <FontAwesomeIcon icon={faPlus} />
           <span>Nuevo Usuario</span>
         </button>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
+      {/* Search and Filters */}
+      <div className="flex flex-col gap-4 mb-6 md:flex-row">
+        {/* Búsqueda por nombre/email */}
+        <div className="relative flex-1 max-w-md">
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
           />
           <input
             type="text"
-            placeholder="Buscar usuarios..."
+            placeholder="Buscar por nombre o email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+            className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
           />
         </div>
+
+        {/* ✅ Filtro por Rol */}
+        <select
+          value={selectedRole}
+          onChange={(e) => setSelectedRole(e.target.value)}
+          className="px-4 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+        >
+          <option value="">Todos los roles</option>
+          <option value="boss">Propietario</option>
+          <option value="employee">Empleado</option>
+          <option value="client">Cliente</option>
+        </select>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden">
+      <div className="overflow-hidden bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-dark-bg">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Usuario
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Rol
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Activo
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase dark:text-text-secondary">
                   Acciones
                 </th>
               </tr>
@@ -156,10 +175,10 @@ const UsersPage = () => {
                 </tr>
               ) : (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors">
+                  <tr key={user.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-dark-bg">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-pepper-orange rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full bg-pepper-orange">
                           <FontAwesomeIcon icon={faUser} className="text-white" />
                         </div>
                         <div className="ml-3">
@@ -169,7 +188,7 @@ const UsersPage = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-text-secondary">
+                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap dark:text-text-secondary">
                       {user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -186,17 +205,17 @@ const UsersPage = () => {
                         {user.is_active ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                    <td className="px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                       <button
                         onClick={() => handleOpenModal(user)}
-                        className="text-pepper-orange hover:text-pepper-orange/80 transition-colors"
+                        className="transition-colors text-pepper-orange hover:text-pepper-orange/80"
                         title="Editar"
                       >
                         <FontAwesomeIcon icon={faEdit} />
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
-                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors ml-3"
+                        className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         title="Eliminar"
                       >
                         <FontAwesomeIcon icon={faTrash} />

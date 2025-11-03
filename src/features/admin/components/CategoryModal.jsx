@@ -123,7 +123,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
         toast.error(errorMessage);
       }
     } catch (error) {
-      toast.error('Error al conectar con el servidor');
+      toast.error(`Error al conectar con el servidor ${error}`);
     } finally {
       setLoading(false);
     }
@@ -141,7 +141,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
         ></div>
 
         {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white dark:bg-dark-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-dark-card sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-border">
             <h3 className="text-xl font-bold text-gray-900 dark:text-text-primary">
@@ -160,7 +160,7 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
             <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               {/* Name Spanish */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nombre (Español) *
                 </label>
                 <input
@@ -169,13 +169,13 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   value={formData.name_es}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Name English */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nombre (Inglés) *
                 </label>
                 <input
@@ -184,13 +184,13 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   value={formData.name_en}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Description Spanish */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Descripción (Español)
                 </label>
                 <textarea
@@ -198,13 +198,13 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   value={formData.description_es}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange resize-none"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg resize-none dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Description English */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Descripción (Inglés)
                 </label>
                 <textarea
@@ -212,13 +212,13 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   value={formData.description_en}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange resize-none"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg resize-none dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Image */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Imagen
                 </label>
                 <input
@@ -226,31 +226,31 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   name="image"
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
                 {imagePreview && (
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="mt-2 w-32 h-32 object-cover rounded-lg"
+                    className="object-cover w-32 h-32 mt-2 rounded-lg"
                   />
                 )}
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-dark-border">
+            <div className="flex justify-end pt-4 mt-6 space-x-3 border-t border-gray-200 dark:border-dark-border">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-bg border border-gray-300 dark:border-dark-border rounded-lg hover:bg-gray-50 dark:hover:bg-dark-card transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg dark:text-gray-300 dark:bg-dark-bg dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-card"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-pepper-orange rounded-lg hover:bg-pepper-orange/90 transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange/90 disabled:opacity-50"
               >
                 {loading ? 'Guardando...' : (category ? 'Actualizar' : 'Crear')}
               </button>
