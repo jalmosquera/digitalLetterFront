@@ -41,9 +41,11 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
     { to: '/contact', label: t('nav.contact') },
     { to: '/privacy', label: t('nav.privacy') },
   ];
+console.log("Navbar isAuthenticated:", isAuthenticated);
+console.log("Navbar user:", user);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-pepper-charcoal shadow-sm dark:shadow-gray-800 transition-colors duration-200">
+    <nav className="sticky top-0 z-50 transition-colors duration-200 bg-white shadow-sm dark:bg-pepper-charcoal dark:shadow-gray-800">
       <div className="container-pepper">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -58,7 +60,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="items-center hidden space-x-8 md:flex">
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
@@ -77,23 +79,23 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           </div>
 
           {/* CTA Button (Desktop) */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="items-center hidden space-x-4 md:flex">
             {/* Language Toggle (Desktop) */}
             <button
               onClick={toggleLanguage}
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label="Toggle language"
               title={t('nav.changeLanguage')}
             >
               <FontAwesomeIcon icon={faGlobe} size="lg" />
-              <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
+              <span className="absolute px-1 text-xs font-bold text-white rounded -bottom-1 -right-1 bg-pepper-orange">
                 {language.toUpperCase()}
               </span>
             </button>
             {/* Dark Mode Toggle (Desktop) */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              className="p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label="Toggle dark mode"
             >
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
@@ -102,12 +104,12 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             {/* Cart Button (Desktop) */}
             <Link
               to="/cart"
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
             >
               <FontAwesomeIcon icon={faShoppingCart} size="lg" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-pepper-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
                   {itemCount}
                 </span>
               )}
@@ -122,7 +124,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="btn-pepper-secondary flex items-center space-x-2"
+                  className="flex items-center space-x-2 btn-pepper-secondary"
                 >
                   <FontAwesomeIcon icon={faSignOutAlt} />
                   <span>{t('auth.logout')}</span>
@@ -141,23 +143,23 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           </div>
 
           {/* Mobile Controls: Language + Dark Mode + Cart + Menu */}
-          <div className="flex md:hidden items-center space-x-2">
+          <div className="flex items-center space-x-2 md:hidden">
             {/* Language Toggle (Mobile) */}
             <button
               onClick={toggleLanguage}
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label="Toggle language"
               title={t('nav.changeLanguage')}
             >
               <FontAwesomeIcon icon={faGlobe} size="lg" />
-              <span className="absolute -bottom-1 -right-1 text-xs font-bold bg-pepper-orange text-white px-1 rounded">
+              <span className="absolute px-1 text-xs font-bold text-white rounded -bottom-1 -right-1 bg-pepper-orange">
                 {language.toUpperCase()}
               </span>
             </button>
             {/* Dark Mode Toggle (Mobile) */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              className="p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label="Toggle dark mode"
             >
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
@@ -165,12 +167,12 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             {/* Cart Button (Mobile) */}
             <Link
               to="/cart"
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange relative"
+              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
             >
               <FontAwesomeIcon icon={faShoppingCart} size="lg" />
               {itemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-pepper-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
                   {itemCount}
                 </span>
               )}
@@ -178,7 +180,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMenu}
-              className="p-2 text-pepper-charcoal hover:text-pepper-orange transition-colors duration-200 dark:text-white dark:hover:text-pepper-orange"
+              className="p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
               aria-label="Toggle menu"
             >
               <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} size="lg" />
@@ -193,7 +195,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="px-4 pt-2 pb-4 space-y-3 bg-white dark:bg-pepper-charcoal border-t border-pepper-gray-light dark:border-gray-700">
+        <div className="px-4 pt-2 pb-4 space-y-3 bg-white border-t dark:bg-pepper-charcoal border-pepper-gray-light dark:border-gray-700">
           {navLinks.map(link => (
             <NavLink
               key={link.to}
@@ -214,7 +216,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           {/* Auth Buttons Mobile */}
           {isAuthenticated ? (
             <>
-              <div className="px-4 py-3 text-center text-sm text-pepper-charcoal dark:text-white font-gabarito">
+              <div className="px-4 py-3 text-sm text-center text-pepper-charcoal dark:text-white font-gabarito">
                 <FontAwesomeIcon icon={faUser} className="mr-2" />
                 {user?.name}
               </div>

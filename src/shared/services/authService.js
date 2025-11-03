@@ -8,13 +8,6 @@ import { env } from '@/config/env';
 const authService = {
   /**
    * Register a new user
-   * @param {Object} userData - User registration data
-   * @param {string} userData.username - Username
-   * @param {string} userData.email - Email address
-   * @param {string} userData.name - Full name
-   * @param {string} userData.password - Password
-   * @param {string} userData.phone - Phone number
-   * @returns {Promise<Object>} User data
    */
   async register(userData) {
     const response = await axios.post(`${env.apiBaseUrl}/clients/`, userData);
@@ -23,9 +16,6 @@ const authService = {
 
   /**
    * Login user with username and password
-   * @param {string} username - Username
-   * @param {string} password - Password
-   * @returns {Promise<Object>} Tokens and user data
    */
   async login(username, password) {
     // Get JWT tokens
@@ -47,7 +37,11 @@ const authService = {
     // Store user data
     localStorage.setItem('user', JSON.stringify(user));
 
-    return { user, access, refresh };
+    // ✅ IMPORTANTE: devolver la estructura que el AuthProvider espera
+    return {
+      token: access, // el nombre `token` debe existir
+      user,
+    };
   },
 
   /**
@@ -61,7 +55,6 @@ const authService = {
 
   /**
    * Get current user from localStorage
-   * @returns {Object|null} User data or null if not logged in
    */
   getCurrentUser() {
     const userStr = localStorage.getItem('user');
@@ -78,7 +71,6 @@ const authService = {
 
   /**
    * Check if user is authenticated
-   * @returns {boolean} True if user has valid tokens
    */
   isAuthenticated() {
     const token = localStorage.getItem('access_token');
@@ -88,7 +80,6 @@ const authService = {
 
   /**
    * Get access token
-   * @returns {string|null} Access token or null
    */
   getAccessToken() {
     return localStorage.getItem('access_token');
@@ -96,7 +87,6 @@ const authService = {
 
   /**
    * Get refresh token
-   * @returns {string|null} Refresh token or null
    */
   getRefreshToken() {
     return localStorage.getItem('refresh_token');
@@ -104,7 +94,6 @@ const authService = {
 
   /**
    * Refresh access token
-   * @returns {Promise<string>} New access token
    */
   async refreshToken() {
     const refreshToken = this.getRefreshToken();

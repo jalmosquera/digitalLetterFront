@@ -1,6 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
+
+// Context providers
+import { AuthProvider } from '@shared/contexts/AuthContext';
+import { ThemeProvider } from '@shared/contexts/ThemeContext';
+import { LanguageProvider } from '@shared/contexts/LanguageContext';
+import { CartProvider } from '@shared/contexts/CartContext';
+
+// Layouts y páginas
 import MenuLayout from '@shared/components/layout/MenuLayout';
 import AdminLayout from '@shared/components/layout/AdminLayout';
 import HomePage from '@features/menu/pages/HomePage';
@@ -21,85 +29,91 @@ import NotFoundPage from '@pages/NotFoundPage';
 function App() {
   const [isDark, setIsDark] = useState(false);
 
-  // Detect theme changes
   useEffect(() => {
     const checkTheme = () => {
       setIsDark(document.documentElement.classList.contains('dark'));
     };
-
     checkTheme();
-
-    // Observe theme changes
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     });
-
     return () => observer.disconnect();
   }, []);
 
   return (
-    <BrowserRouter>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        toastOptions={{
-          duration: 1500,
-          style: {
-            background: isDark ? '#363636' : '#ffffff',
-            color: '#F76511',
-            padding: '16px',
-            borderRadius: '8px',
-            boxShadow: isDark ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(0, 0, 0, 0.15)',
-          },
-          success: {
-            duration: 1500,
-            iconTheme: {
-              primary: '#FF6B35',
-              secondary: '#F76511',
-            },
-          },
-          error: {
-            duration: 1500,
-          },
-        }}
-      />
-      <Routes>
-        {/* Auth Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <Toaster
+                position="top-center"
+                reverseOrder={false}
+                toastOptions={{
+                  duration: 1500,
+                  style: {
+                    background: isDark ? '#363636' : '#ffffff',
+                    color: '#F76511',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    boxShadow: isDark
+                      ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                      : '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  },
+                  success: {
+                    duration: 1500,
+                    iconTheme: {
+                      primary: '#FF6B35',
+                      secondary: '#F76511',
+                    },
+                  },
+                  error: {
+                    duration: 1500,
+                  },
+                }}
+              />
 
-        {/* Public Routes (Pepper Design) */}
-        <Route path="/" element={<MenuLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="product/:id" element={<ProductDetailPage />} />
-          <Route path="contact" element={<ContactPage />} />
-          <Route path="privacy" element={<PrivacyPage />} />
-          <Route path="cart" element={<CartPage />} />
-          <Route path="checkout" element={<CheckoutPage />} />
-        </Route>
+              <Routes>
+                {/* Auth */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-        {/* Admin Routes (Riday Design) - Protected */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={['boss', 'employee']}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-          <Route path="ingredients" element={<IngredientsPage />} />
-          <Route path="users" element={<UsersPage />} />
-        </Route>
+                {/* Público */}
+                <Route path="/" element={<MenuLayout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="product/:id" element={<ProductDetailPage />} />
+                  <Route path="contact" element={<ContactPage />} />
+                  <Route path="privacy" element={<PrivacyPage />} />
+                  <Route path="cart" element={<CartPage />} />
+                  <Route path="checkout" element={<CheckoutPage />} />
+                </Route>
 
-        {/* 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+                {/* Admin (protegido) */}
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute allowedRoles={['boss', 'employee']}>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<DashboardPage />} />
+                  <Route path="products" element={<ProductsPage />} />
+                  <Route path="categories" element={<CategoriesPage />} />
+                  <Route path="ingredients" element={<IngredientsPage />} />
+                  <Route path="users" element={<UsersPage />} />
+                </Route>
+
+                {/* 404 */}
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </BrowserRouter>
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
