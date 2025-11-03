@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@shared/contexts/LanguageContext';
-import authService from '@shared/services/authService';
 import { useAuth } from '@shared/contexts/AuthContext';
 
 const LoginPage = () => {

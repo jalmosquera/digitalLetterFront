@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faSearch, faSave, faTimes, faCheck, faX } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faSearch, faCheck, faX } from '@fortawesome/free-solid-svg-icons';
+
 import useFetch from '@shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';

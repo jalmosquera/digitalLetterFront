@@ -10,7 +10,6 @@ import {
   faList,
   faLeaf,
   faChartLine,
-  faCog,
   faChevronRight,
   faStore,
 } from '@fortawesome/free-solid-svg-icons';
