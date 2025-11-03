@@ -50,9 +50,10 @@ export const AuthProvider = ({ children }) => {
       const newUser = await authService.register(userData);
       return newUser;
     } catch (error) {
-      const message = error.response?.data?.message ||
-                     error.response?.data?.detail ||
-                     'Error al registrar usuario';
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.detail ||
+        'Error al registrar usuario';
       throw new Error(message);
     }
   };
@@ -61,16 +62,31 @@ export const AuthProvider = ({ children }) => {
    * Login user
    * @param {string} username - Username
    * @param {string} password - Password
-   * @returns {Promise<void>}
+   * @returns {Promise<Object>} Logged in user
    */
   const login = async (username, password) => {
     try {
-      const { user: loggedUser } = await authService.login(username, password);
+      // authService.login devuelve { access_token, user }
+      const { access_token, user: loggedUser } = await authService.login(
+        username,
+        password
+      );
+
+      if (!loggedUser) {
+        throw new Error('No se recibieron datos del usuario');
+      }
+
+      // Actualiza estado global
       setUser(loggedUser);
+
+      // ✅ Retorna el usuario
+      return loggedUser;
     } catch (error) {
-      const message = error.response?.data?.detail ||
-                     error.response?.data?.message ||
-                     'Error al iniciar sesión';
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        error.message ||
+        'Error al iniciar sesión';
       throw new Error(message);
     }
   };
