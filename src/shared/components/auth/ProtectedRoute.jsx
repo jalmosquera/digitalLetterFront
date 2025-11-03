@@ -5,17 +5,24 @@ import PropTypes from 'prop-types';
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { isAuthenticated, user } = useAuth();
 
-  // If not authenticated, redirect to login
-  if (!isAuthenticated) {
+  // 🔹 lee respaldo del localStorage por si el contexto aún no cargó
+  const storedUser = JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
+
+  const activeUser = user || storedUser;
+  const authenticated = isAuthenticated || !!token;
+
+  // No autenticado en ningún lado → login
+  if (!authenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  // If user role is not allowed, redirect to home
-  if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
+  // Autenticado, pero sin permiso → home
+  if (allowedRoles.length > 0 && !allowedRoles.includes(activeUser?.role)) {
     return <Navigate to="/" replace />;
   }
 
-  // If authenticated and authorized, render the children
+  // Todo OK
   return children;
 };
 
