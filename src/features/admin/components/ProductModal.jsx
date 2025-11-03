@@ -5,10 +5,15 @@ import PropTypes from 'prop-types';
 import useFetch from '@shared/hooks/useFetch';
 import toast from 'react-hot-toast';
 import { getAuthHeaders } from '@shared/utils/auth';
+import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
+  const { getTranslation } = useLanguage();
   const { data: categoriesData } = useFetch('/api/categories/');
+  const { data: ingredientsData } = useFetch('/api/ingredients/');
+  
   const categories = categoriesData?.results || [];
+  const ingredients = ingredientsData?.results || [];
 
   const [formData, setFormData] = useState({
     name_es: '',
@@ -20,6 +25,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     stock: 0,
     available: true,
     image: null,
+    ingredients: [],
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -36,6 +42,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         stock: product.stock || 0,
         available: product.available ?? true,
         image: null,
+        ingredients: product.ingredients?.map(ing => ing.id) || [],
       });
       setImagePreview(product.image);
     } else {
@@ -49,10 +56,11 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         stock: 0,
         available: true,
         image: null,
+        ingredients: [],
       });
       setImagePreview(null);
     }
-  }, [product]);
+  }, [product, isOpen]);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -67,108 +75,132 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     }
   };
 
+  const handleIngredientToggle = (ingredientId) => {
+    setFormData(prev => ({
+      ...prev,
+      ingredients: prev.ingredients.includes(ingredientId)
+        ? prev.ingredients.filter(id => id !== ingredientId)
+        : [...prev.ingredients, ingredientId]
+    }));
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      // Create translations object
-      const translations = {
-        es: {
-          name: formData.name_es,
-          description: formData.description_es,
-        },
-        en: {
-          name: formData.name_en,
-          description: formData.description_en,
-        },
-      };
+  try {
+    const translations = {
+      es: {
+        name: formData.name_es,
+        description: formData.description_es,
+      },
+      en: {
+        name: formData.name_en,
+        description: formData.description_en,
+      },
+    };
 
-      const dataToSend = {
-        translations,
-        price: formData.price,
-        categories: [parseInt(formData.category)],
-        stock: parseInt(formData.stock),
-        available: formData.available,
-      };
+    const url = product
+      ? `${import.meta.env.VITE_API_URL}/api/products/${product.id}/`
+      : `${import.meta.env.VITE_API_URL}/api/products/`;
 
-      const url = product
-        ? `${import.meta.env.VITE_API_URL}/api/products/${product.id}/`
-        : `${import.meta.env.VITE_API_URL}/api/products/`;
+    let body;
+    let headers = getAuthHeaders();
+    let method = 'POST'; // Para crear
 
-      let body;
-      let headers = getAuthHeaders();
+    // Si es edición, usa PATCH (no PUT)
+    if (product) {
+      method = 'PATCH';
+    }
 
-      // Si hay imagen, usar FormData con campos planos
-      if (formData.image) {
-        const formDataToSend = new FormData();
+    // Si hay imagen, usar FormData
+    if (formData.image) {
+      const formDataToSend = new FormData();
 
-        // Traducciones como campos planos (backend los convierte automáticamente)
-        formDataToSend.append('name_en', formData.name_en);
-        formDataToSend.append('name_es', formData.name_es);
+      // Traducciones
+      formDataToSend.append('name_en', formData.name_en);
+      formDataToSend.append('name_es', formData.name_es);
+      formDataToSend.append('description_en', formData.description_en || '');
+      formDataToSend.append('description_es', formData.description_es || '');
 
-        // Solo agregar descriptions si tienen contenido
-        if (formData.description_en) {
-          formDataToSend.append('description_en', formData.description_en);
-        }
-        if (formData.description_es) {
-          formDataToSend.append('description_es', formData.description_es);
-        }
+      // Campos regulares
+      formDataToSend.append('price', String(formData.price));
+      formDataToSend.append('stock', String(formData.stock));
+      formDataToSend.append('available', String(formData.available));
+      formDataToSend.append('categories', String(formData.category));
 
-        // Campos regulares (como strings para FormData)
-        formDataToSend.append('price', String(formData.price));
-        formDataToSend.append('stock', String(formData.stock));
-        formDataToSend.append('available', String(formData.available));
-
-        // Categories - como string (el backend acepta "1,2" o "[1,2]")
-        formDataToSend.append('categories', String(formData.category));
-
-        // Imagen
-        formDataToSend.append('image', formData.image);
-
-        body = formDataToSend;
-        // No agregar Content-Type, el navegador lo hace automáticamente con el boundary correcto
-      } else {
-        // Sin imagen, enviar como JSON
-        headers['Content-Type'] = 'application/json';
-        body = JSON.stringify(dataToSend);
-      }
-
-      const response = await fetch(url, {
-        method: product ? 'PUT' : 'POST',
-        headers,
-        body,
+      // ✅ Ingredientes como array
+      formData.ingredients.forEach(ingId => {
+        formDataToSend.append('ingredients', ingId);
       });
 
-      if (response.ok) {
-        toast.success(product ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
-        onSuccess();
-        onClose();
-      } else {
-        const error = await response.json();
+      // Imagen
+      formDataToSend.append('image', formData.image);
 
-        // Manejar diferentes formatos de error
-        let errorMessage = 'Error al guardar el producto';
-        if (error.detail) {
-          errorMessage = error.detail;
-        } else if (error.message) {
-          errorMessage = error.message;
-        } else if (typeof error === 'object') {
-          // Si el error es un objeto con campos específicos
-          const errorFields = Object.keys(error);
-          if (errorFields.length > 0) {
-            errorMessage = `Error en: ${errorFields.join(', ')}`;
-          }
-        }
+      body = formDataToSend;
+      delete headers['Content-Type'];
+    } else {
+      // ✅ Sin imagen, enviar como JSON
+      headers['Content-Type'] = 'application/json';
+      
+      const payload = {
+        translations,
+        price: String(formData.price),
+        stock: parseInt(formData.stock),
+        available: formData.available,
+        ingredients: formData.ingredients,
+      };
 
-        toast.error(errorMessage);
+      // Solo agregar categories si hay seleccionada
+      if (formData.category) {
+        payload.categories = [parseInt(formData.category)];
       }
-    } catch (error) {
-      toast.error('Error al conectar con el servidor');
-    } finally {
-      setLoading(false);
+
+      body = JSON.stringify(payload);
     }
-  };
+
+  
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body,
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      toast.success(product ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
+      onSuccess();
+      onClose();
+    } else {
+      let errorMessage = 'Error al guardar el producto';
+      
+      if (responseData.detail) {
+        errorMessage = responseData.detail;
+      } else if (responseData.message) {
+        errorMessage = responseData.message;
+      } else if (responseData.ingredients) {
+        errorMessage = `Error en ingredientes: ${responseData.ingredients}`;
+      } else if (typeof responseData === 'object') {
+        const errorFields = Object.keys(responseData).filter(k => responseData[k]);
+        if (errorFields.length > 0) {
+          errorMessage = `Error: ${errorFields.join(', ')}`;
+        }
+      }
+
+      console.error('Error response:', responseData);
+      toast.error(errorMessage);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    toast.error('Error al conectar con el servidor');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   if (!isOpen) return null;
 
@@ -182,7 +214,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         ></div>
 
         {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white dark:bg-dark-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl dark:bg-dark-card sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-dark-border">
             <h3 className="text-xl font-bold text-gray-900 dark:text-text-primary">
@@ -201,7 +233,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
             <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               {/* Name Spanish */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nombre (Español) *
                 </label>
                 <input
@@ -210,13 +242,13 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   value={formData.name_es}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Name English */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Nombre (Inglés) *
                 </label>
                 <input
@@ -225,13 +257,13 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   value={formData.name_en}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Description Spanish */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Descripción (Español)
                 </label>
                 <textarea
@@ -239,13 +271,13 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   value={formData.description_es}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange resize-none"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg resize-none dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Description English */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Descripción (Inglés)
                 </label>
                 <textarea
@@ -253,14 +285,14 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   value={formData.description_en}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange resize-none"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg resize-none dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
               </div>
 
               {/* Price, Stock and Category */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Precio (€) *
                   </label>
                   <input
@@ -271,12 +303,12 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                     step="0.01"
                     min="0"
                     required
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                    className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Stock *
                   </label>
                   <input
@@ -286,12 +318,12 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                     onChange={handleChange}
                     min="0"
                     required
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                    className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Categoría *
                   </label>
                   <select
@@ -299,7 +331,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                     value={formData.category}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                    className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                   >
                     <option value="">Seleccionar...</option>
                     {categories.map(cat => (
@@ -311,9 +343,37 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 </div>
               </div>
 
+              {/* Ingredientes */}
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Ingredientes
+                </label>
+                <div className="grid grid-cols-2 gap-3 p-3 border border-gray-200 rounded-lg dark:border-dark-border bg-gray-50 dark:bg-dark-bg/50">
+                  {ingredients.length > 0 ? (
+                    ingredients.map(ing => (
+                      <label key={ing.id} className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.ingredients.includes(ing.id)}
+                          onChange={() => handleIngredientToggle(ing.id)}
+                          className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
+                        />
+                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                          {ing.icon} {getTranslation(ing.translations, 'name')}
+                        </span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="col-span-2 text-sm text-gray-500 dark:text-gray-400">
+                      No hay ingredientes disponibles
+                    </p>
+                  )}
+                </div>
+              </div>
+
               {/* Image */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Imagen
                 </label>
                 <input
@@ -321,13 +381,13 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   name="image"
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
                 {imagePreview && (
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="mt-2 w-32 h-32 object-cover rounded-lg"
+                    className="object-cover w-32 h-32 mt-2 rounded-lg"
                   />
                 )}
               </div>
@@ -339,7 +399,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   name="available"
                   checked={formData.available}
                   onChange={handleChange}
-                  className="w-4 h-4 text-pepper-orange border-gray-300 rounded focus:ring-pepper-orange"
+                  className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
                 />
                 <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Disponible
@@ -348,18 +408,18 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-dark-border">
+            <div className="flex justify-end pt-4 mt-6 space-x-3 border-t border-gray-200 dark:border-dark-border">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-dark-bg border border-gray-300 dark:border-dark-border rounded-lg hover:bg-gray-50 dark:hover:bg-dark-card transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-white border border-gray-300 rounded-lg dark:text-gray-300 dark:bg-dark-bg dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-card"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 text-sm font-medium text-white bg-pepper-orange rounded-lg hover:bg-pepper-orange/90 transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange/90 disabled:opacity-50"
               >
                 {loading ? 'Guardando...' : (product ? 'Actualizar' : 'Crear')}
               </button>

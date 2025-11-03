@@ -14,6 +14,7 @@ const ProductsPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
+
   const { data: productsData, loading, error, refetch } = useFetch('/api/products/');
   const { data: categoriesData } = useFetch('/api/categories/');
 
@@ -140,9 +141,9 @@ const ProductsPage = () => {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-text-primary mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-text-primary">
             Productos
           </h1>
           <p className="text-gray-600 dark:text-text-secondary">
@@ -151,7 +152,7 @@ const ProductsPage = () => {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="btn-pepper-primary flex items-center space-x-2"
+          className="flex items-center space-x-2 btn-pepper-primary"
         >
           <FontAwesomeIcon icon={faPlus} />
           <span>Nuevo Producto</span>
@@ -163,46 +164,46 @@ const ProductsPage = () => {
         <div className="relative max-w-md">
           <FontAwesomeIcon
             icon={faSearch}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
           />
           <input
             type="text"
             placeholder="Buscar productos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+            className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
           />
         </div>
       </div>
 
       {/* Products Table */}
-      <div className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border overflow-hidden">
+      <div className="overflow-hidden bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-dark-bg">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Imagen
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Nombre (ES)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Nombre (EN)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Precio
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Stock
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Categoría
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-600 uppercase dark:text-text-secondary">
                   Disponible
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 dark:text-text-secondary uppercase tracking-wider">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-600 uppercase dark:text-text-secondary">
                   Acciones
                 </th>
               </tr>
@@ -239,7 +240,7 @@ const ProductsPage = () => {
                         <img
                           src={product.image || '/placeholder-product.jpg'}
                           alt={nameES}
-                          className="w-12 h-12 rounded-lg object-cover"
+                          className="object-cover w-12 h-12 rounded-lg"
                         />
                       </td>
 
@@ -250,10 +251,10 @@ const ProductsPage = () => {
                             type="text"
                             value={editedData.name_es}
                             onChange={(e) => handleFieldChange('name_es', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
+                            className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
-                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">
+                          <span className="text-sm font-medium text-gray-900 dark:text-text-primary">
                             {nameES}
                           </span>
                         )}
@@ -266,7 +267,7 @@ const ProductsPage = () => {
                             type="text"
                             value={editedData.name_en}
                             onChange={(e) => handleFieldChange('name_en', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
+                            className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
                           <span className="text-sm text-gray-600 dark:text-text-secondary">
@@ -283,10 +284,10 @@ const ProductsPage = () => {
                             step="0.01"
                             value={editedData.price}
                             onChange={(e) => handleFieldChange('price', e.target.value)}
-                            className="w-24 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
+                            className="w-24 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
-                          <span className="text-sm text-gray-900 dark:text-text-primary font-semibold">
+                          <span className="text-sm font-semibold text-gray-900 dark:text-text-primary">
                             €{parseFloat(price).toFixed(2)}
                           </span>
                         )}
@@ -299,7 +300,7 @@ const ProductsPage = () => {
                             type="number"
                             value={editedData.stock}
                             onChange={(e) => handleFieldChange('stock', e.target.value)}
-                            className="w-20 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
+                            className="w-20 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
                           <span className="text-sm text-gray-900 dark:text-text-primary">
@@ -314,7 +315,7 @@ const ProductsPage = () => {
                           <select
                             value={editedData.category}
                             onChange={(e) => handleFieldChange('category', e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
+                            className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           >
                             <option value="">Seleccionar...</option>
                             {categories.map(cat => (
@@ -338,7 +339,7 @@ const ProductsPage = () => {
                               type="checkbox"
                               checked={editedData.available}
                               onChange={(e) => handleFieldChange('available', e.target.checked)}
-                              className="w-4 h-4 text-pepper-orange border-gray-300 rounded focus:ring-pepper-orange"
+                              className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
                             />
                             <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                               {editedData.available ? 'Sí' : 'No'}
@@ -356,19 +357,19 @@ const ProductsPage = () => {
                       </td>
 
                       {/* Acciones */}
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
+                      <td className="px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
                         {isEditing ? (
                           <>
                             <button
                               onClick={() => handleSaveEdit(product.id)}
-                              className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                              className="text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
                               title="Guardar"
                             >
                               <FontAwesomeIcon icon={faCheck} />
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors ml-3"
+                              className="ml-3 text-gray-600 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                               title="Cancelar"
                             >
                               <FontAwesomeIcon icon={faX} />
@@ -378,21 +379,21 @@ const ProductsPage = () => {
                           <>
                             <button
                               onClick={() => handleStartEdit(product)}
-                              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                              className="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                               title="Editar inline"
                             >
                               <FontAwesomeIcon icon={faEdit} />
                             </button>
                             <button
                               onClick={() => handleOpenModal(product)}
-                              className="text-pepper-orange hover:text-pepper-orange/80 transition-colors ml-3"
-                              title="Editar completo"
+                              className="ml-3 transition-colors text-pepper-orange hover:text-pepper-orange/80"
+                              title="Editar completo (ingredientes, imagen, etc)"
                             >
                               <FontAwesomeIcon icon={faPlus} />
                             </button>
                             <button
                               onClick={() => handleDelete(product.id)}
-                              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors ml-3"
+                              className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                               title="Eliminar"
                             >
                               <FontAwesomeIcon icon={faTrash} />
