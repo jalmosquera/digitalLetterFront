@@ -88,7 +88,7 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       <div className="h-[70px] flex items-center justify-between px-4 bg-white dark:bg-dark-header border-b border-gray-200 dark:border-dark-border">
         {!isCollapsed && (
           <h1 className="font-bold text-xl text-pepper-orange">
-            Riday
+            Equus
           </h1>
         )}
         <button

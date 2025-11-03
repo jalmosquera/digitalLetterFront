@@ -3,22 +3,34 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import useFetch from '@shared/hooks/useFetch';
 import toast from 'react-hot-toast';
+import UserModal from '@features/admin/components/UserModal';
+import { getAuthHeaders } from '@shared/utils/auth';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data: usersData, loading, error, refetch } = useFetch('/api/users/');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const { data: usersData, loading, error, refetch } = useFetch('/api/users-list/');
 
   const users = usersData?.results || [];
+
+  const handleOpenModal = (user = null) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedUser(null);
+    setIsModalOpen(false);
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar este usuario?')) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}/`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users-list/${id}/`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
+        headers: getAuthHeaders(),
       });
 
       if (response.ok) {
@@ -86,7 +98,10 @@ const UsersPage = () => {
             Gestiona los usuarios del sistema
           </p>
         </div>
-        <button className="btn-pepper-primary flex items-center space-x-2">
+        <button
+          onClick={() => handleOpenModal()}
+          className="btn-pepper-primary flex items-center space-x-2"
+        >
           <FontAwesomeIcon icon={faPlus} />
           <span>Nuevo Usuario</span>
         </button>
@@ -173,6 +188,7 @@ const UsersPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
                       <button
+                        onClick={() => handleOpenModal(user)}
                         className="text-pepper-orange hover:text-pepper-orange/80 transition-colors"
                         title="Editar"
                       >
@@ -193,6 +209,14 @@ const UsersPage = () => {
           </table>
         </div>
       </div>
+
+      {/* User Modal */}
+      <UserModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        user={selectedUser}
+        onSuccess={refetch}
+      />
     </div>
   );
 };
