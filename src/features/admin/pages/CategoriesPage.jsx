@@ -4,34 +4,51 @@ import { faPlus, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-i
 import useFetch from '@shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';
+import CategoryModal from '@features/admin/components/CategoryModal';
+import { getAuthHeaders } from '@shared/utils/auth';
 
 const CategoriesPage = () => {
   const { getTranslation } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const { data: categoriesData, loading, error, refetch } = useFetch('/api/categories/');
 
   const categories = categoriesData?.results || [];
+
+  const handleOpenModal = (category = null) => {
+    setSelectedCategory(category);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCategory(null);
+    setIsModalOpen(false);
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm('¿Estás seguro de eliminar esta categoría?')) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${id}/`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/categories/${id}/`,
+        {
+          method: 'DELETE',
+          headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
+        }
+      );
 
       if (response.ok) {
         toast.success('Categoría eliminada exitosamente');
         refetch();
       } else {
+        const errorData = await response.json();
+        console.error('Error al eliminar:', errorData);
         toast.error('Error al eliminar la categoría');
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al eliminar la categoría');
+      console.error('Error al conectar con el servidor:', error);
+      toast.error('Error al conectar con el servidor');
     }
   };
 
@@ -68,7 +85,10 @@ const CategoriesPage = () => {
             Gestiona las categorías de productos
           </p>
         </div>
-        <button className="btn-pepper-primary flex items-center space-x-2">
+        <button
+          onClick={() => handleOpenModal()}
+          className="btn-pepper-primary flex items-center space-x-2"
+        >
           <FontAwesomeIcon icon={faPlus} />
           <span>Nueva Categoría</span>
         </button>
@@ -91,60 +111,89 @@ const CategoriesPage = () => {
         </div>
       </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCategories.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-gray-600 dark:text-text-secondary">
-            No se encontraron categorías
-          </div>
-        ) : (
-          filteredCategories.map((category) => {
-            const name = getTranslation(category.translations, 'name') || 'Sin nombre';
-            const description = getTranslation(category.translations, 'description') || '';
+      {/* Categories Table */}
+      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-dark-border">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+          <thead className="bg-gray-50 dark:bg-dark-card">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-text-primary">
+                ID
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-text-primary">
+                Nombre
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-text-primary">
+                Descripción
+              </th>
+              <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700 dark:text-text-primary">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-dark-card divide-y divide-gray-200 dark:divide-dark-border">
+            {filteredCategories.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="4"
+                  className="text-center py-6 text-gray-600 dark:text-text-secondary"
+                >
+                  No se encontraron categorías
+                </td>
+              </tr>
+            ) : (
+              filteredCategories.map((category) => {
+                const name =
+                  getTranslation(category.translations, 'name') || 'Sin nombre';
+                const description =
+                  getTranslation(category.translations, 'description') || '';
 
-            return (
-              <div
-                key={category.id}
-                className="bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border p-6 hover:border-pepper-orange/30 transition-colors"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-text-primary mb-2">
+                return (
+                  <tr
+                    key={category.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <td className="px-4 py-3 text-sm text-gray-700 dark:text-text-primary">
+                      {category.id}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-text-primary font-medium">
                       {name}
-                    </h3>
-                    {description && (
-                      <p className="text-sm text-gray-600 dark:text-text-secondary line-clamp-2">
-                        {description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-dark-border">
-                  <div className="text-sm text-gray-600 dark:text-text-secondary">
-                    ID: {category.id}
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      className="text-pepper-orange hover:text-pepper-orange/80 transition-colors p-2"
-                      title="Editar"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(category.id)}
-                      className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-2"
-                      title="Eliminar"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-text-secondary">
+                      {description || (
+                        <span className="italic text-gray-400">Sin descripción</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right space-x-2">
+                      <button
+                        onClick={() => handleOpenModal(category)}
+                        className="text-pepper-orange hover:text-pepper-orange/80 transition-colors p-2"
+                        title="Editar"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(category.id)}
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-2"
+                        title="Eliminar"
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* Category Modal */}
+      <CategoryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        category={selectedCategory}
+        onSuccess={refetch}
+      />
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { useCart } from '@shared/contexts/CartContext';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 import { sendOrderViaWhatsApp } from '@shared/services/whatsappService';
+import { createOrder } from '@shared/services/orderService';
 
 const CheckoutPage = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -86,20 +87,29 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Prepare order data
+      // Step 1: Save order to database
+      const createdOrder = await createOrder({
+        items,
+        deliveryInfo,
+      });
+
+      console.log('Order created successfully:', createdOrder);
+
+      // Step 2: Prepare order data for WhatsApp
       const orderData = {
         items,
         deliveryInfo,
         user,
         totalPrice,
+        orderId: createdOrder.id,
       };
 
-      // Send via WhatsApp
+      // Step 3: Send via WhatsApp
       sendOrderViaWhatsApp(orderData, language, getTranslation);
 
       // Show success notification
       toast.success(t('checkout.orderSuccess'), {
-        icon: '📱',
+        icon: '✅',
         duration: 4000,
       });
 
@@ -109,8 +119,30 @@ const CheckoutPage = () => {
         navigate('/');
       }, 1000);
     } catch (error) {
-      console.error('Error sending order:', error);
-      toast.error(t('checkout.orderError'));
+      console.error('Error creating order:', error);
+
+      // Handle specific error messages
+      let errorMessage = t('checkout.orderError');
+
+      if (error.response?.data) {
+        const errorData = error.response.data;
+
+        // Check for specific field errors
+        if (errorData.items) {
+          errorMessage = `Error en items: ${errorData.items}`;
+        } else if (errorData.detail) {
+          errorMessage = errorData.detail;
+        } else if (typeof errorData === 'object') {
+          const errorFields = Object.keys(errorData);
+          if (errorFields.length > 0) {
+            errorMessage = `Error: ${errorFields.join(', ')}`;
+          }
+        }
+      }
+
+      toast.error(errorMessage, {
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }

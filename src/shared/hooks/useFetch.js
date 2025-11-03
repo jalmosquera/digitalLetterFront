@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthHeaders } from '@shared/utils/auth';
 
 /**
  * Hook personalizado para hacer fetch de datos desde la API
@@ -19,7 +20,13 @@ const useFetch = (url, options = {}) => {
         setError(null);
 
         const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-        const response = await axios.get(`${baseURL}${url}`, options);
+
+        const config = {
+          ...options,
+          headers: getAuthHeaders(options.headers),
+        };
+
+        const response = await axios.get(`${baseURL}${url}`, config);
 
         setData(response.data);
       } catch (err) {
@@ -35,18 +42,25 @@ const useFetch = (url, options = {}) => {
   }, [url]);
 
   // Función para refetch manual
-  const refetch = () => {
+  const refetch = async () => {
     setLoading(true);
     setError(null);
     const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    axios
-      .get(`${baseURL}${url}`, options)
-      .then((response) => setData(response.data))
-      .catch((err) => {
-        setError(err.response?.data?.message || err.message || 'Error al cargar datos');
-        console.error('Error en useFetch:', err);
-      })
-      .finally(() => setLoading(false));
+
+    const config = {
+      ...options,
+      headers: getAuthHeaders(options.headers),
+    };
+
+    try {
+      const response = await axios.get(`${baseURL}${url}`, config);
+      setData(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Error al cargar datos');
+      console.error('Error en useFetch:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return { data, loading, error, refetch };
