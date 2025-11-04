@@ -2,103 +2,81 @@ import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTrophy,
-  faListUl,
   faUser,
-  faLayerGroup,
+  faCalendarDay,
   faCalendarWeek,
   faCalendarAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import useFetch from '@shared/hooks/useFetch';
-import { useLanguage } from '@shared/contexts/LanguageContext';
 
 const AnalyticsPage = () => {
-  const { getTranslation } = useLanguage();
-  const [period, setPeriod] = useState('week'); // 'week' o 'month'
+  const [period, setPeriod] = useState('week'); // 'day', 'week', 'month'
 
   const { data: ordersData, loading, error } = useFetch('/orders/');
   const orders = ordersData?.results || [];
 
-  // Filtrar pedidos por período
+  // Filter orders by period
   const filteredOrders = useMemo(() => {
     const today = new Date();
     const startDate = new Date(today);
 
-    if (period === 'week') {
+    if (period === 'day') {
+      startDate.setHours(0, 0, 0, 0);
+    } else if (period === 'week') {
       startDate.setDate(today.getDate() - 7);
     } else {
-      startDate.setDate(1); // Primer día del mes actual
+      startDate.setDate(1); // First day of current month
     }
 
     return orders.filter(order => new Date(order.created_at) >= startDate);
   }, [orders, period]);
 
-  // Calcular todas las métricas
+  // Calculate analytics
   const analytics = useMemo(() => {
-    const productMap = {};
-    const categoryMap = {};
-    const userPurchases = {};
-    const comboMap = {};
+    const productStats = {};
+    const userStats = {};
 
     filteredOrders.forEach(order => {
       const userId = order.user;
-      const userKey = order.user_name || order.user_email || `User #${userId}`;
+      const userName = order.user_name || order.user_email || `Usuario #${userId}`;
 
-      // Inicializar usuario si no existe
-      if (!userPurchases[userKey]) {
-        userPurchases[userKey] = { count: 0, total: 0 };
+      // User statistics
+      if (!userStats[userId]) {
+        userStats[userId] = { name: userName, count: 0, total: 0 };
       }
+      userStats[userId].count += 1;
+      userStats[userId].total += parseFloat(order.total_price || 0);
 
-      userPurchases[userKey].count += 1;
-      userPurchases[userKey].total += parseFloat(order.total_price || 0);
-
-      // Obtener items del pedido (asumiendo que vienen en la respuesta)
+      // Product statistics
       if (order.items && Array.isArray(order.items)) {
-        // Crear key para la combinación
-        const comboKey = order.items
-          .map(item => item.product_name)
-          .sort()
-          .join(' + ');
-
-        if (order.items.length > 1) {
-          comboMap[comboKey] = (comboMap[comboKey] || 0) + 1;
-        }
-
-        // Contar productos y categorías
         order.items.forEach(item => {
-          const productName = item.product_name || 'Desconocido';
-          const categoryName = item.category || 'Sin categoría';
-
-          productMap[productName] = (productMap[productName] || 0) + item.quantity;
-          categoryMap[categoryName] = (categoryMap[categoryName] || 0) + item.quantity;
+          const productId = item.product;
+          if (!productStats[productId]) {
+            productStats[productId] = {
+              id: productId,
+              name: item.product_name || 'Desconocido',
+              image: item.product_image,
+              quantity: 0,
+              revenue: 0,
+            };
+          }
+          productStats[productId].quantity += item.quantity;
+          productStats[productId].revenue += parseFloat(item.subtotal || 0);
         });
       }
     });
 
-    // Convertir a arrays y ordenar
-    const topProducts = Object.entries(productMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([name, quantity]) => ({ name, quantity }));
+    // Convert to arrays and sort
+    const topProducts = Object.values(productStats)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
 
-    const topCategories = Object.entries(categoryMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([name, quantity]) => ({ name, quantity }));
+    const topCustomer = Object.values(userStats)
+      .sort((a, b) => b.total - a.total)[0] || null;
 
-    const topUser = Object.entries(userPurchases)
-      .sort((a, b) => b[1].count - a[1].count)[0];
+    const topProduct = topProducts[0] || null;
 
-    const topCombos = Object.entries(comboMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([combo, count]) => ({ combo, count }));
-
-    return {
-      topProducts,
-      topCategories,
-      topUser: topUser ? { name: topUser[0], ...topUser[1] } : null,
-      topCombos,
-    };
+    return { topProduct, topCustomer, topProducts };
   }, [filteredOrders]);
 
   if (loading) {
@@ -133,6 +111,17 @@ const AnalyticsPage = () => {
         {/* Period Filter */}
         <div className="flex gap-2">
           <button
+            onClick={() => setPeriod('day')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              period === 'day'
+                ? 'bg-pepper-orange text-white'
+                : 'bg-gray-200 dark:bg-dark-card text-gray-700 dark:text-text-secondary hover:bg-gray-300 dark:hover:bg-dark-border'
+            }`}
+          >
+            <FontAwesomeIcon icon={faCalendarDay} className="mr-2" />
+            Hoy
+          </button>
+          <button
             onClick={() => setPeriod('week')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               period === 'week'
@@ -141,7 +130,7 @@ const AnalyticsPage = () => {
             }`}
           >
             <FontAwesomeIcon icon={faCalendarWeek} className="mr-2" />
-            Última Semana
+            Semana
           </button>
           <button
             onClick={() => setPeriod('month')}
@@ -152,18 +141,81 @@ const AnalyticsPage = () => {
             }`}
           >
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-2" />
-            Este Mes
+            Mes
           </button>
         </div>
       </div>
 
-      {/* Top Products */}
-      <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-2">
+      {/* Top Product Card */}
+      {analytics.topProduct && (
+        <div className="mb-6 p-6 bg-gradient-to-br from-pepper-orange to-pepper-orange/80 rounded-lg shadow-lg text-white">
+          <div className="flex items-center mb-4">
+            <FontAwesomeIcon icon={faTrophy} className="mr-3 text-3xl" />
+            <h2 className="text-2xl font-bold">Producto Más Vendido</h2>
+          </div>
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            {/* Product Image */}
+            <div className="flex-shrink-0">
+              <img
+                src={analytics.topProduct.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"%3E%3Crect width="150" height="150" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23999"%3ESin Imagen%3C/text%3E%3C/svg%3E'}
+                alt={analytics.topProduct.name}
+                className="w-32 h-32 object-cover rounded-lg shadow-md"
+              />
+            </div>
+            {/* Product Info */}
+            <div className="flex-grow text-center md:text-left">
+              <h3 className="text-3xl font-bold mb-2">{analytics.topProduct.name}</h3>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <p className="text-white/80 text-sm">Cantidad Vendida</p>
+                  <p className="text-4xl font-bold">{analytics.topProduct.quantity}</p>
+                </div>
+                <div>
+                  <p className="text-white/80 text-sm">Ingresos Generados</p>
+                  <p className="text-4xl font-bold">€{analytics.topProduct.revenue.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top Customer and Top 5 Products */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Customer */}
+        <div className="p-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
+          <div className="flex items-center mb-4">
+            <FontAwesomeIcon icon={faUser} className="mr-3 text-xl text-yellow-500" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-text-primary">
+              Cliente Más Activo
+            </h2>
+          </div>
+          {analytics.topCustomer ? (
+            <div className="p-6 rounded-lg bg-yellow-500/10 dark:bg-yellow-500/20">
+              <p className="mb-2 text-2xl font-bold text-gray-900 dark:text-text-primary">
+                {analytics.topCustomer.name}
+              </p>
+              <p className="text-gray-600 dark:text-text-secondary mb-4">
+                {analytics.topCustomer.count} pedidos realizados
+              </p>
+              <p className="text-3xl font-bold text-yellow-500">
+                €{analytics.topCustomer.total.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-text-secondary">Total gastado</p>
+            </div>
+          ) : (
+            <p className="py-4 text-center text-gray-600 dark:text-text-secondary">
+              No hay datos disponibles
+            </p>
+          )}
+        </div>
+
+        {/* Top 5 Products */}
         <div className="p-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
           <div className="flex items-center mb-4">
             <FontAwesomeIcon icon={faTrophy} className="mr-3 text-xl text-pepper-orange" />
             <h2 className="text-xl font-bold text-gray-900 dark:text-text-primary">
-              Top 5 Productos Más Vendidos
+              Top 5 Productos
             </h2>
           </div>
           <div className="space-y-3">
@@ -174,130 +226,29 @@ const AnalyticsPage = () => {
             ) : (
               analytics.topProducts.map((product, index) => (
                 <div
-                  key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-dark-bg"
+                  key={product.id}
+                  className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-dark-bg"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-pepper-orange">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-text-primary">
-                      {product.name}
-                    </span>
-                  </div>
-                  <span className="font-semibold text-gray-600 dark:text-text-secondary">
-                    {product.quantity} vendidos
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Top Categories */}
-        <div className="p-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
-          <div className="flex items-center mb-4">
-            <FontAwesomeIcon icon={faListUl} className="mr-3 text-xl text-riday-blue" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-text-primary">
-              Categorías Más Vendidas
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {analytics.topCategories.length === 0 ? (
-              <p className="py-4 text-center text-gray-600 dark:text-text-secondary">
-                No hay datos disponibles
-              </p>
-            ) : (
-              analytics.topCategories.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-dark-bg"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-riday-blue">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium text-gray-900 dark:text-text-primary">
-                      {category.name}
-                    </span>
-                  </div>
-                  <span className="font-semibold text-gray-600 dark:text-text-secondary">
-                    {category.quantity} productos
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Top User */}
-      <div className="p-6 mb-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
-        <div className="flex items-center mb-4">
-          <FontAwesomeIcon icon={faUser} className="mr-3 text-xl text-yellow-500" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-text-primary">
-            Cliente Más Activo
-          </h2>
-        </div>
-        {analytics.topUser ? (
-          <div className="p-6 rounded-lg bg-yellow-500/10 dark:bg-yellow-500/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="mb-2 text-2xl font-bold text-gray-900 dark:text-text-primary">
-                  {analytics.topUser.name}
-                </p>
-                <p className="text-gray-600 dark:text-text-secondary">
-                  {analytics.topUser.count} pedidos realizados
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-yellow-500">
-                  €{analytics.topUser.total.toFixed(2)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-text-secondary">Total gastado</p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <p className="py-4 text-center text-gray-600 dark:text-text-secondary">
-            No hay datos disponibles
-          </p>
-        )}
-      </div>
-
-      {/* Top Combos */}
-      <div className="p-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
-        <div className="flex items-center mb-4">
-          <FontAwesomeIcon icon={faLayerGroup} className="mr-3 text-xl text-purple-500" />
-          <h2 className="text-xl font-bold text-gray-900 dark:text-text-primary">
-            Combinaciones Más Compradas
-          </h2>
-        </div>
-        <div className="space-y-3">
-          {analytics.topCombos.length === 0 ? (
-            <p className="py-4 text-center text-gray-600 dark:text-text-secondary">
-              No hay datos disponibles
-            </p>
-          ) : (
-            analytics.topCombos.map((combo, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-dark-bg"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white bg-purple-500 rounded-full">
+                  <span className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-pepper-orange flex-shrink-0">
                     {index + 1}
                   </span>
-                  <span className="font-medium text-gray-900 dark:text-text-primary">
-                    {combo.combo}
-                  </span>
+                  <img
+                    src={product.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Crect width="40" height="40" fill="%23f5f5f5"/%3E%3C/svg%3E'}
+                    alt={product.name}
+                    className="w-12 h-12 object-cover rounded flex-shrink-0"
+                  />
+                  <div className="flex-grow min-w-0">
+                    <p className="font-medium text-gray-900 dark:text-text-primary truncate">
+                      {product.name}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-text-secondary">
+                      {product.quantity} vendidos • €{product.revenue.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
-                <span className="font-semibold text-gray-600 dark:text-text-secondary">
-                  {combo.count} veces
-                </span>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
