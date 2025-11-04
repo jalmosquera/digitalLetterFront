@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faSearch, faCheck, faX } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faSearch, faCheck, faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 import useFetch from '@shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
@@ -11,10 +11,14 @@ import { getAuthHeaders } from '@shared/utils/auth';
 const ProductsPage = () => {
   const { getTranslation } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [bulkData, setBulkData] = useState({});
+  const [savingAll, setSavingAll] = useState(false);
 
   const { data: productsData, loading, error, refetch } = useFetch('/api/products/');
   const { data: categoriesData } = useFetch('/api/categories/');
@@ -57,23 +61,61 @@ const ProductsPage = () => {
     setEditedData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleBulkEdit = () => {
+    if (!bulkEditMode) {
+      const initialBulkData = {};
+      filteredProducts.forEach(product => {
+        const price = typeof product.price === 'string'
+          ? product.price.replace(' €', '')
+          : product.price;
+        
+        initialBulkData[product.id] = {
+          name_es: product.translations?.es?.name || '',
+          name_en: product.translations?.en?.name || '',
+          price: price,
+          stock: product.stock,
+          available: product.available,
+          category: product.categories?.[0]?.id || '',
+        };
+      });
+      setBulkData(initialBulkData);
+    } else {
+      setBulkData({});
+    }
+    setBulkEditMode(!bulkEditMode);
+    setEditingId(null);
+    setEditedData({});
+  };
+
+  const handleBulkFieldChange = (productId, field, value) => {
+    setBulkData(prev => ({
+      ...prev,
+      [productId]: {
+        ...prev[productId],
+        [field]: value
+      }
+    }));
+  };
+
   const handleSaveEdit = async (productId) => {
     try {
+      const data = bulkEditMode ? bulkData[productId] : editedData;
+      
       const dataToSend = {
         translations: {
-          es: { name: editedData.name_es },
-          en: { name: editedData.name_en },
+          es: { name: data.name_es },
+          en: { name: data.name_en },
         },
-        price: parseFloat(editedData.price),
-        stock: parseInt(editedData.stock),
-        available: editedData.available,
-        categories: [parseInt(editedData.category)],
+        price: parseFloat(data.price),
+        stock: parseInt(data.stock),
+        available: data.available,
+        categories: [parseInt(data.category)],
       };
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/products/${productId}/`,
         {
-          method: 'PUT',
+          method: 'PATCH',
           headers: getAuthHeaders({
             'Content-Type': 'application/json',
           }),
@@ -83,8 +125,10 @@ const ProductsPage = () => {
 
       if (response.ok) {
         toast.success('Producto actualizado exitosamente');
-        setEditingId(null);
-        setEditedData({});
+        if (!bulkEditMode) {
+          setEditingId(null);
+          setEditedData({});
+        }
         refetch();
       } else {
         const error = await response.json();
@@ -94,6 +138,68 @@ const ProductsPage = () => {
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al conectar con el servidor');
+    }
+  };
+
+  const handleSaveAllBulkChanges = async () => {
+    setSavingAll(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const productId in bulkData) {
+        const data = bulkData[productId];
+        
+        const dataToSend = {
+          translations: {
+            es: { name: data.name_es },
+            en: { name: data.name_en },
+          },
+          price: parseFloat(data.price),
+          stock: parseInt(data.stock),
+          available: data.available,
+          categories: [parseInt(data.category)],
+        };
+
+        try {
+          const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/products/${productId}/`,
+            {
+              method: 'PATCH',
+              headers: getAuthHeaders({
+                'Content-Type': 'application/json',
+              }),
+              body: JSON.stringify(dataToSend),
+            }
+          );
+
+          if (response.ok) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          errorCount++;
+          console.error(`Error guardando producto ${productId}:`, error);
+        }
+      }
+
+      if (errorCount === 0) {
+        toast.success(`✅ Se guardaron ${successCount} producto(s) exitosamente`);
+        setBulkEditMode(false);
+        setBulkData({});
+        refetch();
+      } else if (successCount > 0) {
+        toast.success(`✅ ${successCount} guardados. ⚠️ ${errorCount} con error`);
+        refetch();
+      } else {
+        toast.error(`❌ Error al guardar ${errorCount} producto(s)`);
+      }
+    } catch (error) {
+      console.error('Error guardando en lote:', error);
+      toast.error('Error al guardar los cambios');
+    } finally {
+      setSavingAll(false);
     }
   };
 
@@ -120,7 +226,12 @@ const ProductsPage = () => {
 
   const filteredProducts = products.filter(product => {
     const name = getTranslation(product.translations, 'name')?.toLowerCase() || '';
-    return name.includes(searchTerm.toLowerCase());
+    const matchesSearch = name.includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = selectedCategory === 'all' || 
+      product.categories?.some(cat => cat.id === parseInt(selectedCategory));
+    
+    return matchesSearch && matchesCategory;
   });
 
   if (loading) {
@@ -160,9 +271,9 @@ const ProductsPage = () => {
         </button>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
+      {/* Search and Filter */}
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center">
+        <div className="relative flex-1 max-w-md">
           <FontAwesomeIcon
             icon={faSearch}
             className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
@@ -175,7 +286,63 @@ const ProductsPage = () => {
             className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
           />
         </div>
+
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="px-4 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+        >
+          <option value="all">Todas las categorías</option>
+          {categories.map(category => (
+            <option key={category.id} value={category.id}>
+              {getTranslation(category.translations, 'name') || 'Sin nombre'}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={handleBulkEdit}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors whitespace-nowrap ${
+            bulkEditMode
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+          }`}
+          title="Editar todos los productos filtrados"
+        >
+          <FontAwesomeIcon icon={faPenToSquare} />
+          <span className="hidden sm:inline">
+            {bulkEditMode ? 'Desactivar edición' : 'Editar en lote'}
+          </span>
+        </button>
       </div>
+
+      {bulkEditMode && (
+        <div className="p-4 mb-6 text-blue-700 bg-blue-100 border border-blue-300 rounded-lg dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm">
+              <strong>Modo de edición masiva activado:</strong> Editando {filteredProducts.length} producto(s) de{' '}
+              {selectedCategory === 'all' ? 'todas las categorías' : 'esta categoría'}. Haz clic en ✓ para guardar cada cambio.
+            </p>
+            <button
+              onClick={handleSaveAllBulkChanges}
+              disabled={savingAll}
+              className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            >
+              {savingAll ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faCheck} />
+                  Guardar todos
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Products Table */}
       <div className="overflow-hidden bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
@@ -218,7 +385,9 @@ const ProductsPage = () => {
                 </tr>
               ) : (
                 filteredProducts.map((product) => {
-                  const isEditing = editingId === product.id;
+                  const isEditing = bulkEditMode || editingId === product.id;
+                  const data = bulkEditMode ? bulkData[product.id] : (editingId === product.id ? editedData : null);
+                  
                   const nameES = product.translations?.es?.name || 'Sin nombre';
                   const nameEN = product.translations?.en?.name || '';
                   const categoryName = product.categories?.[0]
@@ -234,7 +403,7 @@ const ProductsPage = () => {
                         ? 'bg-blue-50 dark:bg-blue-900/10'
                         : product.available
                           ? 'hover:bg-gray-50 dark:hover:bg-dark-bg'
-                          : 'bg-gray-100 dark:bg-gray-800 opacity-75 hover:bg-gray-150 dark:hover:bg-gray-750'
+                          : 'bg-gray-100 dark:bg-gray-800 opacity-75'
                     }`}>
                       {/* Imagen */}
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -250,8 +419,14 @@ const ProductsPage = () => {
                         {isEditing ? (
                           <input
                             type="text"
-                            value={editedData.name_es}
-                            onChange={(e) => handleFieldChange('name_es', e.target.value)}
+                            value={data?.name_es || nameES}
+                            onChange={(e) => {
+                              if (bulkEditMode) {
+                                handleBulkFieldChange(product.id, 'name_es', e.target.value);
+                              } else {
+                                handleFieldChange('name_es', e.target.value);
+                              }
+                            }}
                             className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
@@ -266,8 +441,14 @@ const ProductsPage = () => {
                         {isEditing ? (
                           <input
                             type="text"
-                            value={editedData.name_en}
-                            onChange={(e) => handleFieldChange('name_en', e.target.value)}
+                            value={data?.name_en || nameEN}
+                            onChange={(e) => {
+                              if (bulkEditMode) {
+                                handleBulkFieldChange(product.id, 'name_en', e.target.value);
+                              } else {
+                                handleFieldChange('name_en', e.target.value);
+                              }
+                            }}
                             className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
@@ -283,8 +464,14 @@ const ProductsPage = () => {
                           <input
                             type="number"
                             step="0.01"
-                            value={editedData.price}
-                            onChange={(e) => handleFieldChange('price', e.target.value)}
+                            value={data?.price || price}
+                            onChange={(e) => {
+                              if (bulkEditMode) {
+                                handleBulkFieldChange(product.id, 'price', e.target.value);
+                              } else {
+                                handleFieldChange('price', e.target.value);
+                              }
+                            }}
                             className="w-24 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
@@ -299,8 +486,14 @@ const ProductsPage = () => {
                         {isEditing ? (
                           <input
                             type="number"
-                            value={editedData.stock}
-                            onChange={(e) => handleFieldChange('stock', e.target.value)}
+                            value={data?.stock ?? product.stock}
+                            onChange={(e) => {
+                              if (bulkEditMode) {
+                                handleBulkFieldChange(product.id, 'stock', e.target.value);
+                              } else {
+                                handleFieldChange('stock', e.target.value);
+                              }
+                            }}
                             className="w-20 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           />
                         ) : (
@@ -314,8 +507,14 @@ const ProductsPage = () => {
                       <td className="px-4 py-4 whitespace-nowrap">
                         {isEditing ? (
                           <select
-                            value={editedData.category}
-                            onChange={(e) => handleFieldChange('category', e.target.value)}
+                            value={data?.category || product.categories?.[0]?.id || ''}
+                            onChange={(e) => {
+                              if (bulkEditMode) {
+                                handleBulkFieldChange(product.id, 'category', e.target.value);
+                              } else {
+                                handleFieldChange('category', e.target.value);
+                              }
+                            }}
                             className="w-full px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-dark-bg dark:text-text-primary focus:ring-2 focus:ring-pepper-orange focus:outline-none"
                           >
                             <option value="">Seleccionar...</option>
@@ -338,12 +537,18 @@ const ProductsPage = () => {
                           <label className="flex items-center cursor-pointer">
                             <input
                               type="checkbox"
-                              checked={editedData.available}
-                              onChange={(e) => handleFieldChange('available', e.target.checked)}
+                              checked={data?.available ?? product.available}
+                              onChange={(e) => {
+                                if (bulkEditMode) {
+                                  handleBulkFieldChange(product.id, 'available', e.target.checked);
+                                } else {
+                                  handleFieldChange('available', e.target.checked);
+                                }
+                              }}
                               className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
                             />
                             <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                              {editedData.available ? 'Sí' : 'No'}
+                              {(data?.available ?? product.available) ? 'Sí' : 'No'}
                             </span>
                           </label>
                         ) : (
@@ -359,46 +564,58 @@ const ProductsPage = () => {
 
                       {/* Acciones */}
                       <td className="px-6 py-4 space-x-2 text-sm text-right whitespace-nowrap">
-                        {isEditing ? (
-                          <>
-                            <button
-                              onClick={() => handleSaveEdit(product.id)}
-                              className="text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                              title="Guardar"
-                            >
-                              <FontAwesomeIcon icon={faCheck} />
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className="ml-3 text-gray-600 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                              title="Cancelar"
-                            >
-                              <FontAwesomeIcon icon={faX} />
-                            </button>
-                          </>
+                        {bulkEditMode ? (
+                          <button
+                            onClick={() => handleSaveEdit(product.id)}
+                            className="text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                            title="Guardar"
+                          >
+                            <FontAwesomeIcon icon={faCheck} />
+                          </button>
                         ) : (
                           <>
-                            <button
-                              onClick={() => handleStartEdit(product)}
-                              className="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                              title="Editar inline"
-                            >
-                              <FontAwesomeIcon icon={faEdit} />
-                            </button>
-                            <button
-                              onClick={() => handleOpenModal(product)}
-                              className="ml-3 transition-colors text-pepper-orange hover:text-pepper-orange/80"
-                              title="Editar completo (ingredientes, imagen, etc)"
-                            >
-                              <FontAwesomeIcon icon={faPlus} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(product.id)}
-                              className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                              title="Eliminar"
-                            >
-                              <FontAwesomeIcon icon={faTrash} />
-                            </button>
+                            {isEditing ? (
+                              <>
+                                <button
+                                  onClick={() => handleSaveEdit(product.id)}
+                                  className="text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                                  title="Guardar"
+                                >
+                                  <FontAwesomeIcon icon={faCheck} />
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="ml-3 text-gray-600 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                  title="Cancelar"
+                                >
+                                  <FontAwesomeIcon icon={faX} />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => handleStartEdit(product)}
+                                  className="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                  title="Editar inline"
+                                >
+                                  <FontAwesomeIcon icon={faEdit} />
+                                </button>
+                                <button
+                                  onClick={() => handleOpenModal(product)}
+                                  className="ml-3 transition-colors text-pepper-orange hover:text-pepper-orange/80"
+                                  title="Editar completo (ingredientes, imagen, etc)"
+                                >
+                                  <FontAwesomeIcon icon={faPlus} />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(product.id)}
+                                  className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  title="Eliminar"
+                                >
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              </>
+                            )}
                           </>
                         )}
                       </td>
