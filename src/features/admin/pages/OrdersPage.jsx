@@ -12,7 +12,7 @@ const OrdersPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editingStatus, setEditingStatus] = useState(null); // { orderId: number, status: string }
-  const { data: ordersData, loading, error, refetch } = useFetch('/api/orders/');
+  const { data: ordersData, loading, error, refetch } = useFetch('/orders/');
 
   const orders = ordersData?.results || [];
 

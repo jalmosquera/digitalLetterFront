@@ -19,7 +19,7 @@ const IngredientsPage = () => {
   const [editedNameEs, setEditedNameEs] = useState('');
   const [editedNameEn, setEditedNameEn] = useState('');
 
-  const { data: ingredientsData, loading, error, refetch } = useFetch('/api/ingredients/');
+  const { data: ingredientsData, loading, error, refetch } = useFetch('/ingredients/');
   const ingredients = ingredientsData?.results || ingredientsData || [];
 
   const handleOpenModal = (ingredient = null) => {

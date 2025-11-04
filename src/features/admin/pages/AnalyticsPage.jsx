@@ -15,7 +15,7 @@ const AnalyticsPage = () => {
   const { getTranslation } = useLanguage();
   const [period, setPeriod] = useState('week'); // 'week' o 'month'
 
-  const { data: ordersData, loading, error } = useFetch('/api/orders/');
+  const { data: ordersData, loading, error } = useFetch('/orders/');
   const orders = ordersData?.results || [];
 
   // Filtrar pedidos por período

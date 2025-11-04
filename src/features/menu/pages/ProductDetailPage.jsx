@@ -19,8 +19,10 @@ const ProductDetailPage = () => {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [selectedExtras, setSelectedExtras] = useState([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [showExtras, setShowExtras] = useState(false);
   const { getTranslation, t } = useLanguage();
   const { addToCart } = useCart();
 
@@ -29,7 +31,10 @@ const ProductDetailPage = () => {
     data: productData,
     loading,
     error,
-  } = useFetch(`/api/products/${id}/`);
+  } = useFetch(`/products/${id}/`);
+
+  // Fetch de ingredientes extras disponibles
+  const { data: extraIngredientsData } = useFetch('/ingredients/?be_extra=true');
 
   // Scroll to top when component mounts or ID changes
   useEffect(() => {
@@ -56,9 +61,20 @@ const ProductDetailPage = () => {
     }
   };
 
-  // Toggle ingredient selection
+  // Toggle ingredient selection (base ingredients)
   const toggleIngredient = (ingredientId) => {
     setSelectedIngredients(prev => {
+      if (prev.includes(ingredientId)) {
+        return prev.filter(id => id !== ingredientId);
+      } else {
+        return [...prev, ingredientId];
+      }
+    });
+  };
+
+  // Toggle extra ingredient selection
+  const toggleExtraIngredient = (ingredientId) => {
+    setSelectedExtras(prev => {
       if (prev.includes(ingredientId)) {
         return prev.filter(id => id !== ingredientId);
       } else {
@@ -71,6 +87,7 @@ const ProductDetailPage = () => {
   const handleAddToCart = () => {
     const customization = {
       selectedIngredients,
+      selectedExtras,
       additionalNotes: additionalNotes.trim(),
     };
     addToCart(productData, quantity, customization);
@@ -83,6 +100,8 @@ const ProductDetailPage = () => {
     // Reset to defaults after adding
     setQuantity(1);
     setAdditionalNotes('');
+    setSelectedExtras([]);
+    setShowExtras(false);
     if (productData && productData.ingredients) {
       const allIngredientIds = productData.ingredients.map(ing => ing.id);
       setSelectedIngredients(allIngredientIds);
@@ -161,9 +180,17 @@ const ProductDetailPage = () => {
   // El precio ya viene formateado desde la API como string (ej: "7487.00 €")
   const formattedPrice = price;
 
+  // Obtener ingredientes extras disponibles
+  const extraIngredients = extraIngredientsData?.results || [];
+
   // Para calcular el total, necesitamos extraer el número del string
   const priceNumber = parseFloat(price?.replace(/[^\d.]/g, '') || 0);
-  const totalPrice = priceNumber * quantity + ' €';
+
+  // Calcular precio de extras (asumiendo que cada extra cuesta un porcentaje del precio base o un valor fijo)
+  // Por ahora, cada extra suma 1€ al precio - esto se puede ajustar según tu modelo de negocio
+  const extrasPrice = selectedExtras.length * 1.0;
+
+  const totalPrice = ((priceNumber + extrasPrice) * quantity).toFixed(2) + ' €';
 
 
 
@@ -310,6 +337,56 @@ const ProductDetailPage = () => {
                     );
                   })}
                 </div>
+
+                {/* Botón para agregar extras */}
+                {extraIngredients.length > 0 && (
+                  <div className="mt-6">
+                    <button
+                      type="button"
+                      onClick={() => setShowExtras(!showExtras)}
+                      className="w-full px-4 py-3 font-semibold transition-all border-2 rounded-lg font-gabarito border-pepper-orange text-pepper-orange hover:bg-pepper-orange hover:text-white"
+                    >
+                      {showExtras ? 'Ocultar ingredientes extras' : '+ Agregar ingredientes extras'}
+                    </button>
+
+                    {/* Lista de ingredientes extras */}
+                    {showExtras && (
+                      <div className="p-4 mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                        <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
+                          Selecciona ingredientes adicionales (+1€ cada uno):
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                          {extraIngredients.map((ingredient) => {
+                            const ingredientName = getTranslation(ingredient.translations, 'name') || 'Ingrediente';
+                            const isSelected = selectedExtras.includes(ingredient.id);
+
+                            return (
+                              <label
+                                key={ingredient.id}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-all ${
+                                  isSelected
+                                    ? 'bg-green-500 border-green-500 text-white'
+                                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-pepper-charcoal dark:text-white hover:border-green-500'
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleExtraIngredient(ingredient.id)}
+                                  className="w-4 h-4 border-gray-300 rounded text-green-500 focus:ring-green-500"
+                                />
+                                <span className="text-2xl">{ingredient.icon}</span>
+                                <span className="font-semibold font-gabarito">
+                                  {ingredientName} <span className="text-xs">(+1€)</span>
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Campo para ingredientes adicionales */}
                 <div className="mt-4">

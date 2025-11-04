@@ -12,12 +12,12 @@ const HomePage = () => {
     data: productsData,
     loading: productsLoading,
     error: productsError,
-  } = useFetch('/api/products/');
+  } = useFetch('/products/');
 
   const {
     data: categoriesData,
     loading: categoriesLoading,
-  } = useFetch('/api/categories/');
+  } = useFetch('/categories/');
 
   // Extraer los arrays de results de la respuesta paginada
   const categories = categoriesData?.results || [];

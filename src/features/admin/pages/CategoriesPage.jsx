@@ -12,7 +12,7 @@ const CategoriesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { data: categoriesData, loading, error, refetch } = useFetch('/api/categories/');
+  const { data: categoriesData, loading, error, refetch } = useFetch('/categories/');
 
   const categories = categoriesData?.results || [];
 

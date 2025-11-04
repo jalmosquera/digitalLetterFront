@@ -20,8 +20,8 @@ const ProductsPage = () => {
   const [bulkData, setBulkData] = useState({});
   const [savingAll, setSavingAll] = useState(false);
 
-  const { data: productsData, loading, error, refetch } = useFetch('/api/products/');
-  const { data: categoriesData } = useFetch('/api/categories/');
+  const { data: productsData, loading, error, refetch } = useFetch('/products/');
+  const { data: categoriesData } = useFetch('/categories/');
 
   const products = productsData?.results || [];
   const categories = categoriesData?.results || [];

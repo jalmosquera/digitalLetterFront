@@ -14,7 +14,7 @@ const ContactPage = () => {
   const { getTranslation, t } = useLanguage();
 
   // Fetch company data
-  const { data: companyData } = useFetch('/api/company/');
+  const { data: companyData } = useFetch('/company/');
   const company = companyData?.results?.[0];
 
   // Extract company information with fallbacks

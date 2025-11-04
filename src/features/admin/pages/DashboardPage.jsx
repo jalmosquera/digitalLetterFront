@@ -12,7 +12,7 @@ import {
 import useFetch from '@shared/hooks/useFetch';
 
 const DashboardPage = () => {
-  const { data: ordersData, loading, error } = useFetch('/api/orders/');
+  const { data: ordersData, loading, error } = useFetch('/orders/');
 
   // Extract orders from paginated response (same as categories)
   const orders = ordersData?.results || [];

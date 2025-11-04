@@ -11,7 +11,7 @@ const UsersPage = () => {
   const [selectedRole, setSelectedRole] = useState(''); // ✅ Nuevo estado para rol
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const { data: usersData, loading, error, refetch } = useFetch('/api/users-list/');
+  const { data: usersData, loading, error, refetch } = useFetch('/users-list/');
 
   const users = usersData?.results || [];
 

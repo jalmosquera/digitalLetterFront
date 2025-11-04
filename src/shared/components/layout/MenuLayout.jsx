@@ -8,7 +8,7 @@ const MenuLayout = () => {
   const { getTranslation } = useLanguage();
 
   // Fetch company data once at layout level
-  const { data: companyData } = useFetch('/api/company/');
+  const { data: companyData } = useFetch('/company/');
 
   // Extract company info from paginated response
   const company = companyData?.results?.[0];
