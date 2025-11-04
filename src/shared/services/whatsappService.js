@@ -87,17 +87,33 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
 
   items.forEach((item, index) => {
     const productName = getTranslation(item.product.translations, 'name') || 'Sin nombre';
-    const price = parseFloat(item.product.price) || 0;
-    const itemSubtotal = price * item.quantity;
+
+    // Calculate base price
+    const basePrice = parseFloat(item.product.price) || 0;
+
+    // Calculate extras price
+    let extrasPrice = 0;
+    if (item.customization?.selectedExtras) {
+      extrasPrice = item.customization.selectedExtras.reduce((sum, extra) => {
+        return sum + (parseFloat(extra.price) || 0);
+      }, 0);
+    }
+
+    // Total price per unit (base + extras)
+    const pricePerUnit = basePrice + extrasPrice;
+    const itemSubtotal = pricePerUnit * item.quantity;
 
     message += `${index + 1}. *${productName}*\n`;
     message += `   ${t.quantity}: ${item.quantity}\n`;
-    message += `   ${t.unitPrice}: €${price.toFixed(2)}\n`;
+    message += `   ${t.unitPrice}: €${pricePerUnit.toFixed(2)}\n`;
+    if (extrasPrice > 0) {
+      message += `   (Base: €${basePrice.toFixed(2)} + Extras: €${extrasPrice.toFixed(2)})\n`;
+    }
     message += `   ${t.subtotal}: €${itemSubtotal.toFixed(2)}\n`;
 
     // Add ingredient customization if customer deselected any
     if (item.customization) {
-      const { selectedIngredients, additionalNotes } = item.customization;
+      const { selectedIngredients, selectedExtras, additionalNotes } = item.customization;
       const totalIngredients = item.product.ingredients?.length || 0;
 
       // Only show ingredients if customer deselected any
@@ -110,6 +126,14 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
         if (selectedIngredientNames) {
           message += `   ${t.ingredients}: ${selectedIngredientNames}\n`;
         }
+      }
+
+      // Add extra ingredients if selected
+      if (selectedExtras && selectedExtras.length > 0) {
+        const extrasText = selectedExtras
+          .map(extra => `${getTranslation(extra.translations, 'name')} (+€${parseFloat(extra.price).toFixed(2)})`)
+          .join(', ');
+        message += `   🌟 Extras: ${extrasText}\n`;
       }
 
       // Add additional ingredients if provided
