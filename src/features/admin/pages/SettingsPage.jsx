@@ -90,6 +90,12 @@ const SettingsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!companyId) {
+      setError('No se encontró la configuración de la empresa. Por favor, contacta al administrador.');
+      return;
+    }
+
     try {
       setSaving(true);
       setError(null);
@@ -143,7 +149,7 @@ const SettingsPage = () => {
 
       {/* Form */}
       <div className="max-w-2xl">
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-card rounded-lg shadow-md p-6">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-dark-card rounded-lg shadow-md p-4 md:p-6">
           {error && (
             <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg">
               {error}
@@ -161,11 +167,11 @@ const SettingsPage = () => {
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
               Número de WhatsApp
             </label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <select
                 value={countryCode}
                 onChange={(e) => setCountryCode(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                className="px-3 sm:px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary text-sm sm:text-base"
                 required
               >
                 {COUNTRY_CODES.map(({ code, country }) => (
@@ -179,7 +185,7 @@ const SettingsPage = () => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
                 placeholder="623736566"
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary text-sm sm:text-base"
                 required
               />
             </div>
@@ -193,37 +199,39 @@ const SettingsPage = () => {
             <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-text-secondary">
               Horarios de Atención
             </label>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {schedule.map((item, index) => (
-                <div key={item.day} className="flex items-center gap-3">
-                  <div className="w-12 font-semibold text-gray-700 dark:text-text-secondary">
-                    {item.day}
+                <div key={item.day} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 p-2 sm:p-0 bg-gray-50 dark:bg-dark-bg sm:bg-transparent rounded-lg">
+                  <div className="flex items-center gap-3 sm:gap-2">
+                    <div className="w-10 sm:w-12 font-semibold text-gray-700 dark:text-text-secondary text-sm">
+                      {item.day}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={!item.closed}
+                      onChange={(e) => handleScheduleChange(index, 'closed', !e.target.checked)}
+                      className="w-4 h-4 text-pepper-orange focus:ring-pepper-orange"
+                    />
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-text-secondary w-14 sm:w-16">
+                      {item.closed ? 'Cerrado' : 'Abierto'}
+                    </span>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={!item.closed}
-                    onChange={(e) => handleScheduleChange(index, 'closed', !e.target.checked)}
-                    className="w-4 h-4 text-pepper-orange focus:ring-pepper-orange"
-                  />
-                  <span className="text-sm text-gray-600 dark:text-text-secondary w-16">
-                    {item.closed ? 'Cerrado' : 'Abierto'}
-                  </span>
                   {!item.closed && (
-                    <>
+                    <div className="flex items-center gap-2 sm:gap-3 pl-0 sm:pl-2">
                       <input
                         type="time"
                         value={item.open}
                         onChange={(e) => handleScheduleChange(index, 'open', e.target.value)}
-                        className="px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                        className="px-2 sm:px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary text-sm"
                       />
-                      <span className="text-gray-500">-</span>
+                      <span className="text-gray-500 text-sm">-</span>
                       <input
                         type="time"
                         value={item.close}
                         onChange={(e) => handleScheduleChange(index, 'close', e.target.value)}
-                        className="px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                        className="px-2 sm:px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary text-sm"
                       />
-                    </>
+                    </div>
                   )}
                 </div>
               ))}
