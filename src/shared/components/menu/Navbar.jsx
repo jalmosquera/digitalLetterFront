@@ -39,7 +39,6 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
     { to: '/', label: t('nav.home') },
     ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
     { to: '/contact', label: t('nav.contact') },
-    { to: '/privacy', label: t('nav.privacy') },
   ];
 
 
