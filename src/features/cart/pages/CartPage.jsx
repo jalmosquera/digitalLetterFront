@@ -72,12 +72,26 @@ const CartPage = () => {
               const { id: itemId, product, quantity, customization } = item;
               const name = getTranslation(product.translations, 'name') || 'Sin nombre';
               const productImage = product.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23999"%3ENo img%3C/text%3E%3C/svg%3E';
-              const price = parseFloat(product.price) || 0;
-              const subtotal = price * quantity;
+
+              // Calculate base price
+              const basePrice = parseFloat(product.price) || 0;
+
+              // Calculate extras price
+              let extrasPrice = 0;
+              if (customization?.selectedExtras) {
+                extrasPrice = customization.selectedExtras.reduce((sum, extra) => {
+                  return sum + (parseFloat(extra.price) || 0);
+                }, 0);
+              }
+
+              // Total price per unit (base + extras)
+              const pricePerUnit = basePrice + extrasPrice;
+              const subtotal = pricePerUnit * quantity;
 
               // Get customized ingredients if any
               const hasCustomization = customization && (
                 (customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0)) ||
+                customization.selectedExtras?.length > 0 ||
                 customization.additionalNotes
               );
 
@@ -106,9 +120,16 @@ const CartPage = () => {
                           {name}
                         </h3>
                       </Link>
-                      <p className="text-pepper-orange font-bold text-xl mb-3">
-                        €{price.toFixed(2)}
-                      </p>
+                      <div className="mb-3">
+                        <p className="text-pepper-orange font-bold text-xl">
+                          €{pricePerUnit.toFixed(2)}
+                        </p>
+                        {extrasPrice > 0 && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Base: €{basePrice.toFixed(2)} + Extras: €{extrasPrice.toFixed(2)}
+                          </p>
+                        )}
+                      </div>
 
                       {/* Quantity Controls */}
                       <div className="flex items-center gap-3">
@@ -159,6 +180,18 @@ const CartPage = () => {
                             {product.ingredients
                               ?.filter(ing => customization.selectedIngredients.includes(ing.id))
                               .map(ing => getTranslation(ing.translations, 'name'))
+                              .join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {customization.selectedExtras && customization.selectedExtras.length > 0 && (
+                        <div className="mb-2">
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">
+                            Extras:
+                          </span>
+                          <span className="text-gray-600 dark:text-gray-400 ml-2">
+                            {customization.selectedExtras
+                              .map(extra => `${getTranslation(extra.translations, 'name')} (+€${parseFloat(extra.price).toFixed(2)})`)
                               .join(', ')}
                           </span>
                         </div>
