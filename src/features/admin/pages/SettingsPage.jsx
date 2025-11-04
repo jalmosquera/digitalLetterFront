@@ -3,16 +3,29 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSave } from '@fortawesome/free-solid-svg-icons';
 import api from '@shared/services/api';
 
+const COUNTRY_CODES = [
+  { code: '+34', country: 'España' },
+  { code: '+1', country: 'USA/Canadá' },
+  { code: '+52', country: 'México' },
+  { code: '+54', country: 'Argentina' },
+  { code: '+56', country: 'Chile' },
+  { code: '+57', country: 'Colombia' },
+  { code: '+58', country: 'Venezuela' },
+];
+
+const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
 const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [companyId, setCompanyId] = useState(null);
-  const [formData, setFormData] = useState({
-    whatsapp_phone: '',
-    business_hours: '',
-  });
+  const [countryCode, setCountryCode] = useState('+34');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [schedule, setSchedule] = useState(
+    DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false }))
+  );
 
   useEffect(() => {
     fetchCompanyData();
@@ -25,10 +38,20 @@ const SettingsPage = () => {
       if (response.data.results && response.data.results.length > 0) {
         const company = response.data.results[0];
         setCompanyId(company.id);
-        setFormData({
-          whatsapp_phone: company.whatsapp_phone || '',
-          business_hours: company.business_hours || '',
-        });
+
+        // Parse WhatsApp phone
+        const phone = company.whatsapp_phone || '+34623736566';
+        const matchedCode = COUNTRY_CODES.find(c => phone.startsWith(c.code));
+        if (matchedCode) {
+          setCountryCode(matchedCode.code);
+          setPhoneNumber(phone.substring(matchedCode.code.length));
+        }
+
+        // Parse business hours
+        if (company.business_hours) {
+          const parsedSchedule = parseBusinessHours(company.business_hours);
+          setSchedule(parsedSchedule);
+        }
       }
     } catch (err) {
       console.error('Error fetching company data:', err);
@@ -38,9 +61,31 @@ const SettingsPage = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const parseBusinessHours = (hoursString) => {
+    // Simple parser: "Lun: 08:00 - 23:00" per day
+    const lines = hoursString.split('\n');
+    const newSchedule = DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false }));
+
+    lines.forEach(line => {
+      DAYS.forEach((day, idx) => {
+        if (line.includes(day)) {
+          const timeMatch = line.match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
+          if (timeMatch) {
+            newSchedule[idx] = { day, open: timeMatch[1], close: timeMatch[2], closed: false };
+          } else if (line.toLowerCase().includes('cerrado')) {
+            newSchedule[idx] = { day, open: '08:00', close: '23:00', closed: true };
+          }
+        }
+      });
+    });
+
+    return newSchedule;
+  };
+
+  const handleScheduleChange = (index, field, value) => {
+    const newSchedule = [...schedule];
+    newSchedule[index][field] = value;
+    setSchedule(newSchedule);
   };
 
   const handleSubmit = async (e) => {
@@ -50,7 +95,20 @@ const SettingsPage = () => {
       setError(null);
       setSuccess(false);
 
-      await api.patch(`/company/${companyId}/`, formData);
+      // Generate business_hours string
+      const businessHours = schedule
+        .map(({ day, open, close, closed }) =>
+          closed ? `${day}: Cerrado` : `${day}: ${open} - ${close}`
+        )
+        .join('\n');
+
+      // Generate whatsapp_phone
+      const whatsappPhone = `${countryCode}${phoneNumber}`;
+
+      await api.patch(`/company/${companyId}/`, {
+        whatsapp_phone: whatsappPhone,
+        business_hours: businessHours,
+      });
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -103,36 +161,75 @@ const SettingsPage = () => {
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
               Número de WhatsApp
             </label>
-            <input
-              type="text"
-              name="whatsapp_phone"
-              value={formData.whatsapp_phone}
-              onChange={handleChange}
-              placeholder="+34623736566"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
-              required
-            />
+            <div className="flex gap-2">
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                className="px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              >
+                {COUNTRY_CODES.map(({ code, country }) => (
+                  <option key={code} value={code}>
+                    {code} ({country})
+                  </option>
+                ))}
+              </select>
+              <input
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                placeholder="623736566"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              />
+            </div>
             <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
-              Número que recibirá los pedidos por WhatsApp (incluye código de país)
+              Número que recibirá los pedidos por WhatsApp
             </p>
           </div>
 
           {/* Business Hours */}
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+            <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-text-secondary">
               Horarios de Atención
             </label>
-            <textarea
-              name="business_hours"
-              value={formData.business_hours}
-              onChange={handleChange}
-              placeholder="Lun-Dom: 08:00 - 23:00"
-              rows="4"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary resize-none"
-              required
-            />
-            <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
-              Horarios que se mostrarán en la página de inicio. Formato sugerido: "Lun-Dom: 08:00 - 23:00"
+            <div className="space-y-3">
+              {schedule.map((item, index) => (
+                <div key={item.day} className="flex items-center gap-3">
+                  <div className="w-12 font-semibold text-gray-700 dark:text-text-secondary">
+                    {item.day}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={!item.closed}
+                    onChange={(e) => handleScheduleChange(index, 'closed', !e.target.checked)}
+                    className="w-4 h-4 text-pepper-orange focus:ring-pepper-orange"
+                  />
+                  <span className="text-sm text-gray-600 dark:text-text-secondary w-16">
+                    {item.closed ? 'Cerrado' : 'Abierto'}
+                  </span>
+                  {!item.closed && (
+                    <>
+                      <input
+                        type="time"
+                        value={item.open}
+                        onChange={(e) => handleScheduleChange(index, 'open', e.target.value)}
+                        className="px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="time"
+                        value={item.close}
+                        onChange={(e) => handleScheduleChange(index, 'close', e.target.value)}
+                        className="px-3 py-1 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                      />
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-sm text-gray-500 dark:text-text-secondary">
+              Selecciona los días abiertos y configura los horarios
             </p>
           </div>
 
