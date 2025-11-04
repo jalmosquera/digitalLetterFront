@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 
@@ -66,6 +68,17 @@ const LoginPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 dark:bg-gray-900 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
+        {/* Back button */}
+        <div>
+          <Link
+            to="/"
+            className="inline-flex items-center text-sm font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+            Volver al menú
+          </Link>
+        </div>
+
         <div>
           <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-900 dark:text-white">
             {t('auth.loginTitle')}

@@ -67,7 +67,7 @@ const UserModal = ({ isOpen, onClose, user, onSuccess }) => {
         : `${import.meta.env.VITE_API_URL}/api/users-list/`;
 
       const response = await fetch(url, {
-        method: user ? 'PUT' : 'POST',
+        method: user ? 'PATCH' : 'POST',
         headers: getAuthHeaders({
           'Content-Type': 'application/json',
         }),

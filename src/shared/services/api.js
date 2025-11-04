@@ -57,11 +57,18 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, clear tokens and redirect to login
+        // If refresh fails, clear tokens and redirect to home menu
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+
+        // Show notification if toast is available
+        if (window.toast) {
+          window.toast.error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+        }
+
+        // Redirect to home menu
+        window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }

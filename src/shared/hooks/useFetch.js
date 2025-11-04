@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { getAuthHeaders } from '@shared/utils/auth';
+import api from '@shared/services/api';
 
 /**
  * Hook personalizado para hacer fetch de datos desde la API
@@ -29,17 +28,12 @@ const useFetch = (url, options = {}) => {
         setLoading(true);
         setError(null);
 
-        const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-        // Obtener headers
-        const headers = getAuthHeaders(options.headers);
-
         const config = {
           ...options,
-          headers,
         };
 
-        const response = await axios.get(`${baseURL}${url}`, config);
+        // Use api.js which has the token refresh interceptor
+        const response = await api.get(url, config);
 
         if (isMounted) {
           setData(response.data);
@@ -79,15 +73,12 @@ const useFetch = (url, options = {}) => {
       setLoading(true);
       setError(null);
 
-      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const headers = getAuthHeaders(options.headers);
-
       const config = {
         ...options,
-        headers,
       };
 
-      const response = await axios.get(`${baseURL}${url}`, config);
+      // Use api.js which has the token refresh interceptor
+      const response = await api.get(url, config);
       setData(response.data);
       setError(null);
     } catch (err) {
