@@ -7,6 +7,7 @@ import {
   faIceCream,
   faBurger,
   faBowlFood,
+  faLemon
 } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 
@@ -15,11 +16,17 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
 
   // Mapeo de iconos por nombre de categoría
   const iconMap = {
-    comida: faUtensils,
-    bebida: faCoffee,
-    pizza: faPizzaSlice,
-    postre: faIceCream,
-    hamburguesa: faBurger,
+    comidas: faUtensils,
+    bebidas: faCoffee,
+    postres: faIceCream,
+    hamburguesas: faBurger,
+    camperos: faBurger,
+    patatas:faLemon,
+    montaditos:faBurger,
+    serranitos:faBurger,
+    para_picar:faBurger,
+    ligth_fusion:faBurger,
+    entre_pan_y_pan:faBurger,
     default: faBowlFood,
   };
 
@@ -40,7 +47,7 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-pepper-orange border-t-transparent"></div>
+        <div className="inline-block w-8 h-8 border-4 rounded-full animate-spin border-pepper-orange border-t-transparent"></div>
       </div>
     );
   }
@@ -51,12 +58,12 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
 
   return (
     <div className="mb-12">
-      <h2 className="font-gabarito font-bold text-2xl md:text-3xl text-pepper-charcoal dark:text-white mb-6 text-center">
+      <h2 className="mb-6 text-2xl font-bold text-center font-gabarito md:text-3xl text-pepper-charcoal dark:text-white">
         Categorías
       </h2>
 
       {/* Filtros de categoría - Scroll horizontal en móvil */}
-      <div className="overflow-x-auto pb-4">
+      <div className="pb-4 overflow-x-auto">
         <div className="flex items-center space-x-4 md:justify-center min-w-max md:min-w-0">
           {/* Opción "Todos" */}
           <button
@@ -67,13 +74,13 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
                 : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
             }`}
           >
-            <div className="w-12 h-12 flex items-center justify-center">
+            <div className="flex items-center justify-center w-12 h-12">
               <FontAwesomeIcon
                 icon={faUtensils}
                 className="text-2xl"
               />
             </div>
-            <span className="font-gabarito font-semibold text-sm">Todos</span>
+            <span className="text-sm font-semibold font-gabarito">Todos</span>
           </button>
 
           {/* Categorías dinámicas */}
@@ -89,13 +96,13 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
                     : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
                 }`}
               >
-                <div className="w-12 h-12 flex items-center justify-center">
+                <div className="flex items-center justify-center w-12 h-12">
                   <FontAwesomeIcon
                     icon={getCategoryIcon(categoryName)}
                     className="text-2xl"
                   />
                 </div>
-                <span className="font-gabarito font-semibold text-sm">
+                <span className="text-sm font-semibold font-gabarito">
                   {categoryName}
                 </span>
               </button>
