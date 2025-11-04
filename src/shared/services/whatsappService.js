@@ -2,8 +2,6 @@
  * WhatsApp service for sending orders
  */
 
-const WHATSAPP_NUMBER = '+34623736566'; // User's WhatsApp number
-
 /**
  * Generate bilingual order message based on language
  * @param {Object} orderData - Order information
@@ -154,10 +152,11 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
 /**
  * Open WhatsApp with pre-filled message
  * @param {string} message - Message to send
+ * @param {string} whatsappNumber - WhatsApp number to send to
  */
-export const sendWhatsAppMessage = (message) => {
+export const sendWhatsAppMessage = (message, whatsappNumber) => {
   const encodedMessage = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encodedMessage}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\+/g, '')}?text=${encodedMessage}`;
 
   // Open WhatsApp in new window
   window.open(whatsappUrl, '_blank');
@@ -168,10 +167,11 @@ export const sendWhatsAppMessage = (message) => {
  * @param {Object} orderData - Complete order data
  * @param {string} language - Current language
  * @param {Function} getTranslation - Translation function
+ * @param {string} whatsappNumber - WhatsApp number to send to
  */
-export const sendOrderViaWhatsApp = (orderData, language, getTranslation) => {
+export const sendOrderViaWhatsApp = (orderData, language, getTranslation, whatsappNumber) => {
   const message = generateOrderMessage(orderData, language, getTranslation);
-  sendWhatsAppMessage(message);
+  sendWhatsAppMessage(message, whatsappNumber);
 };
 
 export default {

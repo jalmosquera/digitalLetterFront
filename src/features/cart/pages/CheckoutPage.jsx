@@ -9,6 +9,7 @@ import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 import { sendOrderViaWhatsApp } from '@shared/services/whatsappService';
 import { createOrder } from '@shared/services/orderService';
+import api from '@shared/services/api';
 
 const CheckoutPage = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -26,6 +27,22 @@ const CheckoutPage = () => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('+34623736566');
+
+  // Fetch company data for WhatsApp number
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const response = await api.get('/company/');
+        if (response.data.results && response.data.results.length > 0) {
+          setWhatsappNumber(response.data.results[0].whatsapp_phone || '+34623736566');
+        }
+      } catch (err) {
+        console.error('Error fetching company data:', err);
+      }
+    };
+    fetchCompanyData();
+  }, []);
 
   // Redirect if not authenticated or cart is empty
   useEffect(() => {
@@ -104,7 +121,7 @@ const CheckoutPage = () => {
       };
 
       // Step 3: Send via WhatsApp
-      sendOrderViaWhatsApp(orderData, language, getTranslation);
+      sendOrderViaWhatsApp(orderData, language, getTranslation, whatsappNumber);
 
       // Show success notification
       toast.success(t('checkout.orderSuccess'), {

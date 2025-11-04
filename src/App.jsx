@@ -28,6 +28,7 @@ import UsersPage from '@features/admin/pages/UsersPage';
 import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
 import AnalyticsPage from './features/admin/pages/AnalyticsPage';
+import SettingsPage from './features/admin/pages/SettingsPage';
 
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
                   <Route path="ingredients" element={<IngredientsPage />} />
                   <Route path="users" element={<UsersPage />} />
                   <Route path="analytics" element={<AnalyticsPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
                 </Route>
 
 

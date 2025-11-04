@@ -12,6 +12,7 @@ import {
   faChartLine,
   faChevronRight,
   faStore,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
@@ -64,12 +65,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       icon: faChartLine,
       path: '/admin/analytics',
     },
-    // {
-    //   id: 'settings',
-    //   label: 'Configuración',
-    //   icon: faCog,
-    //   path: '/admin/settings',
-    // },
+    {
+      id: 'settings',
+      label: 'Configuraciones',
+      icon: faCog,
+      path: '/admin/settings',
+    },
   ];
 
 

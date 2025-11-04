@@ -148,30 +148,30 @@ const AnalyticsPage = () => {
 
       {/* Top Product Card */}
       {analytics.topProduct && (
-        <div className="mb-6 p-6 bg-gradient-to-br from-pepper-orange to-pepper-orange/80 rounded-lg shadow-lg text-white">
+        <div className="p-6 mb-6 text-white rounded-lg shadow-lg bg-gradient-to-br from-pepper-orange to-pepper-orange/80">
           <div className="flex items-center mb-4">
             <FontAwesomeIcon icon={faTrophy} className="mr-3 text-3xl" />
             <h2 className="text-2xl font-bold">Producto Más Vendido</h2>
           </div>
-          <div className="flex flex-col md:flex-row gap-6 items-center">
+          <div className="flex flex-col items-center gap-6 md:flex-row">
             {/* Product Image */}
             <div className="flex-shrink-0">
               <img
                 src={analytics.topProduct.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 150 150"%3E%3Crect width="150" height="150" fill="%23f5f5f5"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%23999"%3ESin Imagen%3C/text%3E%3C/svg%3E'}
                 alt={analytics.topProduct.name}
-                className="w-32 h-32 object-cover rounded-lg shadow-md"
+                className="object-cover w-32 h-32 rounded-lg shadow-md"
               />
             </div>
             {/* Product Info */}
             <div className="flex-grow text-center md:text-left">
-              <h3 className="text-3xl font-bold mb-2">{analytics.topProduct.name}</h3>
+              <h3 className="mb-2 text-3xl font-bold">{analytics.topProduct.name}</h3>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
-                  <p className="text-white/80 text-sm">Cantidad Vendida</p>
+                  <p className="text-sm text-white/80">Cantidad Vendida</p>
                   <p className="text-4xl font-bold">{analytics.topProduct.quantity}</p>
                 </div>
                 <div>
-                  <p className="text-white/80 text-sm">Ingresos Generados</p>
+                  <p className="text-sm text-white/80">Ingresos Generados</p>
                   <p className="text-4xl font-bold">€{analytics.topProduct.revenue.toFixed(2)}</p>
                 </div>
               </div>
@@ -181,7 +181,7 @@ const AnalyticsPage = () => {
       )}
 
       {/* Top Customer and Top 5 Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Top Customer */}
         <div className="p-6 bg-white border border-gray-200 rounded-lg dark:bg-dark-card dark:border-dark-border">
           <div className="flex items-center mb-4">
@@ -195,7 +195,7 @@ const AnalyticsPage = () => {
               <p className="mb-2 text-2xl font-bold text-gray-900 dark:text-text-primary">
                 {analytics.topCustomer.name}
               </p>
-              <p className="text-gray-600 dark:text-text-secondary mb-4">
+              <p className="mb-4 text-gray-600 dark:text-text-secondary">
                 {analytics.topCustomer.count} pedidos realizados
               </p>
               <p className="text-3xl font-bold text-yellow-500">
@@ -229,16 +229,16 @@ const AnalyticsPage = () => {
                   key={product.id}
                   className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-dark-bg"
                 >
-                  <span className="flex items-center justify-center w-8 h-8 text-sm font-bold text-white rounded-full bg-pepper-orange flex-shrink-0">
+                  <span className="flex items-center justify-center flex-shrink-0 w-8 h-8 text-sm font-bold text-white rounded-full bg-pepper-orange">
                     {index + 1}
                   </span>
                   <img
                     src={product.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Crect width="40" height="40" fill="%23f5f5f5"/%3E%3C/svg%3E'}
                     alt={product.name}
-                    className="w-12 h-12 object-cover rounded flex-shrink-0"
+                    className="flex-shrink-0 object-cover w-12 h-12 rounded"
                   />
                   <div className="flex-grow min-w-0">
-                    <p className="font-medium text-gray-900 dark:text-text-primary truncate">
+                    <p className="font-medium text-gray-900 truncate dark:text-text-primary">
                       {product.name}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-text-secondary">
