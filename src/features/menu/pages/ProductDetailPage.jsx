@@ -186,9 +186,11 @@ const ProductDetailPage = () => {
   // Para calcular el total, necesitamos extraer el número del string
   const priceNumber = parseFloat(price?.replace(/[^\d.]/g, '') || 0);
 
-  // Calcular precio de extras (asumiendo que cada extra cuesta un porcentaje del precio base o un valor fijo)
-  // Por ahora, cada extra suma 1€ al precio - esto se puede ajustar según tu modelo de negocio
-  const extrasPrice = selectedExtras.length * 1.0;
+  // Calcular precio de extras sumando el precio de cada ingrediente extra seleccionado
+  const extrasPrice = selectedExtras.reduce((total, extraId) => {
+    const extra = extraIngredients.find(ing => ing.id === extraId);
+    return total + (extra ? parseFloat(extra.price || 0) : 0);
+  }, 0);
 
   const totalPrice = ((priceNumber + extrasPrice) * quantity).toFixed(2) + ' €';
 
@@ -353,11 +355,12 @@ const ProductDetailPage = () => {
                     {showExtras && (
                       <div className="p-4 mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                         <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Selecciona ingredientes adicionales (+1€ cada uno):
+                          Selecciona ingredientes adicionales:
                         </p>
                         <div className="flex flex-wrap gap-3">
                           {extraIngredients.map((ingredient) => {
                             const ingredientName = getTranslation(ingredient.translations, 'name') || 'Ingrediente';
+                            const ingredientPrice = parseFloat(ingredient.price || 0).toFixed(2);
                             const isSelected = selectedExtras.includes(ingredient.id);
 
                             return (
@@ -377,7 +380,7 @@ const ProductDetailPage = () => {
                                 />
                                 <span className="text-2xl">{ingredient.icon}</span>
                                 <span className="font-semibold font-gabarito">
-                                  {ingredientName} <span className="text-xs">(+1€)</span>
+                                  {ingredientName} <span className="text-xs">(+{ingredientPrice}€)</span>
                                 </span>
                               </label>
                             );

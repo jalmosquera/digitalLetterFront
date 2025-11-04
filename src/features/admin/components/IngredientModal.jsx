@@ -11,6 +11,7 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
     name_en: '',
     icon: '',
     be_extra: false,
+    price: '0.00',
   });
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +22,7 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
         name_en: ingredient.translations?.en?.name || '',
         icon: ingredient.icon || '',
         be_extra: ingredient.be_extra ?? false,
+        price: ingredient.price || '0.00',
       });
     } else {
       setFormData({
@@ -28,6 +30,7 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
         name_en: '',
         icon: '',
         be_extra: false,
+        price: '0.00',
       });
     }
   }, [ingredient]);
@@ -56,6 +59,7 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
         },
         icon: formData.icon || null,
         be_extra: formData.be_extra,
+        price: parseFloat(formData.price) || 0,
       };
 
       const url = ingredient
@@ -171,6 +175,26 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Ejemplo: fa-cheese, fa-leaf, fa-pepper-hot
+                </p>
+              </div>
+
+              {/* Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Precio (€) *
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  required
+                  step="0.01"
+                  min="0"
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Cargo adicional si se agrega como extra
                 </p>
               </div>
 
