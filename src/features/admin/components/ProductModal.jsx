@@ -89,82 +89,49 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   setLoading(true);
 
   try {
-    const translations = {
-      es: {
-        name: formData.name_es,
-        description: formData.description_es,
-      },
-      en: {
-        name: formData.name_en,
-        description: formData.description_en,
-      },
-    };
-
     const url = product
       ? `${import.meta.env.VITE_API_URL}/api/products/${product.id}/`
       : `${import.meta.env.VITE_API_URL}/api/products/`;
 
-    let body;
-    let headers = getAuthHeaders();
-    let method = 'POST'; // Para crear
+    const method = product ? 'PATCH' : 'POST';
 
-    // Si es edición, usa PATCH (no PUT)
-    if (product) {
-      method = 'PATCH';
-    }
+    // Siempre usar FormData (el serializer del backend lo maneja correctamente)
+    const formDataToSend = new FormData();
 
-    // Si hay imagen, usar FormData
-    if (formData.image) {
-      const formDataToSend = new FormData();
+    // Traducciones como campos planos (el serializer los convierte)
+    formDataToSend.append('name_es', formData.name_es || '');
+    formDataToSend.append('description_es', formData.description_es || '');
+    formDataToSend.append('name_en', formData.name_en || '');
+    formDataToSend.append('description_en', formData.description_en || '');
 
-      // Traducciones
-      formDataToSend.append('name_en', formData.name_en);
-      formDataToSend.append('name_es', formData.name_es);
-      formDataToSend.append('description_en', formData.description_en || '');
-      formDataToSend.append('description_es', formData.description_es || '');
+    // Numéricos
+    formDataToSend.append('price', parseFloat(formData.price) || 0);
+    formDataToSend.append('stock', parseInt(formData.stock) || 0);
 
-      // Campos regulares
-      formDataToSend.append('price', String(formData.price));
-      formDataToSend.append('stock', String(formData.stock));
-      formDataToSend.append('available', String(formData.available));
-      formDataToSend.append('categories', String(formData.category));
+    // Boolean
+    formDataToSend.append('available', formData.available);
 
-      // ✅ Ingredientes como array
-      formData.ingredients.forEach(ingId => {
-        formDataToSend.append('ingredients', ingId);
-      });
+    // Categorías (como string separado por comas)
+    formDataToSend.append('categories', formData.category);
 
-      // Imagen
+    // Ingredientes (cada uno por separado)
+    (formData.ingredients || []).forEach((id) => {
+      formDataToSend.append('ingredients', id);
+    });
+
+    // Imagen (solo si se seleccionó una nueva)
+    if (formData.image instanceof File) {
       formDataToSend.append('image', formData.image);
-
-      body = formDataToSend;
-      delete headers['Content-Type'];
-    } else {
-      // ✅ Sin imagen, enviar como JSON
-      headers['Content-Type'] = 'application/json';
-      
-      const payload = {
-        translations,
-        price: String(formData.price),
-        stock: parseInt(formData.stock),
-        available: formData.available,
-        ingredients: formData.ingredients,
-      };
-
-      // Solo agregar categories si hay seleccionada
-      if (formData.category) {
-        payload.categories = [parseInt(formData.category)];
-      }
-
-      body = JSON.stringify(payload);
     }
 
-  
+    // Headers sin Content-Type (el navegador lo establece con boundary correcto)
+    const headers = getAuthHeaders();
+    delete headers['Content-Type'];
 
     const response = await fetch(url, {
       method,
       headers,
-      body,
+      body: formDataToSend,
     });
 
     const responseData = await response.json();
@@ -174,23 +141,11 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       onSuccess();
       onClose();
     } else {
-      let errorMessage = 'Error al guardar el producto';
-      
-      if (responseData.detail) {
-        errorMessage = responseData.detail;
-      } else if (responseData.message) {
-        errorMessage = responseData.message;
-      } else if (responseData.ingredients) {
-        errorMessage = `Error en ingredientes: ${responseData.ingredients}`;
-      } else if (typeof responseData === 'object') {
-        const errorFields = Object.keys(responseData).filter(k => responseData[k]);
-        if (errorFields.length > 0) {
-          errorMessage = `Error: ${errorFields.join(', ')}`;
-        }
-      }
-
       console.error('Error response:', responseData);
-      toast.error(errorMessage);
+      const messages = Object.entries(responseData)
+        .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+        .join(' | ');
+      toast.error(messages || 'Error al guardar el producto');
     }
   } catch (error) {
     console.error('Error:', error);
@@ -199,6 +154,8 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     setLoading(false);
   }
 };
+
+
 
 
 
