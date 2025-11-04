@@ -1,7 +1,4 @@
-import axios from 'axios';
-import { getAuthHeaders } from '@shared/utils/auth';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import api from './api';
 
 /**
  * Create a new order in the database
@@ -28,15 +25,7 @@ export const createOrder = async ({ items, deliveryInfo }) => {
       items: orderItems,
     };
 
-    const response = await axios.post(
-      `${API_URL}/api/orders/`,
-      orderPayload,
-      {
-        headers: getAuthHeaders({
-          'Content-Type': 'application/json',
-        }),
-      }
-    );
+    const response = await api.post('/orders/', orderPayload);
 
     return response.data;
   } catch (error) {
@@ -51,12 +40,7 @@ export const createOrder = async ({ items, deliveryInfo }) => {
  */
 export const getOrders = async () => {
   try {
-    const response = await axios.get(
-      `${API_URL}/api/orders/`,
-      {
-        headers: getAuthHeaders(),
-      }
-    );
+    const response = await api.get('/orders/');
     return response.data;
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -71,12 +55,7 @@ export const getOrders = async () => {
  */
 export const getOrderById = async (orderId) => {
   try {
-    const response = await axios.get(
-      `${API_URL}/api/orders/${orderId}/`,
-      {
-        headers: getAuthHeaders(),
-      }
-    );
+    const response = await api.get(`/orders/${orderId}/`);
     return response.data;
   } catch (error) {
     console.error('Error fetching order:', error);
