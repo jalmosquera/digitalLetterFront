@@ -85,9 +85,15 @@ const ProductDetailPage = () => {
 
   // Manejar agregar al carrito
   const handleAddToCart = () => {
+    // Get full extra ingredient objects with prices
+    const extrasWithPrices = selectedExtras.map(extraId => {
+      const extra = extraIngredients.find(ing => ing.id === extraId);
+      return extra;
+    }).filter(Boolean);
+
     const customization = {
       selectedIngredients,
-      selectedExtras,
+      selectedExtras: extrasWithPrices,
       additionalNotes: additionalNotes.trim(),
     };
     addToCart(productData, quantity, customization);

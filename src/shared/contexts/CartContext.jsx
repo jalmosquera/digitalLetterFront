@@ -151,8 +151,17 @@ export const CartProvider = ({ children }) => {
    */
   const getTotalPrice = () => {
     return items.reduce((total, item) => {
-      const price = parseFloat(item.product.price) || 0;
-      return total + (price * item.quantity);
+      const basePrice = parseFloat(item.product.price) || 0;
+
+      // Calculate extras price if customization exists
+      let extrasPrice = 0;
+      if (item.customization?.selectedExtras) {
+        extrasPrice = item.customization.selectedExtras.reduce((sum, extra) => {
+          return sum + (parseFloat(extra.price) || 0);
+        }, 0);
+      }
+
+      return total + ((basePrice + extrasPrice) * item.quantity);
     }, 0);
   };
 
