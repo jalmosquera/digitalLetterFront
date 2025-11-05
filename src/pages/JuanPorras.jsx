@@ -180,6 +180,7 @@ const RestaurantMenuModern = () => {
         <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full blur-3xl ${
           darkMode ? 'bg-orange-500/5' : 'bg-orange-500/3'
         }`}></div>
+        <img className='w-auto mx-auto h-96' src="/public/logoJuanPorra.png" alt="" />
 
         <div className="relative z-10">
           <p className={`mb-2 text-lg font-bold tracking-widest ${
