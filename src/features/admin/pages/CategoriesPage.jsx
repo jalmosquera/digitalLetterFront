@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
 import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
@@ -11,26 +11,28 @@ import Pagination from '@shared/components/Pagination';
 const CategoriesPage = () => {
   const { getTranslation } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-
-  // Estado interno para debounce
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-  // Debounce del searchTerm
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
 
   // Construir filtros para la API
   const apiFilters = useMemo(() => {
     const filters = {};
-    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (appliedSearchTerm) filters.search = appliedSearchTerm;
     return filters;
-  }, [debouncedSearchTerm]);
+  }, [appliedSearchTerm]);
+
+  // Función para aplicar la búsqueda
+  const handleSearch = () => {
+    setAppliedSearchTerm(searchTerm);
+  };
+
+  // Permitir búsqueda con Enter
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const {
     data: categoriesData,
@@ -123,18 +125,27 @@ const CategoriesPage = () => {
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative max-w-md">
-          <FontAwesomeIcon
-            icon={faSearch}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-          />
-          <input
-            type="text"
-            placeholder="Buscar categorías..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
-          />
+        <div className="relative flex gap-2 max-w-md">
+          <div className="relative flex-1">
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+            <input
+              type="text"
+              placeholder="Buscar categorías..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-dark-border rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+            />
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange/90 whitespace-nowrap"
+          >
+            Buscar
+          </button>
         </div>
       </div>
 

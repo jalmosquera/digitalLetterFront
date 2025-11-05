@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faEye, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
@@ -9,29 +9,31 @@ import Pagination from '@shared/components/Pagination';
 
 const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [editingStatus, setEditingStatus] = useState(null);
 
-  // Estado interno para debounce
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-  // Debounce del searchTerm
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
   // Construir filtros para la API
   const apiFilters = useMemo(() => {
     const filters = {};
-    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (appliedSearchTerm) filters.search = appliedSearchTerm;
     if (statusFilter && statusFilter !== 'all') filters.status = statusFilter;
     return filters;
-  }, [debouncedSearchTerm, statusFilter]);
+  }, [appliedSearchTerm, statusFilter]);
+
+  // Función para aplicar la búsqueda
+  const handleSearch = () => {
+    setAppliedSearchTerm(searchTerm);
+  };
+
+  // Permitir búsqueda con Enter
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const {
     data: ordersData,
@@ -150,18 +152,27 @@ const OrdersPage = () => {
 
       {/* Search and Filter */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row">
-        <div className="relative flex-1 max-w-md">
-          <FontAwesomeIcon
-            icon={faSearch}
-            className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
-          />
-          <input
-            type="text"
-            placeholder="Buscar por cliente, email o ID..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
-          />
+        <div className="relative flex flex-1 gap-2 max-w-md">
+          <div className="relative flex-1">
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
+            />
+            <input
+              type="text"
+              placeholder="Buscar por cliente, email o ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+              className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+            />
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange/90 whitespace-nowrap"
+          >
+            Buscar
+          </button>
         </div>
         <select
           value={statusFilter}

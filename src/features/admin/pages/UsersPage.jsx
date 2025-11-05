@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
@@ -9,28 +9,30 @@ import Pagination from '@shared/components/Pagination';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Estado interno para debounce
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-
-  // Debounce del searchTerm
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
   // Construir filtros para la API
   const apiFilters = useMemo(() => {
     const filters = {};
-    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (appliedSearchTerm) filters.search = appliedSearchTerm;
     if (selectedRole) filters.role = selectedRole;
     return filters;
-  }, [debouncedSearchTerm, selectedRole]);
+  }, [appliedSearchTerm, selectedRole]);
+
+  // Función para aplicar la búsqueda
+  const handleSearch = () => {
+    setAppliedSearchTerm(searchTerm);
+  };
+
+  // Permitir búsqueda con Enter
+  const handleSearchKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const {
     data: usersData,
@@ -137,18 +139,27 @@ const UsersPage = () => {
       {/* Search and Filters */}
       <div className="flex flex-col gap-4 mb-6 md:flex-row">
         {/* Búsqueda por nombre/email */}
-        <div className="relative flex-1 max-w-md">
-          <FontAwesomeIcon
-            icon={faSearch}
-            className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
-          />
-          <input
-            type="text"
-            placeholder="Buscar por nombre o email..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
-          />
+        <div className="relative flex flex-1 gap-2 max-w-md">
+          <div className="relative flex-1">
+            <FontAwesomeIcon
+              icon={faSearch}
+              className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2"
+            />
+            <input
+              type="text"
+              placeholder="Buscar por nombre o email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleSearchKeyPress}
+              className="w-full py-2 pl-10 pr-4 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-card dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
+            />
+          </div>
+          <button
+            onClick={handleSearch}
+            className="px-4 py-2 text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange/90 whitespace-nowrap"
+          >
+            Buscar
+          </button>
         </div>
 
         {/* ✅ Filtro por Rol */}
