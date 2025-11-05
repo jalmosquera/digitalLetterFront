@@ -1,23 +1,28 @@
 import { useState, useMemo } from 'react';
-import useFetch from '@/shared/hooks/useFetch';
+import usePaginatedFetch from '@/shared/hooks/usePaginatedFetch';
 import { ProductGrid, CategoryFilter } from '../components';
 import { useLanguage } from '@shared/contexts/LanguageContext';
+import Pagination from '@shared/components/Pagination';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { t } = useLanguage();
 
-  // Fetch de productos, categorías y company
+  // Fetch de productos con paginación
   const {
     data: productsData,
     loading: productsLoading,
     error: productsError,
-  } = useFetch('/products/');
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/products/', 12);
 
   const {
     data: categoriesData,
     loading: categoriesLoading,
-  } = useFetch('/categories/');
+  } = usePaginatedFetch('/categories/', 100); // Muchas categorías para mostrar todas
 
   // Extraer los arrays de results de la respuesta paginada
   const categories = categoriesData?.results || [];
@@ -67,6 +72,16 @@ const HomePage = () => {
             loading={productsLoading}
             error={productsError}
           />
+
+          {/* Pagination */}
+          {!productsLoading && !productsError && (
+            <Pagination
+              count={totalCount}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              onPageChange={setPage}
+            />
+          )}
         </div>
       </section>
 

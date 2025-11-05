@@ -191,7 +191,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               {/* Name Spanish */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Nombre (Español) *
+                  Nombre (🇪🇸) *
                 </label>
                 <input
                   type="text"
@@ -206,7 +206,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               {/* Name English */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Nombre (Inglés) *
+                  Nombre (🇬🇧) *
                 </label>
                 <input
                   type="text"
@@ -221,7 +221,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               {/* Description Spanish */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Descripción (Español)
+                  Descripción (🇪🇸)
                 </label>
                 <textarea
                   name="description_es"
@@ -235,7 +235,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
               {/* Description English */}
               <div>
                 <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Descripción (Inglés)
+                  Descripción (🇬🇧)
                 </label>
                 <textarea
                   name="description_en"

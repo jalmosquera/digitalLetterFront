@@ -1,17 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
-import useFetch from '@shared/hooks/useFetch';
+import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import toast from 'react-hot-toast';
 import UserModal from '@features/admin/components/UserModal';
 import { getAuthHeaders } from '@shared/utils/auth';
+import Pagination from '@shared/components/Pagination';
 
 const UsersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState(''); // ✅ Nuevo estado para rol
+  const [selectedRole, setSelectedRole] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const { data: usersData, loading, error, refetch } = useFetch('/users-list/');
+
+  // Estado interno para debounce
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce del searchTerm
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = {};
+    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (selectedRole) filters.role = selectedRole;
+    return filters;
+  }, [debouncedSearchTerm, selectedRole]);
+
+  const {
+    data: usersData,
+    loading,
+    error,
+    refetch,
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/users-list/', 10, apiFilters);
 
   const users = usersData?.results || [];
 
@@ -46,17 +76,8 @@ const UsersPage = () => {
     }
   };
 
-  // ✅ Filtro por nombre Y rol
-  const filteredUsers = users.filter(user => {
-    const username = user.username?.toLowerCase() || '';
-    const email = user.email?.toLowerCase() || '';
-    const search = searchTerm.toLowerCase();
-    
-    const matchesSearch = username.includes(search) || email.includes(search);
-    const matchesRole = selectedRole === '' || user.role === selectedRole;
-    
-    return matchesSearch && matchesRole;
-  });
+  // Los usuarios ya vienen filtrados del servidor
+  const filteredUsers = users;
 
   const getRoleLabel = (role) => {
     const roles = {
@@ -228,6 +249,16 @@ const UsersPage = () => {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {!loading && !error && (
+        <Pagination
+          count={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* User Modal */}
       <UserModal

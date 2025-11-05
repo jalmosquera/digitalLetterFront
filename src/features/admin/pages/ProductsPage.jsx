@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faCheck, faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
-import useFetch from '@shared/hooks/useFetch';
+import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import ProductModal from '@features/admin/components/ProductModal';
 import { getAuthHeaders } from '@shared/utils/auth';
+import Pagination from '@shared/components/Pagination';
 
 const ProductsPage = () => {
   const { getTranslation } = useLanguage();
@@ -20,8 +21,43 @@ const ProductsPage = () => {
   const [bulkData, setBulkData] = useState({});
   const [savingAll, setSavingAll] = useState(false);
 
-  const { data: productsData, loading, error, refetch } = useFetch('/products/');
-  const { data: categoriesData } = useFetch('/categories/');
+  // Estado interno para debounce
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [debouncedCategory, setDebouncedCategory] = useState('all');
+
+  // Debounce del searchTerm
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Debounce de la categoría (sin delay porque es un select)
+  useEffect(() => {
+    setDebouncedCategory(selectedCategory);
+  }, [selectedCategory]);
+
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = {};
+    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (debouncedCategory && debouncedCategory !== 'all') filters.category = debouncedCategory;
+    return filters;
+  }, [debouncedSearchTerm, debouncedCategory]);
+
+  const {
+    data: productsData,
+    loading,
+    error,
+    refetch,
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/products/', 15, apiFilters);
+
+  const { data: categoriesData } = usePaginatedFetch('/categories/', 100);
 
   const products = productsData?.results || [];
   const categories = categoriesData?.results || [];
@@ -224,15 +260,8 @@ const ProductsPage = () => {
     }
   };
 
-  const filteredProducts = products.filter(product => {
-    const name = getTranslation(product.translations, 'name')?.toLowerCase() || '';
-    const matchesSearch = name.includes(searchTerm.toLowerCase());
-    
-    const matchesCategory = selectedCategory === 'all' || 
-      product.categories?.some(cat => cat.id === parseInt(selectedCategory));
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Los productos ya vienen filtrados del servidor
+  const filteredProducts = products;
 
   if (loading) {
     return (
@@ -627,6 +656,16 @@ const ProductsPage = () => {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {!loading && !error && (
+        <Pagination
+          count={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* Product Modal */}
       <ProductModal

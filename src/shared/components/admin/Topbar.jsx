@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '@shared/contexts/AuthContext';
 import { useTheme } from '@shared/contexts/ThemeContext';
+import useNotifications from '@shared/hooks/useNotifications';
 import PropTypes from 'prop-types';
 
 const Topbar = ({ isCollapsed }) => {
@@ -23,14 +24,8 @@ const Topbar = ({ isCollapsed }) => {
   const userMenuRef = useRef(null);
   const notificationsRef = useRef(null);
 
-  // Mock notifications
-  const notifications = [
-    { id: 1, message: 'Nuevo pedido recibido', time: 'Hace 5 min', unread: true },
-    { id: 2, message: 'Producto actualizado', time: 'Hace 1 hora', unread: true },
-    { id: 3, message: 'Usuario registrado', time: 'Hace 2 horas', unread: false },
-  ];
-
-  const unreadCount = notifications.filter(n => n.unread).length;
+  // Real-time notifications from pending orders
+  const { notifications, loading, unreadCount, markAsRead, clearAll } = useNotifications();
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -97,31 +92,64 @@ const Topbar = ({ isCollapsed }) => {
             {/* Notifications Dropdown */}
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-dark-card rounded-lg shadow-lg border border-gray-200 dark:border-dark-border overflow-hidden animate-fadeIn z-50 max-w-[calc(100vw-2rem)]">
-                <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-border">
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-dark-border flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900 dark:text-text-primary">Notificaciones</h3>
+                  {notifications.length > 0 && (
+                    <button
+                      onClick={() => {
+                        clearAll();
+                      }}
+                      className="text-xs text-gray-500 hover:text-gray-700 dark:text-text-secondary dark:hover:text-text-primary"
+                    >
+                      Limpiar
+                    </button>
+                  )}
                 </div>
                 <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={`px-4 py-3 border-b border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors cursor-pointer ${
-                        notification.unread ? 'bg-gray-50 dark:bg-dark-bg/50' : ''
-                      }`}
-                    >
-                      <p className="text-sm text-gray-900 dark:text-text-primary mb-1">
-                        {notification.message}
-                      </p>
-                      <p className="text-xs text-gray-600 dark:text-text-secondary">
-                        {notification.time}
-                      </p>
+                  {loading ? (
+                    <div className="px-4 py-8 text-center text-gray-500 dark:text-text-secondary">
+                      Cargando notificaciones...
                     </div>
-                  ))}
+                  ) : notifications.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-gray-500 dark:text-text-secondary">
+                      No hay notificaciones nuevas
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        onClick={() => {
+                          markAsRead(notification.id);
+                          navigate('/admin/orders');
+                          setShowNotifications(false);
+                        }}
+                        className={`px-4 py-3 border-b border-gray-200 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-bg transition-colors cursor-pointer ${
+                          notification.unread ? 'bg-gray-50 dark:bg-dark-bg/50' : ''
+                        }`}
+                      >
+                        <p className="text-sm text-gray-900 dark:text-text-primary mb-1">
+                          {notification.message}
+                        </p>
+                        <p className="text-xs text-gray-600 dark:text-text-secondary">
+                          {notification.time}
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
-                <div className="px-4 py-3 text-center border-t border-gray-200 dark:border-dark-border">
-                  <button className="text-sm text-pepper-orange hover:text-pepper-orange/80 font-medium">
-                    Ver todas
-                  </button>
-                </div>
+                {notifications.length > 0 && (
+                  <div className="px-4 py-3 text-center border-t border-gray-200 dark:border-dark-border">
+                    <button
+                      onClick={() => {
+                        navigate('/admin/orders');
+                        setShowNotifications(false);
+                      }}
+                      className="text-sm text-pepper-orange hover:text-pepper-orange/80 font-medium"
+                    >
+                      Ver todos los pedidos
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

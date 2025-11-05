@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faCheck, faX } from '@fortawesome/free-solid-svg-icons';
-import useFetch from '@shared/hooks/useFetch';
+import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import IngredientModal from '@features/admin/components/IngredientModal';
 import { getAuthHeaders } from '@shared/utils/auth';
+import Pagination from '@shared/components/Pagination';
 
 const IngredientsPage = () => {
   const { getTranslation } = useLanguage();
@@ -19,7 +20,34 @@ const IngredientsPage = () => {
   const [editedNameEs, setEditedNameEs] = useState('');
   const [editedNameEn, setEditedNameEn] = useState('');
 
-  const { data: ingredientsData, loading, error, refetch } = useFetch('/ingredients/');
+  // Estado interno para debounce
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce del searchTerm
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = {};
+    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    return filters;
+  }, [debouncedSearchTerm]);
+
+  const {
+    data: ingredientsData,
+    loading,
+    error,
+    refetch,
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/ingredients/', 10, apiFilters);
   const ingredients = ingredientsData?.results || ingredientsData || [];
 
   const handleOpenModal = (ingredient = null) => {
@@ -101,10 +129,8 @@ const IngredientsPage = () => {
     }
   };
 
-  const filteredIngredients = ingredients.filter((ingredient) => {
-    const name = getTranslation(ingredient.translations, 'name')?.toLowerCase() || '';
-    return name.includes(searchTerm.toLowerCase());
-  });
+  // Los ingredientes ya vienen filtrados del servidor
+  const filteredIngredients = ingredients;
 
   if (loading)
     return (
@@ -308,6 +334,16 @@ const IngredientsPage = () => {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {!loading && !error && (
+        <Pagination
+          count={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* Ingredient Modal */}
       <IngredientModal

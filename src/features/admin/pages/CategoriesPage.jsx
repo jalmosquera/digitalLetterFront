@@ -1,18 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch } from '@fortawesome/free-solid-svg-icons';
-import useFetch from '@shared/hooks/useFetch';
+import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import CategoryModal from '@features/admin/components/CategoryModal';
 import { getAuthHeaders } from '@shared/utils/auth';
+import Pagination from '@shared/components/Pagination';
 
 const CategoriesPage = () => {
   const { getTranslation } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const { data: categoriesData, loading, error, refetch } = useFetch('/categories/');
+
+  // Estado interno para debounce
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce del searchTerm
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = {};
+    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    return filters;
+  }, [debouncedSearchTerm]);
+
+  const {
+    data: categoriesData,
+    loading,
+    error,
+    refetch,
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/categories/', 10, apiFilters);
 
   const categories = categoriesData?.results || [];
 
@@ -52,10 +81,8 @@ const CategoriesPage = () => {
     }
   };
 
-  const filteredCategories = categories.filter(category => {
-    const name = getTranslation(category.translations, 'name')?.toLowerCase() || '';
-    return name.includes(searchTerm.toLowerCase());
-  });
+  // Las categorías ya vienen filtradas del servidor
+  const filteredCategories = categories;
 
   if (loading) {
     return (
@@ -186,6 +213,16 @@ const CategoriesPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && !error && (
+        <Pagination
+          count={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* Category Modal */}
       <CategoryModal

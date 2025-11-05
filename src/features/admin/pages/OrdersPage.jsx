@@ -1,18 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faEye, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import useFetch from '@shared/hooks/useFetch';
+import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import toast from 'react-hot-toast';
 import OrderModal from '@features/admin/components/OrderModal';
 import { getAuthHeaders } from '@shared/utils/auth';
+import Pagination from '@shared/components/Pagination';
 
 const OrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [editingStatus, setEditingStatus] = useState(null); // { orderId: number, status: string }
-  const { data: ordersData, loading, error, refetch } = useFetch('/orders/');
+  const [editingStatus, setEditingStatus] = useState(null);
+
+  // Estado interno para debounce
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  // Debounce del searchTerm
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = {};
+    if (debouncedSearchTerm) filters.search = debouncedSearchTerm;
+    if (statusFilter && statusFilter !== 'all') filters.status = statusFilter;
+    return filters;
+  }, [debouncedSearchTerm, statusFilter]);
+
+  const {
+    data: ordersData,
+    loading,
+    error,
+    refetch,
+    currentPage,
+    pageSize,
+    totalCount,
+    setPage,
+  } = usePaginatedFetch('/orders/', 10, apiFilters);
 
   const orders = ordersData?.results || [];
 
@@ -60,21 +90,8 @@ const OrdersPage = () => {
     await handleStatusChange(orderId, newStatus);
   };
 
-  const filteredOrders = orders.filter(order => {
-    const customerName = order.user_name?.toLowerCase() || '';
-    const customerEmail = order.user_email?.toLowerCase() || '';
-    const orderId = order.id?.toString() || '';
-    const searchLower = searchTerm.toLowerCase();
-
-    const matchesSearch =
-      customerName.includes(searchLower) ||
-      customerEmail.includes(searchLower) ||
-      orderId.includes(searchLower);
-
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
-  });
+  // Los pedidos ya vienen filtrados del servidor
+  const filteredOrders = orders;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -274,6 +291,16 @@ const OrdersPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {!loading && !error && (
+        <Pagination
+          count={totalCount}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setPage}
+        />
+      )}
 
       {/* Order Detail Modal */}
       <OrderModal
