@@ -1,10 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Globe } from 'lucide-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
+const translations = {
+  es: {
+    welcome: 'Bienvenido a',
+    title: 'Juan el Porra',
+    subtitle: 'Comida casera cada día',
+    homemadeFood: 'COMIDAS',
+    homemadeFoodHighlight: 'CASERAS',
+    roastedChickens: 'POLLOS',
+    roastedChickensHighlight: 'ASADOS',
+    sundaysOrder: 'LOS DOMINGOS',
+    sundaysOrderHighlight: 'POR ENCARGO',
+    orderLabel: 'Encargo',
+    consultLabel: 'Consultar',
+    paellaDesc: 'Receta tradicional preparada con amor',
+    codilloDesc: 'Tierno, jugoso y delicioso',
+    conejoDesc: 'Receta casera auténtica',
+    chickensSchedule: 'Viernes, Sábados y Domingos',
+    traditionalRecipes: 'Preparados con nuestras recetas tradicionales',
+    available: 'Disponibles:',
+    chooseFavorite: 'Elige tu especialidad favorita:',
+    delivery: 'DOMICILIO',
+    location: 'Ubicación:',
+    locationValue: 'Ardales - Carratraca',
+    holidays: 'DÍAS FESTIVOS',
+    openWithReservation: 'Abrimos con reserva',
+    checkAvailability: 'Consulte disponibilidad y haga su reserva',
+    contactUs: 'Contáctanos',
+    callForOrders: 'Llámenos para pedidos especiales y más información',
+    whatsappMessage: 'Hola, me gustaría información sobre los servicios de Juan el Porra'
+  },
+  en: {
+    welcome: 'Welcome to',
+    title: 'Juan el Porra',
+    subtitle: 'Homemade food every day',
+    homemadeFood: 'HOMEMADE',
+    homemadeFoodHighlight: 'FOOD',
+    roastedChickens: 'ROASTED',
+    roastedChickensHighlight: 'CHICKENS',
+    sundaysOrder: 'SUNDAYS',
+    sundaysOrderHighlight: 'BY ORDER',
+    orderLabel: 'Order',
+    consultLabel: 'Inquire',
+    paellaDesc: 'Traditional recipe prepared with love',
+    codilloDesc: 'Tender, juicy and delicious',
+    conejoDesc: 'Authentic homemade recipe',
+    chickensSchedule: 'Friday, Saturday and Sunday',
+    traditionalRecipes: 'Prepared with our traditional recipes',
+    available: 'Available:',
+    chooseFavorite: 'Choose your favorite specialty:',
+    delivery: 'DELIVERY',
+    location: 'Location:',
+    locationValue: 'Ardales - Carratraca',
+    holidays: 'HOLIDAYS',
+    openWithReservation: 'Open with reservation',
+    checkAvailability: 'Check availability and make your reservation',
+    contactUs: 'Contact Us',
+    callForOrders: 'Call us for special orders and more information',
+    whatsappMessage: 'Hello, I would like information about Juan el Porra services'
+  }
+};
+
 const RestaurantMenuModern = () => {
   const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState('es');
   const [whatsappNumber, setWhatsappNumber] = useState('34652411939');
 
   useEffect(() => {
@@ -14,41 +76,54 @@ const RestaurantMenuModern = () => {
       // Remove the + sign if present
       setWhatsappNumber(savedNumber.replace('+', ''));
     }
+
+    // Load language preference
+    const savedLanguage = localStorage.getItem('juanPorrasLanguage');
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
   }, []);
+
+  const toggleLanguage = () => {
+    const newLanguage = language === 'es' ? 'en' : 'es';
+    setLanguage(newLanguage);
+    localStorage.setItem('juanPorrasLanguage', newLanguage);
+  };
+
+  const t = translations[language];
 
   const menuItems = [
     {
       section: 'todos',
       name: 'PAELLA',
-      price: 'Encargo',
-      description: 'Receta tradicional preparada con amor',
+      price: t.orderLabel,
+      description: t.paellaDesc,
       image: '🥘'
     },
     {
       section: 'todos',
       name: 'CODILLO',
-      price: 'Encargo',
-      description: 'Tierno, jugoso y delicioso',
+      price: t.orderLabel,
+      description: t.codilloDesc,
       image: '🍖'
     },
     {
       section: 'todos',
       name: 'CONEJO',
-      price: 'Encargo',
-      description: 'Receta casera auténtica',
+      price: t.orderLabel,
+      description: t.conejoDesc,
       image: '🍗'
     },
     {
       section: 'pollos',
-      name: 'POLLOS ASADOS',
-      price: 'Consultar',
-      description: 'Viernes, Sábados y Domingos',
+      name: language === 'es' ? 'POLLOS ASADOS' : 'ROASTED CHICKENS',
+      price: t.consultLabel,
+      description: t.chickensSchedule,
       image: '🐔'
     }
   ];
 
-  const whatsappMessage = 'Hola, me gustaría información sobre los servicios de Juan el Porra';
-  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(t.whatsappMessage)}`;
 
   return (
     <div className={`min-h-screen overflow-hidden transition-colors duration-300 ${
@@ -58,18 +133,34 @@ const RestaurantMenuModern = () => {
     }`}
     style={darkMode ? { backgroundColor: '#1B1A1F' } : {}}
     >
-      
-      {/* Toggle Dark Mode */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className={`fixed top-6 right-6 z-50 p-3 rounded-full transition-all duration-300 ${
-          darkMode
-            ? 'bg-orange-500 hover:bg-orange-600 text-white'
-            : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-        }`}
-      >
-        {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
-      </button>
+
+      {/* Toggle Dark Mode and Language */}
+      <div className="fixed z-50 flex gap-3 top-6 right-6">
+        {/* Language Toggle */}
+        <button
+          onClick={toggleLanguage}
+          className={`p-3 rounded-full transition-all duration-300 ${
+            darkMode
+              ? 'bg-orange-500 hover:bg-orange-600 text-white'
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+          }`}
+          title={language === 'es' ? 'Switch to English' : 'Cambiar a Español'}
+        >
+          <Globe className="w-6 h-6" />
+        </button>
+
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className={`p-3 rounded-full transition-all duration-300 ${
+            darkMode
+              ? 'bg-orange-500 hover:bg-orange-600 text-white'
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+          }`}
+        >
+          {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+        </button>
+      </div>
 
       {/* WhatsApp Floating Button */}
       <a
@@ -89,17 +180,17 @@ const RestaurantMenuModern = () => {
         <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full blur-3xl ${
           darkMode ? 'bg-orange-500/5' : 'bg-orange-500/3'
         }`}></div>
-        
+
         <div className="relative z-10">
           <p className={`mb-2 text-lg font-bold tracking-widest ${
             darkMode ? 'text-orange-500' : 'text-orange-600'
-          }`}>Bienvenido a</p>
+          }`}>{t.welcome}</p>
           <h1 className="mb-2 font-black tracking-tight text-7xl">
-            Juan el Porra
+            {t.title}
           </h1>
           <p className={`text-xl font-light ${
             darkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>Comida casera cada día</p>
+          }`}>{t.subtitle}</p>
         </div>
       </div>
 
@@ -115,8 +206,8 @@ const RestaurantMenuModern = () => {
           <div className="relative z-10">
             <div className="inline-block mb-12">
               <h2 className="text-5xl font-black tracking-tight">
-                <span className={darkMode ? 'text-white' : 'text-gray-900'}>COMIDAS</span>
-                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> CASERAS</span>
+                <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t.homemadeFood}</span>
+                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> {t.homemadeFoodHighlight}</span>
               </h2>
               <div className={`w-32 h-1 mt-4 ${
                 darkMode ? 'bg-orange-500' : 'bg-orange-600'
@@ -184,8 +275,8 @@ const RestaurantMenuModern = () => {
           <div className="relative z-10">
             <div className="inline-block mb-12">
               <h2 className="text-5xl font-black tracking-tight">
-                <span className={darkMode ? 'text-white' : 'text-gray-900'}>POLLOS</span>
-                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> ASADOS</span>
+                <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t.roastedChickens}</span>
+                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> {t.roastedChickensHighlight}</span>
               </h2>
               <div className={`w-32 h-1 mt-4 ${
                 darkMode ? 'bg-orange-500' : 'bg-orange-600'
@@ -227,14 +318,14 @@ const RestaurantMenuModern = () => {
                     <h3 className={`mb-4 text-5xl font-black tracking-tight transition-colors duration-300 ${
                       darkMode ? 'text-white group-hover:text-orange-400' : 'text-gray-900 group-hover:text-orange-600'
                     }`}>
-                      POLLOS<br/>
-                      <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}>ASADOS</span>
+                      {t.roastedChickens}<br/>
+                      <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}>{t.roastedChickensHighlight}</span>
                     </h3>
                     <div className="space-y-4">
                       <p className={`text-lg leading-relaxed transition-colors duration-300 ${
                         darkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-800'
                       }`}>
-                        Preparados con nuestras recetas tradicionales
+                        {t.traditionalRecipes}
                       </p>
                       <div className={`p-4 border rounded-xl backdrop-blur-sm transition-all duration-300 ${
                         darkMode
@@ -243,10 +334,10 @@ const RestaurantMenuModern = () => {
                       }`}>
                         <p className={`mb-1 text-lg font-bold transition-colors duration-300 ${
                           darkMode ? 'text-orange-400 group-hover:text-orange-300' : 'text-orange-600 group-hover:text-orange-500'
-                        }`}>Disponibles:</p>
+                        }`}>{t.available}</p>
                         <p className={`transition-colors duration-300 ${
                           darkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-800'
-                        }`}>Viernes, Sábados y Domingos</p>
+                        }`}>{t.chickensSchedule}</p>
                       </div>
                     </div>
                   </div>
@@ -265,8 +356,8 @@ const RestaurantMenuModern = () => {
           <div className="relative z-10">
             <div className="inline-block mb-12">
               <h2 className="text-5xl font-black tracking-tight">
-                <span className={darkMode ? 'text-white' : 'text-gray-900'}>LOS DOMINGOS</span>
-                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> POR ENCARGO</span>
+                <span className={darkMode ? 'text-white' : 'text-gray-900'}>{t.sundaysOrder}</span>
+                <span className={darkMode ? 'text-orange-500' : 'text-orange-600'}> {t.sundaysOrderHighlight}</span>
               </h2>
               <div className={`w-48 h-1 mt-4 ${
                 darkMode ? 'bg-orange-500' : 'bg-orange-600'
@@ -278,7 +369,7 @@ const RestaurantMenuModern = () => {
                 ? 'bg-orange-500 shadow-orange-500/20 hover:shadow-orange-500/40'
                 : 'bg-orange-600 shadow-orange-600/20 hover:shadow-orange-600/40'
             }`}>
-              <p className="mb-6 text-lg font-semibold text-white/90">Elige tu especialidad favorita:</p>
+              <p className="mb-6 text-lg font-semibold text-white/90">{t.chooseFavorite}</p>
               <div className="flex flex-wrap justify-center gap-4">
                 {['PAELLA', 'CODILLO', 'CONEJO'].map((item, idx) => (
                   <div key={idx} className="px-8 py-3 transition-all duration-300 transform border rounded-full cursor-pointer bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/60 hover:bg-white/30 hover:scale-110">
@@ -313,16 +404,16 @@ const RestaurantMenuModern = () => {
               }`}>
                 <h3 className={`mb-6 text-3xl font-black transition-colors duration-300 ${
                   darkMode ? 'text-white group-hover:text-orange-400' : 'text-gray-900 group-hover:text-orange-600'
-                }`}>DOMICILIO</h3>
+                }`}>{t.delivery}</h3>
 
                 <div className="space-y-4">
                   <div>
                     <p className={`mb-1 text-lg font-bold transition-colors duration-300 ${
                       darkMode ? 'text-orange-500 group-hover:text-orange-400' : 'text-orange-600 group-hover:text-orange-500'
-                    }`}>Ubicación:</p>
+                    }`}>{t.location}</p>
                     <p className={`text-lg transition-colors duration-300 ${
                       darkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-800'
-                    }`}>Ardales - Carratraca</p>
+                    }`}>{t.locationValue}</p>
                   </div>
 
                   <a
@@ -357,15 +448,15 @@ const RestaurantMenuModern = () => {
               }`}>
                 <h3 className={`mb-6 text-3xl font-black transition-colors duration-300 ${
                   darkMode ? 'text-white group-hover:text-orange-400' : 'text-gray-900 group-hover:text-orange-600'
-                }`}>DÍAS FESTIVOS</h3>
-                
+                }`}>{t.holidays}</h3>
+
                 <div className="space-y-4">
                   <p className={`text-lg font-bold transition-colors duration-300 ${
                     darkMode ? 'text-orange-400 group-hover:text-orange-300' : 'text-orange-600 group-hover:text-orange-500'
-                  }`}>Abrimos con reserva</p>
+                  }`}>{t.openWithReservation}</p>
                   <p className={`transition-colors duration-300 ${
                     darkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-800'
-                  }`}>Consulte disponibilidad y haga su reserva</p>
+                  }`}>{t.checkAvailability}</p>
                   
                   <a
                     href={whatsappLink}
@@ -398,7 +489,7 @@ const RestaurantMenuModern = () => {
         <div className="pb-12 mx-auto text-center max-w-7xl">
           <h3 className={`mb-4 text-2xl font-bold ${
             darkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>Contáctanos</h3>
+          }`}>{t.contactUs}</h3>
           <a
             href={whatsappLink}
             target="_blank"
@@ -413,7 +504,7 @@ const RestaurantMenuModern = () => {
           <p className={`mt-4 text-sm ${
             darkMode ? 'text-gray-500' : 'text-gray-600'
           }`}>
-            Llámenos para pedidos especiales y más información
+            {t.callForOrders}
           </p>
         </div>
       </footer>

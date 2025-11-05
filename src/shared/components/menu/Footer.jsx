@@ -32,22 +32,22 @@ const Footer = ({ company }) => {
   const businessHours = company?.business_hours || 'Consultar horarios';
 
   return (
-    <footer className="bg-pepper-charcoal text-white">
-      <div className="container-pepper py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+    <footer className="text-white bg-pepper-charcoal">
+      <div className="py-12 container-pepper">
+        <div className="grid max-w-5xl grid-cols-1 gap-8 mx-auto md:grid-cols-3">
           {/* Horario Section */}
           <div className="flex flex-col items-center justify-start">
-            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+            <h4 className="mb-4 text-lg font-bold font-gabarito text-pepper-orange">
               {t('footer.businessHours')}
             </h4>
-            <div className="text-gray-300 text-sm text-center whitespace-pre-line leading-relaxed">
+            <div className="text-sm leading-relaxed text-center text-gray-300 whitespace-pre-line">
               {businessHours}
             </div>
           </div>
 
           {/* Contactanos Section */}
           <div className="flex flex-col items-center justify-start">
-            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+            <h4 className="mb-4 text-lg font-bold font-gabarito text-pepper-orange">
               {t('footer.contactUs')}
             </h4>
             <ul className="flex flex-col items-center space-y-3">
@@ -56,78 +56,69 @@ const Footer = ({ company }) => {
                   icon={faLocationDot}
                   className="text-pepper-orange"
                 />
-                <a
+                <Link
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyAddress}
-                </a>
+                </Link>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
-                <a
+                <Link
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyPhone}
-                </a>
+                </Link>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
-                <a
+                <Link
                   href={mailtoUrl}
-                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyEmail}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Siguenos Section */}
           <div className="flex flex-col items-center justify-start">
-            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+            <h4 className="mb-4 text-lg font-bold font-gabarito text-pepper-orange">
               {t('footer.followUs')}
             </h4>
             <div className="flex space-x-4">
-              <a
-                href="https://facebook.com"
+              <Link
+                to="https://www.facebook.com/equus.ardales/?locale=es_ES"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-pepper-orange hover:bg-pepper-yellow rounded-full flex items-center justify-center transition-colors duration-200"
+                className="flex items-center justify-center w-10 h-10 transition-colors duration-200 rounded-full bg-pepper-orange hover:bg-pepper-yellow"
                 aria-label="Facebook"
               >
                 <FontAwesomeIcon icon={faFacebook} size="lg" />
-              </a>
-              <a
-                href="https://instagram.com"
+              </Link>
+              <Link
+                to="https://www.instagram.com/equuspubardales/?hl=es"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-pepper-orange hover:bg-pepper-yellow rounded-full flex items-center justify-center transition-colors duration-200"
+                className="flex items-center justify-center w-10 h-10 transition-colors duration-200 rounded-full bg-pepper-orange hover:bg-pepper-yellow"
                 aria-label="Instagram"
               >
                 <FontAwesomeIcon icon={faInstagram} size="lg" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-pepper-orange hover:bg-pepper-yellow rounded-full flex items-center justify-center transition-colors duration-200"
-                aria-label="Twitter"
-              >
-                <FontAwesomeIcon icon={faTwitter} size="lg" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">
+        <div className="pt-8 mt-8 text-center border-t border-gray-700">
+          <p className="text-sm text-gray-400">
             &copy; {currentYear} {companyName}. {t('footer.allRightsReserved')}
           </p>
         </div>
