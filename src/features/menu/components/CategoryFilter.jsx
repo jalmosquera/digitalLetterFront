@@ -68,19 +68,19 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
           {/* Opción "Todos" */}
           <button
             onClick={() => onCategoryChange(null)}
-            className={`flex  items-center space-y-2 px-4 py-1 rounded-xl transition-all duration-200 min-w-[100px] ${
+            className={`flex flex-col items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 min-w-[120px] ${
               selectedCategory === null
                 ? 'bg-pepper-orange text-white shadow-lg scale-105'
                 : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
             }`}
           >
-            <div className="flex items-center justify-center w-12 h-12">
+            <div className="flex items-center justify-center w-10 h-10">
               <FontAwesomeIcon
                 icon={faUtensils}
-                className="text-2xl"
+                className="text-xl"
               />
             </div>
-            <span className="text-sm font-semibold font-gabarito">Todos</span>
+            <span className="text-xs font-semibold text-center font-gabarito leading-tight">Todos</span>
           </button>
 
           {/* Categorías dinámicas */}
@@ -90,19 +90,19 @@ const CategoryFilter = ({ categories, selectedCategory, onCategoryChange, loadin
               <button
                 key={category.id}
                 onClick={() => onCategoryChange(category.id)}
-                className={`flex  items-center space-y-2 px-2 py-1 rounded-xl transition-all duration-200 min-w-[100px] ${
+                className={`flex flex-col items-center gap-2 px-3 py-3 rounded-xl transition-all duration-200 min-w-[120px] max-w-[140px] ${
                   selectedCategory === category.id
                     ? 'bg-pepper-orange text-white shadow-lg scale-105'
                     : 'bg-white dark:bg-gray-800 text-pepper-charcoal dark:text-white hover:bg-pepper-light dark:hover:bg-gray-700 border-2 border-pepper-gray-light dark:border-gray-600'
                 }`}
               >
-                <div className="flex items-center justify-center w-12 h-12">
+                <div className="flex items-center justify-center w-10 h-10">
                   <FontAwesomeIcon
                     icon={getCategoryIcon(categoryName)}
-                    className="text-2xl"
+                    className="text-xl"
                   />
                 </div>
-                <span className="text-sm font-semibold font-gabarito">
+                <span className="text-xs font-semibold text-center font-gabarito leading-tight line-clamp-2">
                   {categoryName}
                 </span>
               </button>

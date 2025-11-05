@@ -28,67 +28,71 @@ const Footer = ({ company }) => {
   const whatsappUrl = `https://wa.me/${String(companyPhone).replace(/[^0-9+]/g, '')}`;
   const mailtoUrl = `mailto:${companyEmail}`;
 
+  // Get business hours
+  const businessHours = company?.business_hours || 'Consultar horarios';
+
   return (
     <footer className="bg-pepper-charcoal text-white">
       <div className="container-pepper py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* About Section */}
-          <div className='flex flex-col items-center justify-center'>
-            <h3 className="font-cherry-bomb text-2xl text-pepper-orange mb-4">
-              {companyName}
-            </h3>
-
-            
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Horario Section */}
+          <div className="flex flex-col items-center justify-start">
+            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+              {t('footer.businessHours')}
+            </h4>
+            <div className="text-gray-300 text-sm text-center whitespace-pre-line leading-relaxed">
+              {businessHours}
+            </div>
           </div>
 
-         
-          {/* Contact Info */}
-          <div>
-  <h4 className="font-gabarito font-bold text-lg mb-4 text-center">
-    {t('footer.contactUs')}
-  </h4>
-  <ul className="flex flex-col items-center space-y-3">
-    <li className="flex items-center space-x-3">
-      <FontAwesomeIcon
-        icon={faLocationDot}
-        className="text-pepper-orange mt-1"
-      />
-      <a
-        href={googleMapsUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
-      >
-        {companyAddress}
-      </a>
-    </li>
-    <li className="flex items-center space-x-3">
-      <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
-      >
-        {companyPhone}
-      </a>
-    </li>
-    <li className="flex items-center space-x-3">
-      <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
-      <a
-        href={mailtoUrl}
-        className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
-      >
-        {companyEmail}
-      </a>
-    </li>
-  </ul>
-</div>
+          {/* Contactanos Section */}
+          <div className="flex flex-col items-center justify-start">
+            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+              {t('footer.contactUs')}
+            </h4>
+            <ul className="flex flex-col items-center space-y-3">
+              <li className="flex items-center space-x-3">
+                <FontAwesomeIcon
+                  icon={faLocationDot}
+                  className="text-pepper-orange"
+                />
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                >
+                  {companyAddress}
+                </a>
+              </li>
+              <li className="flex items-center space-x-3">
+                <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                >
+                  {companyPhone}
+                </a>
+              </li>
+              <li className="flex items-center space-x-3">
+                <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
+                <a
+                  href={mailtoUrl}
+                  className="text-gray-300 text-sm hover:text-pepper-orange transition-colors cursor-pointer"
+                >
+                  {companyEmail}
+                </a>
+              </li>
+            </ul>
+          </div>
 
-
-          {/* Social Media */}
-          <div className="flex flex-col items-center justify-center">
-            <h4 className="font-gabarito font-bold text-lg mb-4">{t('footer.followUs')}</h4>
+          {/* Siguenos Section */}
+          <div className="flex flex-col items-center justify-start">
+            <h4 className="font-gabarito font-bold text-lg mb-4 text-pepper-orange">
+              {t('footer.followUs')}
+            </h4>
             <div className="flex space-x-4">
               <a
                 href="https://facebook.com"
@@ -118,7 +122,6 @@ const Footer = ({ company }) => {
                 <FontAwesomeIcon icon={faTwitter} size="lg" />
               </a>
             </div>
-
           </div>
         </div>
 
@@ -147,6 +150,7 @@ Footer.propTypes = {
     }),
     email: PropTypes.string,
     phone: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    business_hours: PropTypes.string,
   }),
 };
 

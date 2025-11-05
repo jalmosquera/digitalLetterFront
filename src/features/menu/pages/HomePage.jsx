@@ -19,8 +19,6 @@ const HomePage = () => {
     loading: categoriesLoading,
   } = useFetch('/categories/');
 
-  const { data: companyData } = useFetch('/company/');
-
   // Extraer los arrays de results de la respuesta paginada
   const categories = categoriesData?.results || [];
 
@@ -69,16 +67,6 @@ const HomePage = () => {
             loading={productsLoading}
             error={productsError}
           />
-
-          {/* Business Hours - Discreto */}
-          {companyData?.results?.[0]?.business_hours && (
-            <div className="mt-12 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">{t('home.businessHours')}:</span>{' '}
-                {companyData.results[0].business_hours}
-              </p>
-            </div>
-          )}
         </div>
       </section>
 
