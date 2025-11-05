@@ -57,7 +57,7 @@ function App() {
           <CartProvider>
             <BrowserRouter>
               <Toaster
-                position="top-center"
+                position="bottom-center"
                 reverseOrder={false}
                 toastOptions={{
                   duration: 1500,

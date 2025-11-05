@@ -56,34 +56,34 @@ const Footer = ({ company }) => {
                   icon={faLocationDot}
                   className="text-pepper-orange"
                 />
-                <Link
+                <a
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyAddress}
-                </Link>
+                </a>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
-                <Link
+                <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyPhone}
-                </Link>
+                </a>
               </li>
               <li className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
-                <Link
+                <a
                   href={mailtoUrl}
                   className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
                 >
                   {companyEmail}
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
