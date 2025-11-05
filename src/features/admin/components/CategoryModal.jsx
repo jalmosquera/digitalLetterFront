@@ -11,10 +11,8 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
     name_en: '',
     description_es: '',
     description_en: '',
-    image: null,
   });
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     if (category) {
@@ -23,30 +21,20 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
         name_en: category.translations?.en?.name || '',
         description_es: category.translations?.es?.description || '',
         description_en: category.translations?.en?.description || '',
-        image: null,
       });
-      setImagePreview(category.image);
     } else {
       setFormData({
         name_es: '',
         name_en: '',
         description_es: '',
         description_en: '',
-        image: null,
       });
-      setImagePreview(null);
     }
   }, [category]);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-
-    if (files && files[0]) {
-      setFormData(prev => ({ ...prev, [name]: files[0] }));
-      setImagePreview(URL.createObjectURL(files[0]));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -73,36 +61,14 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
         ? `${import.meta.env.VITE_API_URL}/api/categories/${category.id}/`
         : `${import.meta.env.VITE_API_URL}/api/categories/`;
 
-      let body;
-      let headers = getAuthHeaders();
-
-      // Si hay imagen, usar FormData con campos planos
-      if (formData.image) {
-        const formDataToSend = new FormData();
-
-        formDataToSend.append('name_en', formData.name_en);
-        formDataToSend.append('name_es', formData.name_es);
-
-        if (formData.description_en) {
-          formDataToSend.append('description_en', formData.description_en);
-        }
-        if (formData.description_es) {
-          formDataToSend.append('description_es', formData.description_es);
-        }
-
-        formDataToSend.append('image', formData.image);
-
-        body = formDataToSend;
-      } else {
-        // Sin imagen, enviar como JSON
-        headers['Content-Type'] = 'application/json';
-        body = JSON.stringify(dataToSend);
-      }
+      const headers = getAuthHeaders({
+        'Content-Type': 'application/json',
+      });
 
       const response = await fetch(url, {
         method: category ? 'PUT' : 'POST',
         headers,
-        body,
+        body: JSON.stringify(dataToSend),
       });
 
       if (response.ok) {
@@ -214,27 +180,6 @@ const CategoryModal = ({ isOpen, onClose, category, onSuccess }) => {
                   rows="3"
                   className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg resize-none dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
                 />
-              </div>
-
-              {/* Image */}
-              <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Imagen
-                </label>
-                <input
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-200 rounded-lg dark:border-dark-border dark:bg-dark-bg dark:text-text-primary focus:outline-none focus:ring-2 focus:ring-pepper-orange"
-                />
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="object-cover w-32 h-32 mt-2 rounded-lg"
-                  />
-                )}
               </div>
             </div>
 
