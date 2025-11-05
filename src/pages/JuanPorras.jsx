@@ -64,7 +64,7 @@ const translations = {
   }
 };
 
-const RestaurantMenuModern = () => {
+const JuanPorras = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [language, setLanguage] = useState('es');
   const [whatsappNumber, setWhatsappNumber] = useState('34652411939');
@@ -514,4 +514,4 @@ const RestaurantMenuModern = () => {
   );
 };
 
-export default RestaurantMenuModern;
+export default JuanPorras;

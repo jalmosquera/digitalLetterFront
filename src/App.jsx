@@ -29,7 +29,7 @@ import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
 import AnalyticsPage from './features/admin/pages/AnalyticsPage';
 import SettingsPage from './features/admin/pages/SettingsPage';
-import LandingPage from './pages/JuanPorras';
+import JuanPorras from './pages/JuanPorras';
 
 
 function App() {
@@ -100,7 +100,7 @@ function App() {
                 </Route>
 
                 {/* Juan landing */}
-                <Route path="landing" element={<LandingPage />} />
+                <Route path="landing" element={<JuanPorras />} />
 
                 {/* Admin (protegido) */}
                 <Route
