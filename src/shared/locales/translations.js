@@ -15,11 +15,15 @@ export const translations = {
       heroDescription: 'Experimenta el futuro de la gastronomía con nuestro menú digital. Explora deliciosos platillos y ordena con facilidad.',
       exploreMenu: 'Explorar Menú',
       ourMenu: 'Nuestro Menú',
-      menuDescription: 'Descubre nuestra selección de platillos deliciosos preparados con amor.',
+      menuDescription: 'Descubre nuestra selección de platillos deliciosos',
       all: 'Todos',
       categories: 'Categorías',
       loading: 'Cargando productos...',
       noProducts: 'No hay productos disponibles',
+      // Mobile Hero
+      mobileHeroTitle: 'Sabores que Enamoran',
+      mobileHeroSubtitle: 'Come en el restaurante o pide a domicilio',
+      mobileHeroCta: 'Ver Menú',
     },
     // ProductCard
     product: {
@@ -166,11 +170,15 @@ export const translations = {
       heroDescription: 'Experience the future of dining with our digital menu. Browse delicious dishes and order with ease.',
       exploreMenu: 'Explore Menu',
       ourMenu: 'Our Menu',
-      menuDescription: 'Discover our selection of delicious dishes prepared with love.',
+      menuDescription: 'Discover our selection of delicious dishes',
       all: 'All',
       categories: 'Categories',
       loading: 'Loading products...',
       noProducts: 'No products available',
+      // Mobile Hero
+      mobileHeroTitle: 'Flavors that Captivate',
+      mobileHeroSubtitle: 'Dine in or order for delivery',
+      mobileHeroCta: 'View Menu',
     },
     // ProductCard
     product: {

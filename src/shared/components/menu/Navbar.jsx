@@ -49,9 +49,10 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-3"
             onClick={closeMenu}
           >
+            
             <span className="text-2xl lg:text-3xl font-cherry-bomb text-pepper-orange">
               {companyName}
             </span>
