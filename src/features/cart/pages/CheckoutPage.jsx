@@ -28,8 +28,9 @@ const CheckoutPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('+34623736566');
+  const [deliveryLocations, setDeliveryLocations] = useState([]);
 
-  // Fetch company data for WhatsApp number
+  // Fetch company data for WhatsApp number and delivery locations
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
@@ -42,6 +43,28 @@ const CheckoutPage = () => {
       }
     };
     fetchCompanyData();
+
+    // Load delivery locations from localStorage
+    const savedLocations = localStorage.getItem('deliveryLocations');
+    if (savedLocations) {
+      try {
+        const locations = JSON.parse(savedLocations);
+        setDeliveryLocations(locations.filter(loc => loc.enabled));
+      } catch (error) {
+        console.error('Error parsing delivery locations:', error);
+        // Fallback to default locations
+        setDeliveryLocations([
+          { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
+          { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
+        ]);
+      }
+    } else {
+      // Default locations if none saved
+      setDeliveryLocations([
+        { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
+        { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
+      ]);
+    }
   }, []);
 
   // Redirect if not authenticated or cart is empty
@@ -260,8 +283,11 @@ const CheckoutPage = () => {
                     } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-gray-800 transition-colors`}
                   >
                     <option value="">{t('checkout.selectLocation')}</option>
-                    <option value="ardales">{t('checkout.ardales')}</option>
-                    <option value="carratraca">{t('checkout.carratraca')}</option>
+                    {deliveryLocations.map((location) => (
+                      <option key={location.id} value={location.value}>
+                        {location.name}
+                      </option>
+                    ))}
                   </select>
                   {errors.delivery_location && (
                     <p className="mt-1 text-sm text-red-600 dark:text-red-400">

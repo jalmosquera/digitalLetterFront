@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faSave, faPlus, faTrash, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
 import api from '@shared/services/api';
 
 const COUNTRY_CODES = [
@@ -31,6 +31,13 @@ const SettingsPage = () => {
   const [juanCountryCode, setJuanCountryCode] = useState('+34');
   const [juanPhoneNumber, setJuanPhoneNumber] = useState('');
 
+  // Delivery locations (frontend only)
+  const [deliveryLocations, setDeliveryLocations] = useState([
+    { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
+    { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
+  ]);
+  const [newLocationName, setNewLocationName] = useState('');
+
   useEffect(() => {
     fetchCompanyData();
     // Load Juan Porras phone from localStorage
@@ -45,6 +52,16 @@ const SettingsPage = () => {
       // Default value
       setJuanCountryCode('+34');
       setJuanPhoneNumber('652411939');
+    }
+
+    // Load delivery locations from localStorage
+    const savedLocations = localStorage.getItem('deliveryLocations');
+    if (savedLocations) {
+      try {
+        setDeliveryLocations(JSON.parse(savedLocations));
+      } catch (error) {
+        console.error('Error parsing delivery locations:', error);
+      }
     }
   }, []);
 
@@ -105,6 +122,35 @@ const SettingsPage = () => {
     setSchedule(newSchedule);
   };
 
+  const handleAddLocation = () => {
+    if (!newLocationName.trim()) return;
+
+    const newLocation = {
+      id: Date.now(),
+      name: newLocationName.trim(),
+      value: newLocationName.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_'),
+      enabled: true,
+    };
+
+    setDeliveryLocations([...deliveryLocations, newLocation]);
+    setNewLocationName('');
+  };
+
+  const handleToggleLocation = (id) => {
+    setDeliveryLocations(deliveryLocations.map(loc =>
+      loc.id === id ? { ...loc, enabled: !loc.enabled } : loc
+    ));
+  };
+
+  const handleDeleteLocation = (id) => {
+    if (deliveryLocations.filter(loc => loc.enabled).length <= 1) {
+      setError('Debe haber al menos una ubicación habilitada');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+    setDeliveryLocations(deliveryLocations.filter(loc => loc.id !== id));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -131,6 +177,9 @@ const SettingsPage = () => {
       // Save Juan Porras phone to localStorage (frontend only)
       const juanWhatsappPhone = `${juanCountryCode}${juanPhoneNumber}`;
       localStorage.setItem('juanPorrasWhatsapp', juanWhatsappPhone);
+
+      // Save delivery locations to localStorage (frontend only)
+      localStorage.setItem('deliveryLocations', JSON.stringify(deliveryLocations));
 
       await api.patch(`/company/${companyId}/`, {
         whatsapp_phone: whatsappPhone,
@@ -289,6 +338,76 @@ const SettingsPage = () => {
             </div>
             <p className="mt-2 text-sm text-gray-500 dark:text-text-secondary">
               Selecciona los días abiertos y configura los horarios
+            </p>
+          </div>
+
+          {/* Delivery Locations */}
+          <div className="mb-6">
+            <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-text-secondary">
+              Ubicaciones de Entrega
+            </label>
+
+            {/* Add new location */}
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={newLocationName}
+                onChange={(e) => setNewLocationName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLocation())}
+                placeholder="Nombre del pueblo..."
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+              />
+              <button
+                type="button"
+                onClick={handleAddLocation}
+                className="px-4 py-2 text-white transition-colors rounded-lg bg-pepper-orange hover:bg-pepper-orange-dark"
+              >
+                <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                Agregar
+              </button>
+            </div>
+
+            {/* List of locations */}
+            <div className="space-y-2">
+              {deliveryLocations.map((location) => (
+                <div
+                  key={location.id}
+                  className="flex items-center justify-between p-3 border border-gray-200 rounded-lg dark:border-dark-border bg-gray-50 dark:bg-dark-bg"
+                >
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleLocation(location.id)}
+                      className={`transition-colors ${
+                        location.enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-600'
+                      }`}
+                      title={location.enabled ? 'Deshabilitar' : 'Habilitar'}
+                    >
+                      <FontAwesomeIcon icon={location.enabled ? faToggleOn : faToggleOff} size="lg" />
+                    </button>
+                    <span className={`font-medium ${location.enabled ? 'text-gray-900 dark:text-text-primary' : 'text-gray-400 dark:text-gray-600'}`}>
+                      {location.name}
+                    </span>
+                    {!location.enabled && (
+                      <span className="px-2 py-1 text-xs text-gray-600 bg-gray-200 rounded dark:bg-gray-700 dark:text-gray-400">
+                        Deshabilitado
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLocation(location.id)}
+                    className="text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    title="Eliminar"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-2 text-sm text-gray-500 dark:text-text-secondary">
+              Agrega pueblos y habilítalos/deshabilítalos según disponibilidad de reparto
             </p>
           </div>
 
