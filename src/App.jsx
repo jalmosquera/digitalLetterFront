@@ -100,7 +100,7 @@ function App() {
                 </Route>
 
                 {/* Juan landing */}
-                <Route path="juanprorras" element={<JuanPorras />} />
+                <Route path="juanporras" element={<JuanPorras />} />
 
                 {/* Admin (protegido) */}
                 <Route
