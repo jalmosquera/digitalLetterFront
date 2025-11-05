@@ -8,7 +8,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { t } = useLanguage();
 
-  // Fetch de productos con paginación
+  // Fetch de productos con paginación (solo disponibles para el menú público)
   const {
     data: productsData,
     loading: productsLoading,
@@ -17,7 +17,7 @@ const HomePage = () => {
     pageSize,
     totalCount,
     setPage,
-  } = usePaginatedFetch('/products/', 12);
+  } = usePaginatedFetch('/products/', 12, { available: 'true' });
 
   const {
     data: categoriesData,
