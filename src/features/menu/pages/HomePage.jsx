@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import usePaginatedFetch from '@/shared/hooks/usePaginatedFetch';
 import { ProductGrid, CategoryFilter } from '../components';
 import { useLanguage } from '@shared/contexts/LanguageContext';
@@ -7,6 +7,18 @@ import Pagination from '@shared/components/Pagination';
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { t } = useLanguage();
+
+  // Preload hero images for better performance
+  useEffect(() => {
+    const heroImages = ['/homePage.jpg', '/burger.jpg', '/logoEquss.png'];
+    heroImages.forEach((src) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = src;
+      document.head.appendChild(link);
+    });
+  }, []);
 
   // Fetch de productos con paginación (solo disponibles para el menú público)
   const {
@@ -48,10 +60,7 @@ const HomePage = () => {
       {/* Desktop Hero Section - Only visible on desktop */}
       <section className="relative hidden h-screen md:block">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-center bg-cover"
-          style={{ backgroundImage: 'url(/homePage.jpg)' }}
-        >
+        <div className="absolute inset-0 bg-center bg-cover bg-[url('/homePage.jpg')]">
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
         </div>
@@ -63,6 +72,9 @@ const HomePage = () => {
             <img
               src="/logoEquss.png"
               alt="Logo"
+              width="192"
+              height="192"
+              loading="eager"
               className="w-40 h-40 lg:w-48 lg:h-48 drop-shadow-2xl"
             />
           </div>
@@ -103,10 +115,7 @@ const HomePage = () => {
       {/* Mobile Hero Section - Only visible on mobile */}
       <section className="relative block h-screen md:hidden">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-center bg-cover"
-          style={{ backgroundImage: 'url(/burger.jpg)' }}
-        >
+        <div className="absolute inset-0 bg-center bg-cover bg-[url('/burger.jpg')]">
           {/* Gradient Overlay on dark area */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-transparent"></div>
         </div>
@@ -118,6 +127,9 @@ const HomePage = () => {
             <img
               src="/logoEquss.png"
               alt="Logo"
+              width="256"
+              height="256"
+              loading="eager"
               className="w-64 h-64 drop-shadow-2xl"
             />
           </div>

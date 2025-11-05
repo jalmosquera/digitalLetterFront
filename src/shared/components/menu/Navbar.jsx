@@ -190,8 +190,8 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        className={`md:hidden transition-transform duration-300 ease-in-out origin-top ${
+          isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 h-0'
         }`}
       >
         <div className="px-4 pt-2 pb-4 space-y-3 bg-white border-t dark:bg-pepper-charcoal border-pepper-gray-light dark:border-gray-700">
