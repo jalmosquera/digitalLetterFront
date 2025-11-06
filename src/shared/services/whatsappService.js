@@ -3,7 +3,9 @@
  */
 
 /**
- * Generate bilingual order message based on language
+ * Generate order message based on language
+ * - If Spanish: Only Spanish
+ * - If English: Bilingual (English + Spanish) for both customer and business owner
  * @param {Object} orderData - Order information
  * @param {Array} orderData.items - Cart items
  * @param {Object} orderData.deliveryInfo - Delivery information
@@ -15,48 +17,40 @@
 export const generateOrderMessage = (orderData, language, getTranslation) => {
   const { items, deliveryInfo, user, totalPrice } = orderData;
 
-  const messages = {
-    es: {
-      title: '🛒 *NUEVO PEDIDO*',
-      customer: '👤 *Cliente:*',
-      phone: '📱 *Teléfono:*',
-      delivery: '📍 *Dirección de Entrega:*',
-      street: 'Calle',
-      houseNumber: 'Número',
-      location: 'Localidad',
-      ardales: 'Ardales',
-      carratraca: 'Carratraca',
-      notes: '📝 *Notas:*',
-      order: '🍕 *Pedido:*',
-      quantity: 'Cantidad',
-      unitPrice: 'Precio unitario',
-      subtotal: 'Subtotal',
-      ingredients: 'Ingredientes',
-      additionalIngredients: 'Ingredientes adicionales',
-      total: '💰 *TOTAL:*',
-    },
-    en: {
-      title: '🛒 *NEW ORDER*',
-      customer: '👤 *Customer:*',
-      phone: '📱 *Phone:*',
-      delivery: '📍 *Delivery Address:*',
-      street: 'Street',
-      houseNumber: 'Number',
-      location: 'Location',
-      ardales: 'Ardales',
-      carratraca: 'Carratraca',
-      notes: '📝 *Notes:*',
-      order: '🍕 *Order:*',
-      quantity: 'Quantity',
-      unitPrice: 'Unit price',
-      subtotal: 'Subtotal',
-      ingredients: 'Ingredients',
-      additionalIngredients: 'Additional ingredients',
-      total: '💰 *TOTAL:*',
-    },
-  };
+  // If language is English, generate bilingual message
+  if (language === 'en') {
+    return generateBilingualMessage(orderData, getTranslation);
+  }
 
-  const t = messages[language] || messages.es;
+  // Otherwise, generate Spanish-only message
+  return generateSpanishMessage(orderData, getTranslation);
+};
+
+/**
+ * Generate Spanish-only message
+ */
+const generateSpanishMessage = (orderData, getTranslation) => {
+  const { items, deliveryInfo, user, totalPrice } = orderData;
+
+  const t = {
+    title: '🛒 *NUEVO PEDIDO*',
+    customer: '👤 *Cliente:*',
+    phone: '📱 *Teléfono:*',
+    delivery: '📍 *Dirección de Entrega:*',
+    street: 'Calle',
+    houseNumber: 'Número',
+    location: 'Localidad',
+    ardales: 'Ardales',
+    carratraca: 'Carratraca',
+    notes: '📝 *Notas:*',
+    order: '🍕 *Pedido:*',
+    quantity: 'Cantidad',
+    unitPrice: 'Precio unitario',
+    subtotal: 'Subtotal',
+    ingredients: 'Ingredientes',
+    additionalIngredients: 'Ingredientes adicionales',
+    total: '💰 *TOTAL:*',
+  };
 
   // Build message
   let message = `${t.title}\n\n`;
@@ -145,6 +139,101 @@ export const generateOrderMessage = (orderData, language, getTranslation) => {
 
   message += '━━━━━━━━━━━━━━━━━━━━\n';
   message += `${t.total} €${totalPrice.toFixed(2)}`;
+
+  return message;
+};
+
+/**
+ * Generate bilingual message (English + Spanish)
+ * For international customers - shows order in both languages
+ */
+const generateBilingualMessage = (orderData, getTranslation) => {
+  const { items, deliveryInfo, user, totalPrice } = orderData;
+
+  let message = '';
+
+  // ===== ENGLISH VERSION =====
+  message += '🌐 *NEW ORDER / NUEVO PEDIDO*\n';
+  message += '━━━━━━━━━━━━━━━━━━━━\n';
+  message += '🇬🇧 *ENGLISH*\n\n';
+
+  message += `👤 *Customer:* ${user.name}\n`;
+  message += `📱 *Phone:* ${deliveryInfo.phone}\n\n`;
+
+  message += `📍 *Delivery Address:*\n`;
+  message += `Street: ${deliveryInfo.delivery_street}\n`;
+  message += `Number: ${deliveryInfo.delivery_house_number}\n`;
+  const locationEN = deliveryInfo.delivery_location === 'ardales' ? 'Ardales' : 'Carratraca';
+  message += `Location: ${locationEN}\n`;
+
+  if (deliveryInfo.notes) {
+    message += `\n📝 *Notes:* ${deliveryInfo.notes}\n`;
+  }
+
+  message += `\n🍕 *Order:*\n`;
+  items.forEach((item, index) => {
+    const productNameEN = item.product.translations?.en?.name || item.product.translations?.es?.name || 'No name';
+    const basePrice = parseFloat(item.product.price) || 0;
+    let extrasPrice = 0;
+    if (item.customization?.selectedExtras) {
+      extrasPrice = item.customization.selectedExtras.reduce((sum, extra) => sum + (parseFloat(extra.price) || 0), 0);
+    }
+    const pricePerUnit = basePrice + extrasPrice;
+    const itemSubtotal = pricePerUnit * item.quantity;
+
+    message += `${index + 1}. *${productNameEN}*\n`;
+    message += `   Quantity: ${item.quantity} | Unit: €${pricePerUnit.toFixed(2)} | Subtotal: €${itemSubtotal.toFixed(2)}\n`;
+
+    if (item.customization?.selectedExtras && item.customization.selectedExtras.length > 0) {
+      const extrasText = item.customization.selectedExtras
+        .map(extra => `${extra.translations?.en?.name || extra.translations?.es?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
+        .join(', ');
+      message += `   🌟 Extras: ${extrasText}\n`;
+    }
+  });
+
+  message += `\n💰 *TOTAL:* €${totalPrice.toFixed(2)}\n`;
+
+  // ===== SPANISH VERSION =====
+  message += '\n━━━━━━━━━━━━━━━━━━━━\n';
+  message += '🇪🇸 *ESPAÑOL*\n\n';
+
+  message += `👤 *Cliente:* ${user.name}\n`;
+  message += `📱 *Teléfono:* ${deliveryInfo.phone}\n\n`;
+
+  message += `📍 *Dirección de Entrega:*\n`;
+  message += `Calle: ${deliveryInfo.delivery_street}\n`;
+  message += `Número: ${deliveryInfo.delivery_house_number}\n`;
+  const locationES = deliveryInfo.delivery_location === 'ardales' ? 'Ardales' : 'Carratraca';
+  message += `Localidad: ${locationES}\n`;
+
+  if (deliveryInfo.notes) {
+    message += `\n📝 *Notas:* ${deliveryInfo.notes}\n`;
+  }
+
+  message += `\n🍕 *Pedido:*\n`;
+  items.forEach((item, index) => {
+    const productNameES = item.product.translations?.es?.name || 'Sin nombre';
+    const basePrice = parseFloat(item.product.price) || 0;
+    let extrasPrice = 0;
+    if (item.customization?.selectedExtras) {
+      extrasPrice = item.customization.selectedExtras.reduce((sum, extra) => sum + (parseFloat(extra.price) || 0), 0);
+    }
+    const pricePerUnit = basePrice + extrasPrice;
+    const itemSubtotal = pricePerUnit * item.quantity;
+
+    message += `${index + 1}. *${productNameES}*\n`;
+    message += `   Cantidad: ${item.quantity} | Unitario: €${pricePerUnit.toFixed(2)} | Subtotal: €${itemSubtotal.toFixed(2)}\n`;
+
+    if (item.customization?.selectedExtras && item.customization.selectedExtras.length > 0) {
+      const extrasText = item.customization.selectedExtras
+        .map(extra => `${extra.translations?.es?.name || extra.translations?.en?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
+        .join(', ');
+      message += `   🌟 Extras: ${extrasText}\n`;
+    }
+  });
+
+  message += `\n💰 *TOTAL:* €${totalPrice.toFixed(2)}`;
 
   return message;
 };

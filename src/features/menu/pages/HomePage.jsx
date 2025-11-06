@@ -20,6 +20,13 @@ const HomePage = () => {
     });
   }, []);
 
+  // Construir filtros para la API
+  const apiFilters = useMemo(() => {
+    const filters = { available: 'true' };
+    if (selectedCategory) filters.category = selectedCategory;
+    return filters;
+  }, [selectedCategory]);
+
   // Fetch de productos con paginación (solo disponibles para el menú público)
   const {
     data: productsData,
@@ -29,7 +36,7 @@ const HomePage = () => {
     pageSize,
     totalCount,
     setPage,
-  } = usePaginatedFetch('/products/', 12, { available: 'true' });
+  } = usePaginatedFetch('/products/', 12, apiFilters);
 
   const {
     data: categoriesData,
@@ -38,22 +45,23 @@ const HomePage = () => {
 
   // Extraer los arrays de results de la respuesta paginada
   const categories = categoriesData?.results || [];
-
-  // Filtrar productos por categoría seleccionada
-  const filteredProducts = useMemo(() => {
-    const products = productsData?.results || [];
-    if (!products) return [];
-    if (!selectedCategory) return products;
-
-    return products.filter((product) =>
-      product.categories?.some((cat) => cat.id === selectedCategory)
-    );
-  }, [productsData, selectedCategory]);
+  const filteredProducts = productsData?.results || [];
 
   // Handler para cambio de categoría
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
+    setPage(1); // Resetear a página 1 cuando cambia la categoría
   };
+
+  // Scroll al inicio de la sección de categorías cuando cambia la página
+  useEffect(() => {
+    if (currentPage > 1) {
+      const menuSection = document.getElementById('menu-section');
+      if (menuSection) {
+        menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [currentPage]);
 
   return (
     <div className="min-h-screen">
