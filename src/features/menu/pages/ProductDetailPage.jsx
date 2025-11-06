@@ -91,8 +91,16 @@ const ProductDetailPage = () => {
       return extra;
     }).filter(Boolean);
 
+    // Calculate deselected ingredients (ingredients that were removed)
+    const allIngredientIds = productData.ingredients.map(ing => ing.id);
+    const deselectedIngredientIds = allIngredientIds.filter(id => !selectedIngredients.includes(id));
+    const deselectedIngredientNames = productData.ingredients
+      .filter(ing => deselectedIngredientIds.includes(ing.id))
+      .map(ing => getTranslation(ing.translations, 'name'));
+
     const customization = {
       selectedIngredients,
+      deselectedIngredients: deselectedIngredientNames,
       selectedExtras: extrasWithPrices,
       additionalNotes: additionalNotes.trim(),
     };

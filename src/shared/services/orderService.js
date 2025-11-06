@@ -13,6 +13,7 @@ export const createOrder = async ({ items, deliveryInfo }) => {
     const orderItems = items.map(item => ({
       product: item.product.id,
       quantity: item.quantity,
+      customization: item.customization || null,
     }));
 
     // Prepare order data for backend

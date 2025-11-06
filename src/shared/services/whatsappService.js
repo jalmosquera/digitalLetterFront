@@ -105,19 +105,11 @@ const generateSpanishMessage = (orderData, getTranslation) => {
 
     // Add ingredient customization if customer deselected any
     if (item.customization) {
-      const { selectedIngredients, selectedExtras, additionalNotes } = item.customization;
-      const totalIngredients = item.product.ingredients?.length || 0;
+      const { deselectedIngredients, selectedExtras, additionalNotes } = item.customization;
 
-      // Only show ingredients if customer deselected any
-      if (selectedIngredients && selectedIngredients.length < totalIngredients && totalIngredients > 0) {
-        const selectedIngredientNames = item.product.ingredients
-          .filter(ing => selectedIngredients.includes(ing.id))
-          .map(ing => getTranslation(ing.translations, 'name'))
-          .join(', ');
-
-        if (selectedIngredientNames) {
-          message += `   ${t.ingredients}: ${selectedIngredientNames}\n`;
-        }
+      // Show deselected ingredients (ingredients that were removed)
+      if (deselectedIngredients && deselectedIngredients.length > 0) {
+        message += `   ❌ Sin: ${deselectedIngredients.join(', ')}\n`;
       }
 
       // Add extra ingredients if selected
@@ -184,11 +176,20 @@ const generateBilingualMessage = (orderData, getTranslation) => {
     message += `${index + 1}. *${productNameEN}*\n`;
     message += `   Quantity: ${item.quantity} | Unit: €${pricePerUnit.toFixed(2)} | Subtotal: €${itemSubtotal.toFixed(2)}\n`;
 
-    if (item.customization?.selectedExtras && item.customization.selectedExtras.length > 0) {
-      const extrasText = item.customization.selectedExtras
-        .map(extra => `${extra.translations?.en?.name || extra.translations?.es?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
-        .join(', ');
-      message += `   🌟 Extras: ${extrasText}\n`;
+    // Show customizations
+    if (item.customization) {
+      if (item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0) {
+        message += `   ❌ Without: ${item.customization.deselectedIngredients.join(', ')}\n`;
+      }
+      if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
+        const extrasText = item.customization.selectedExtras
+          .map(extra => `${extra.translations?.en?.name || extra.translations?.es?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
+          .join(', ');
+        message += `   🌟 Extras: ${extrasText}\n`;
+      }
+      if (item.customization.additionalNotes && item.customization.additionalNotes.trim()) {
+        message += `   📝 Note: ${item.customization.additionalNotes}\n`;
+      }
     }
   });
 
@@ -225,11 +226,20 @@ const generateBilingualMessage = (orderData, getTranslation) => {
     message += `${index + 1}. *${productNameES}*\n`;
     message += `   Cantidad: ${item.quantity} | Unitario: €${pricePerUnit.toFixed(2)} | Subtotal: €${itemSubtotal.toFixed(2)}\n`;
 
-    if (item.customization?.selectedExtras && item.customization.selectedExtras.length > 0) {
-      const extrasText = item.customization.selectedExtras
-        .map(extra => `${extra.translations?.es?.name || extra.translations?.en?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
-        .join(', ');
-      message += `   🌟 Extras: ${extrasText}\n`;
+    // Show customizations
+    if (item.customization) {
+      if (item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0) {
+        message += `   ❌ Sin: ${item.customization.deselectedIngredients.join(', ')}\n`;
+      }
+      if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
+        const extrasText = item.customization.selectedExtras
+          .map(extra => `${extra.translations?.es?.name || extra.translations?.en?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
+          .join(', ');
+        message += `   🌟 Extras: ${extrasText}\n`;
+      }
+      if (item.customization.additionalNotes && item.customization.additionalNotes.trim()) {
+        message += `   📝 Nota: ${item.customization.additionalNotes}\n`;
+      }
     }
   });
 

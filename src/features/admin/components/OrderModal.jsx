@@ -167,7 +167,38 @@ const OrderModal = ({ isOpen, onClose, order }) => {
                         {orderDetails?.items?.map((item) => (
                           <tr key={item.id}>
                             <td className="px-4 py-3 text-sm text-gray-900 dark:text-text-primary">
-                              {item.product_name}
+                              <div>
+                                <div className="font-medium">{item.product_name}</div>
+                                {item.customization && (
+                                  <div className="mt-1 space-y-1 text-xs text-gray-600 dark:text-text-secondary">
+                                    {/* Show deselected ingredients */}
+                                    {item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0 && (
+                                      <div className="text-red-600 dark:text-red-400">
+                                        ❌ Sin: {item.customization.deselectedIngredients.join(', ')}
+                                      </div>
+                                    )}
+                                    {/* Show extra ingredients */}
+                                    {item.customization.selectedExtras && item.customization.selectedExtras.length > 0 && (
+                                      <div className="text-green-600 dark:text-green-400">
+                                        ➕ Extras: {item.customization.selectedExtras.map(extra => {
+                                          // Handle both object format (with translations) and string format
+                                          if (typeof extra === 'string') return extra;
+                                          if (extra.translations) {
+                                            return extra.translations.es?.name || extra.translations.en?.name || extra.name;
+                                          }
+                                          return extra.name;
+                                        }).join(', ')}
+                                      </div>
+                                    )}
+                                    {/* Show additional notes */}
+                                    {item.customization.additionalNotes && item.customization.additionalNotes.trim() && (
+                                      <div className="italic">
+                                        📝 Nota: {item.customization.additionalNotes}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </td>
                             <td className="px-4 py-3 text-sm text-center text-gray-600 dark:text-text-secondary">
                               {item.quantity}
