@@ -195,7 +195,7 @@ const ProductDetailPage = () => {
   const formattedPrice = price;
 
   // Obtener ingredientes extras disponibles
-  const extraIngredients = extraIngredientsData?.results || [];
+  const extraIngredients = extraIngredientsData || []; // Ingredients endpoint returns array directly (no pagination)
 
   // Para calcular el total, necesitamos extraer el número del string
   const priceNumber = parseFloat(price?.replace(/[^\d.]/g, '') || 0);
