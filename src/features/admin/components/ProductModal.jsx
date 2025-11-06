@@ -11,9 +11,9 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const { getTranslation } = useLanguage();
   const { data: categoriesData } = useFetch('/categories/');
   const { data: ingredientsData } = useFetch('/ingredients/');
-  
+
   const categories = categoriesData?.results || [];
-  const ingredients = ingredientsData?.results || [];
+  const ingredients = ingredientsData || []; // Ingredients endpoint returns array directly (no pagination)
 
   const [formData, setFormData] = useState({
     name_es: '',
