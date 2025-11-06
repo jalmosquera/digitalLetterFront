@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSave, faPlus, faTrash, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import toast from 'react-hot-toast';
 import api from '@shared/services/api';
 
 const COUNTRY_CODES = [
@@ -18,8 +19,6 @@ const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const [companyId, setCompanyId] = useState(null);
   const [countryCode, setCountryCode] = useState('+34');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -89,7 +88,7 @@ const SettingsPage = () => {
       }
     } catch (err) {
       console.error('Error fetching company data:', err);
-      setError('Error al cargar configuraciones');
+      toast.error('Error al cargar configuraciones');
     } finally {
       setLoading(false);
     }
@@ -144,8 +143,7 @@ const SettingsPage = () => {
 
   const handleDeleteLocation = (id) => {
     if (deliveryLocations.filter(loc => loc.enabled).length <= 1) {
-      setError('Debe haber al menos una ubicación habilitada');
-      setTimeout(() => setError(null), 3000);
+      toast.error('Debe haber al menos una ubicación habilitada');
       return;
     }
     setDeliveryLocations(deliveryLocations.filter(loc => loc.id !== id));
@@ -155,14 +153,12 @@ const SettingsPage = () => {
     e.preventDefault();
 
     if (!companyId) {
-      setError('No se encontró la configuración de la empresa. Por favor, contacta al administrador.');
+      toast.error('No se encontró la configuración de la empresa. Por favor, contacta al administrador.');
       return;
     }
 
     try {
       setSaving(true);
-      setError(null);
-      setSuccess(false);
 
       // Generate business_hours string
       const businessHours = schedule
@@ -186,11 +182,13 @@ const SettingsPage = () => {
         business_hours: businessHours,
       });
 
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      toast.success('Configuraciones guardadas correctamente', {
+        icon: '✅',
+        duration: 3000,
+      });
     } catch (err) {
       console.error('Error saving settings:', err);
-      setError('Error al guardar configuraciones');
+      toast.error('Error al guardar configuraciones');
     } finally {
       setSaving(false);
     }
@@ -220,18 +218,6 @@ const SettingsPage = () => {
       {/* Form */}
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-md dark:bg-dark-card md:p-6">
-          {error && (
-            <div className="p-3 mb-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-900/20 dark:text-red-400">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="p-3 mb-4 text-green-700 bg-green-100 rounded-lg dark:bg-green-900/20 dark:text-green-400">
-              Configuraciones guardadas correctamente
-            </div>
-          )}
-
           {/* WhatsApp Phone */}
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
