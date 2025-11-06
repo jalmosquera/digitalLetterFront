@@ -23,7 +23,7 @@ const HomePage = () => {
   // Construir filtros para la API
   const apiFilters = useMemo(() => {
     const filters = { available: 'true' };
-    if (selectedCategory) filters.category = selectedCategory;
+    if (selectedCategory) filters.categories = selectedCategory;
     return filters;
   }, [selectedCategory]);
 
