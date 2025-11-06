@@ -10,7 +10,7 @@ const OrderModal = ({ isOpen, onClose, order }) => {
   // Solo hacer fetch si hay una orden seleccionada
   const shouldFetch = isOpen && order?.id;
   const { data: orderData, loading } = useFetch(
-    shouldFetch ? `/api/orders/${order.id}/` : null
+    shouldFetch ? `/orders/${order.id}/` : null
   );
 
   useEffect(() => {

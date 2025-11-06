@@ -20,8 +20,20 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [companyId, setCompanyId] = useState(null);
+
+  // Company Information
+  const [companyNameEs, setCompanyNameEs] = useState('');
+  const [companyNameEn, setCompanyNameEn] = useState('');
+  const [companyAddressEs, setCompanyAddressEs] = useState('');
+  const [companyAddressEn, setCompanyAddressEn] = useState('');
+  const [companyEmail, setCompanyEmail] = useState('');
+  const [companyPhone, setCompanyPhone] = useState('');
+
+  // WhatsApp Phone (for orders)
   const [countryCode, setCountryCode] = useState('+34');
   const [phoneNumber, setPhoneNumber] = useState('');
+
+  // Business Hours
   const [schedule, setSchedule] = useState(
     DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false }))
   );
@@ -71,6 +83,16 @@ const SettingsPage = () => {
       if (response.data.results && response.data.results.length > 0) {
         const company = response.data.results[0];
         setCompanyId(company.id);
+
+        // Parse Company Information
+        if (company.translations) {
+          setCompanyNameEs(company.translations.es?.name || '');
+          setCompanyNameEn(company.translations.en?.name || '');
+          setCompanyAddressEs(company.translations.es?.address || '');
+          setCompanyAddressEn(company.translations.en?.address || '');
+        }
+        setCompanyEmail(company.email || '');
+        setCompanyPhone(company.phone?.toString() || '');
 
         // Parse WhatsApp phone
         const phone = company.whatsapp_phone || '+34623736566';
@@ -178,6 +200,18 @@ const SettingsPage = () => {
       localStorage.setItem('deliveryLocations', JSON.stringify(deliveryLocations));
 
       await api.patch(`/company/${companyId}/`, {
+        translations: {
+          es: {
+            name: companyNameEs,
+            address: companyAddressEs,
+          },
+          en: {
+            name: companyNameEn,
+            address: companyAddressEn,
+          },
+        },
+        email: companyEmail,
+        phone: parseInt(companyPhone) || 0,
         whatsapp_phone: whatsappPhone,
         business_hours: businessHours,
       });
@@ -211,80 +245,187 @@ const SettingsPage = () => {
           Configuraciones
         </h1>
         <p className="text-gray-600 dark:text-text-secondary">
-          Configura los números de WhatsApp, horarios de atención y ajustes generales
+          Configura la información de la empresa, números de WhatsApp, horarios de atención y ubicaciones de entrega
         </p>
       </div>
 
       {/* Form */}
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-md dark:bg-dark-card md:p-6">
-          {/* WhatsApp Phone */}
-          <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
-              Número de WhatsApp (Pedidos)
-            </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
-                required
-              >
-                {COUNTRY_CODES.map(({ code, country }) => (
-                  <option key={code} value={code}>
-                    {code} ({country})
-                  </option>
-                ))}
-              </select>
+          {/* ========== SECTION 1: GENERAL INFORMATION ========== */}
+          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
+              Información General
+            </h2>
+
+            {/* Company Name ES */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Nombre de la Empresa (Español)
+              </label>
               <input
-                type="tel"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                placeholder="623736566"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                type="text"
+                value={companyNameEs}
+                onChange={(e) => setCompanyNameEs(e.target.value)}
+                placeholder="Restaurante Delicioso"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
                 required
               />
             </div>
-            <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
-              Número que recibirá los pedidos por WhatsApp
-            </p>
-          </div>
 
-          {/* Juan Porras WhatsApp Phone (Frontend only) */}
-          <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
-              Número de WhatsApp (Juan Porras)
-            </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <select
-                value={juanCountryCode}
-                onChange={(e) => setJuanCountryCode(e.target.value)}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
-              >
-                {COUNTRY_CODES.map(({ code, country }) => (
-                  <option key={code} value={code}>
-                    {code} ({country})
-                  </option>
-                ))}
-              </select>
+            {/* Company Name EN */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Nombre de la Empresa (Inglés)
+              </label>
               <input
-                type="tel"
-                value={juanPhoneNumber}
-                onChange={(e) => setJuanPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                placeholder="652411939"
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                type="text"
+                value={companyNameEn}
+                onChange={(e) => setCompanyNameEn(e.target.value)}
+                placeholder="Delicious Restaurant"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
               />
             </div>
-            <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
-              Número para la página de Juan Porras 
-            </p>
+
+            {/* Company Address ES */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Dirección (Español)
+              </label>
+              <input
+                type="text"
+                value={companyAddressEs}
+                onChange={(e) => setCompanyAddressEs(e.target.value)}
+                placeholder="Calle Principal 123, Madrid"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              />
+            </div>
+
+            {/* Company Address EN */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Dirección (Inglés)
+              </label>
+              <input
+                type="text"
+                value={companyAddressEn}
+                onChange={(e) => setCompanyAddressEn(e.target.value)}
+                placeholder="123 Main Street, Madrid"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              />
+            </div>
+
+            {/* Company Email */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Email
+              </label>
+              <input
+                type="email"
+                value={companyEmail}
+                onChange={(e) => setCompanyEmail(e.target.value)}
+                placeholder="info@restaurant.com"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              />
+            </div>
+
+            {/* Company Phone */}
+            <div className="mb-0">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Teléfono
+              </label>
+              <input
+                type="tel"
+                value={companyPhone}
+                onChange={(e) => setCompanyPhone(e.target.value.replace(/\D/g, ''))}
+                placeholder="123456789"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                required
+              />
+              <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
+                Número de teléfono principal de contacto
+              </p>
+            </div>
           </div>
 
-          {/* Business Hours */}
-          <div className="mb-6">
-            <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-text-secondary">
+          {/* ========== SECTION 2: WHATSAPP NUMBERS ========== */}
+          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
+              Números de WhatsApp
+            </h2>
+
+            {/* WhatsApp Phone (Orders) */}
+            <div className="mb-6">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Número de WhatsApp (Pedidos)
+              </label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                  required
+                >
+                  {COUNTRY_CODES.map(({ code, country }) => (
+                    <option key={code} value={code}>
+                      {code} ({country})
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder="623736566"
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                  required
+                />
+              </div>
+              <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
+                Número que recibirá los pedidos por WhatsApp
+              </p>
+            </div>
+
+            {/* Juan Porras WhatsApp Phone (Frontend only) */}
+            <div className="mb-0">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-text-secondary">
+                Número de WhatsApp (Juan Porras)
+              </label>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <select
+                  value={juanCountryCode}
+                  onChange={(e) => setJuanCountryCode(e.target.value)}
+                  className="px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                >
+                  {COUNTRY_CODES.map(({ code, country }) => (
+                    <option key={code} value={code}>
+                      {code} ({country})
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  value={juanPhoneNumber}
+                  onChange={(e) => setJuanPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder="652411939"
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg sm:px-4 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary sm:text-base"
+                />
+              </div>
+              <p className="mt-1 text-sm text-gray-500 dark:text-text-secondary">
+                Número para la página de Juan Porras
+              </p>
+            </div>
+          </div>
+
+          {/* ========== SECTION 3: BUSINESS HOURS ========== */}
+          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Horarios de Atención
-            </label>
+            </h2>
             <div className="space-y-2 sm:space-y-3">
               {schedule.map((item, index) => (
                 <div key={item.day} className="flex flex-col gap-2 p-2 rounded-lg sm:flex-row sm:items-center sm:gap-3 sm:p-0 bg-gray-50 dark:bg-dark-bg sm:bg-transparent">
@@ -327,11 +468,11 @@ const SettingsPage = () => {
             </p>
           </div>
 
-          {/* Delivery Locations */}
+          {/* ========== SECTION 4: DELIVERY LOCATIONS ========== */}
           <div className="mb-6">
-            <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-text-secondary">
+            <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Ubicaciones de Entrega
-            </label>
+            </h2>
 
             {/* Add new location */}
             <div className="flex gap-2 mb-4">
