@@ -406,10 +406,12 @@ Detailed product view with ingredient customization and add to cart.
 
 - Product image gallery
 - Product information (name, description, price)
-- Ingredient selection with checkboxes
-- Additional ingredients text field
+- Ingredient selection with checkboxes (base ingredients)
+- Extra ingredients selection (143 ingredients available, alphabetically sorted, no pagination)
+- Toggle button to show/hide extra ingredients section
+- Additional ingredients text field for special requests
 - Quantity selector
-- Add to cart with customization
+- Add to cart with full customization support
 - Navigation back to menu
 - Loading and error states
 
