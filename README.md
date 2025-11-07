@@ -8,6 +8,8 @@
 [![Vitest](https://img.shields.io/badge/Vitest-4.0-6E9F18.svg)](https://vitest.dev/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+> 📖 [Versión en Español](README_ES.md)
+
 ## Table of Contents
 
 - [Features](#features)
@@ -29,7 +31,7 @@
 - **Fast Development** - Powered by Vite with HMR
 - **Multi-language Support** - Spanish and English with custom LanguageContext
 - **Dark Mode** - Full dark theme support with ThemeContext
-- **Ingredient Customization** - Users can select/deselect ingredients for their orders
+- **Ingredient Customization** - Users can select/deselect ingredients and add extras (143 ingredients available, alphabetically sorted)
 - **Shopping Cart** - Complete cart system with localStorage persistence
 - **WhatsApp Integration** - Direct order placement via WhatsApp
 - **Responsive Design** - Mobile-first approach for all screen sizes
