@@ -108,6 +108,13 @@ const SettingsPage = () => {
           const parsedSchedule = parseBusinessHours(company.business_hours);
           setSchedule(parsedSchedule);
         }
+
+        // Load delivery locations from backend
+        if (company.delivery_locations && company.delivery_locations.length > 0) {
+          setDeliveryLocations(company.delivery_locations);
+          // Sync with localStorage
+          localStorage.setItem('deliveryLocations', JSON.stringify(company.delivery_locations));
+        }
       }
     } catch (err) {
       console.error('Error fetching company data:', err);
@@ -197,9 +204,7 @@ const SettingsPage = () => {
       const juanWhatsappPhone = `${juanCountryCode}${juanPhoneNumber}`;
       localStorage.setItem('juanPorrasWhatsapp', juanWhatsappPhone);
 
-      // Save delivery locations to localStorage (frontend only)
-      localStorage.setItem('deliveryLocations', JSON.stringify(deliveryLocations));
-
+      // Save to backend (delivery locations included)
       await api.patch(`/company/${companyId}/`, {
         translations: {
           es: {
@@ -215,7 +220,11 @@ const SettingsPage = () => {
         phone: parseInt(companyPhone) || 0,
         whatsapp_phone: whatsappPhone,
         business_hours: businessHours,
+        delivery_locations: deliveryLocations,
       });
+
+      // Also save to localStorage as backup
+      localStorage.setItem('deliveryLocations', JSON.stringify(deliveryLocations));
 
       toast.success('Configuraciones guardadas correctamente', {
         icon: '✅',
