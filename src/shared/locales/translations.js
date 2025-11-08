@@ -1,6 +1,11 @@
 // Static translations for UI text
 export const translations = {
   es: {
+    // Common
+    common: {
+      cancel: 'Cancelar',
+      sending: 'Enviando',
+    },
     // Navbar
     nav: {
       home: 'Inicio',
@@ -32,6 +37,9 @@ export const translations = {
       soldOut: 'Agotado',
       addToCart: 'Agregar',
       noName: 'Sin nombre',
+      without: 'Sin',
+      extras: 'Extras',
+      note: 'Nota',
     },
     // ProductDetailPage
     productDetail: {
@@ -132,6 +140,7 @@ export const translations = {
       loginToOrder: 'Iniciar Sesión',
       customIngredients: 'Ingredientes',
       extraNotes: 'Extras',
+      unitPrice: 'Precio unitario',
     },
     // Checkout
     checkout: {
@@ -153,9 +162,21 @@ export const translations = {
       orderSuccess: '¡Pedido enviado correctamente!',
       orderError: 'Error al enviar el pedido',
       fillAllFields: 'Por favor completa todos los campos requeridos',
+      confirmOrder: 'Confirmar Pedido',
+      reviewOrder: 'Revisa tu pedido antes de confirmar',
+      confirmAndSend: 'Confirmar y Enviar',
+      yourOrder: 'Tu Pedido',
+      address: 'Dirección',
+      location: 'Localidad',
+      phone: 'Teléfono',
     },
   },
   en: {
+    // Common
+    common: {
+      cancel: 'Cancel',
+      sending: 'Sending',
+    },
     // Navbar
     nav: {
       home: 'Home',
@@ -187,6 +208,9 @@ export const translations = {
       soldOut: 'Sold Out',
       addToCart: 'Add',
       noName: 'No name',
+      without: 'Without',
+      extras: 'Extras',
+      note: 'Note',
     },
     // ProductDetailPage
     productDetail: {
@@ -287,6 +311,7 @@ export const translations = {
       loginToOrder: 'Sign In',
       customIngredients: 'Ingredients',
       extraNotes: 'Extras',
+      unitPrice: 'Unit price',
     },
     // Checkout
     checkout: {
@@ -308,6 +333,13 @@ export const translations = {
       orderSuccess: 'Order sent successfully!',
       orderError: 'Error sending order',
       fillAllFields: 'Please fill in all required fields',
+      confirmOrder: 'Confirm Order',
+      reviewOrder: 'Review your order before confirming',
+      confirmAndSend: 'Confirm and Send',
+      yourOrder: 'Your Order',
+      address: 'Address',
+      location: 'Location',
+      phone: 'Phone',
     },
   },
 };

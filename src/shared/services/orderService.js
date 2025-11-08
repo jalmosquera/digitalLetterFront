@@ -63,3 +63,25 @@ export const getOrderById = async (orderId) => {
     throw error;
   }
 };
+
+/**
+ * Send order confirmation emails to customer and company
+ * @param {Object} emailData - Email data
+ * @param {string} emailData.order_id - Order ID
+ * @param {string} emailData.user_name - Customer name
+ * @param {string} emailData.user_email - Customer email
+ * @param {string} emailData.language - Language (es/en)
+ * @param {Object} emailData.delivery_info - Delivery information
+ * @param {Array} emailData.items - Order items with names and customizations
+ * @param {number} emailData.total_price - Total price
+ * @returns {Promise} - Email send results
+ */
+export const sendOrderConfirmationEmails = async (emailData) => {
+  try {
+    const response = await api.post('/orders/send_confirmation/', emailData);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending confirmation emails:', error);
+    throw error;
+  }
+};
