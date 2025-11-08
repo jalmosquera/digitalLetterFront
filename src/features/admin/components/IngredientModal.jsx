@@ -91,7 +91,7 @@ const IngredientModal = ({ isOpen, onClose, ingredient, onSuccess }) => {
         }
         toast.error(errorMessage);
       }
-    } catch (error) {
+    } catch {
       toast.error('Error al conectar con el servidor');
     } finally {
       setLoading(false);

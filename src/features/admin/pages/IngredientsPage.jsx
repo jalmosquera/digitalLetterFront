@@ -2,14 +2,12 @@ import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faEdit, faTrash, faSearch, faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
-import { useLanguage } from '@shared/contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import IngredientModal from '@features/admin/components/IngredientModal';
 import { getAuthHeaders } from '@shared/utils/auth';
 import Pagination from '@shared/components/Pagination';
 
 const IngredientsPage = () => {
-  const { getTranslation } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -74,6 +74,7 @@ const SettingsPage = () => {
         console.error('Error parsing delivery locations:', error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCompanyData = async () => {

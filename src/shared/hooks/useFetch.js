@@ -63,7 +63,8 @@ const useFetch = (url, options = {}) => {
     return () => {
       isMounted = false;
     };
-  }, [url]); // ← SOLO url como dependencia, NO options
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url]); // ← SOLO url como dependencia, NO options (evita loops infinitos)
 
   // Función para refetch manual
   const refetch = async () => {

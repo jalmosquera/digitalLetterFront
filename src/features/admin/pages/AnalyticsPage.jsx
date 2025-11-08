@@ -13,7 +13,7 @@ const AnalyticsPage = () => {
   const [period, setPeriod] = useState('week'); // 'day', 'week', 'month'
 
   const { data: ordersData, loading, error } = useFetch('/orders/');
-  const orders = ordersData?.results || [];
+  const orders = useMemo(() => ordersData?.results || [], [ordersData]);
 
   // Filter orders by period
   const filteredOrders = useMemo(() => {
