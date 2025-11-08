@@ -78,7 +78,13 @@ describe('WhatsApp Service', () => {
         items: [
           {
             id: 1,
-            product: mockProduct,
+            product: {
+              ...mockProduct,
+              translations: {
+                en: { name: 'Margherita Pizza' },
+                es: { name: 'Pizza Margherita' }
+              }
+            },
             quantity: 1,
             customization: null
           }
@@ -95,7 +101,10 @@ describe('WhatsApp Service', () => {
 
       const message = generateOrderMessage(orderData, 'en', mockGetTranslationEn);
 
-      expect(message).toContain('🛒 *NEW ORDER*');
+      // English generates bilingual message
+      expect(message).toContain('🌐 *NEW ORDER / NUEVO PEDIDO*');
+      expect(message).toContain('🇬🇧 *ENGLISH*');
+      expect(message).toContain('🇪🇸 *ESPAÑOL*');
       expect(message).toContain('Juan Pérez');
       expect(message).toContain('Margherita Pizza');
       expect(message).toContain('Quantity: 1');
@@ -110,7 +119,8 @@ describe('WhatsApp Service', () => {
             product: mockProduct,
             quantity: 1,
             customization: {
-              selectedIngredients: [1, 2], // Only Tomate and Queso, not Albahaca
+              deselectedIngredients: ['Albahaca'], // Customer removed Albahaca
+              selectedExtras: [],
               additionalNotes: ''
             }
           }
@@ -122,11 +132,10 @@ describe('WhatsApp Service', () => {
 
       const message = generateOrderMessage(orderData, 'es', mockGetTranslation);
 
-      expect(message).toContain('Ingredientes: Tomate, Queso');
-      expect(message).not.toContain('Albahaca');
+      expect(message).toContain('❌ Sin: Albahaca');
     });
 
-    it('should NOT include ingredients when all are selected', () => {
+    it('should NOT include ingredients when none are deselected', () => {
       const orderData = {
         items: [
           {
@@ -134,7 +143,8 @@ describe('WhatsApp Service', () => {
             product: mockProduct,
             quantity: 1,
             customization: {
-              selectedIngredients: [1, 2, 3], // All ingredients
+              deselectedIngredients: [], // No ingredients removed
+              selectedExtras: [],
               additionalNotes: ''
             }
           }
@@ -146,8 +156,8 @@ describe('WhatsApp Service', () => {
 
       const message = generateOrderMessage(orderData, 'es', mockGetTranslation);
 
-      // Should not show ingredients list when all are selected
-      expect(message).not.toContain('Ingredientes:');
+      // Should not show "Sin:" when no ingredients are deselected
+      expect(message).not.toContain('❌ Sin:');
     });
 
     it('should include additional ingredients notes', () => {
@@ -158,7 +168,8 @@ describe('WhatsApp Service', () => {
             product: mockProduct,
             quantity: 1,
             customization: {
-              selectedIngredients: [1, 2, 3],
+              deselectedIngredients: [],
+              selectedExtras: [],
               additionalNotes: 'Extra cheese, no onions'
             }
           }
@@ -181,7 +192,8 @@ describe('WhatsApp Service', () => {
             product: mockProduct,
             quantity: 1,
             customization: {
-              selectedIngredients: [1, 2],
+              deselectedIngredients: ['Albahaca'],
+              selectedExtras: [],
               additionalNotes: 'Extra cheese'
             }
           },
@@ -201,7 +213,7 @@ describe('WhatsApp Service', () => {
 
       expect(message).toContain('1. *Pizza Margherita*');
       expect(message).toContain('2. *Pizza Margherita*');
-      expect(message).toContain('Ingredientes: Tomate, Queso');
+      expect(message).toContain('❌ Sin: Albahaca');
       expect(message).toContain('Extra cheese');
       expect(message).toContain('€37.50');
     });
@@ -250,8 +262,9 @@ describe('WhatsApp Service', () => {
 
     it('should open WhatsApp URL with encoded message', () => {
       const message = 'Test message with special chars: ñ, á, é';
+      const whatsappNumber = '+34623736566';
 
-      sendWhatsAppMessage(message);
+      sendWhatsAppMessage(message, whatsappNumber);
 
       expect(window.open).toHaveBeenCalledWith(
         expect.stringContaining('https://wa.me/34623736566?text='),
@@ -261,8 +274,9 @@ describe('WhatsApp Service', () => {
 
     it('should encode message properly', () => {
       const message = 'Hello World!';
+      const whatsappNumber = '+34623736566';
 
-      sendWhatsAppMessage(message);
+      sendWhatsAppMessage(message, whatsappNumber);
 
       const callArg = window.open.mock.calls[0][0];
       expect(callArg).toContain(encodeURIComponent(message));
