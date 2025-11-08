@@ -58,6 +58,9 @@ export const translations = {
       selectIngredients: 'Selecciona los ingredientes que deseas (todos por defecto)',
       additionalIngredients: 'Agregar ingredientes extra (Este campo es opcional y sujeto a stock disponible y a aumento del precio por los ingredientes adicionales, se te confirmara al whatsapp al momento de la compra‼️)',
       additionalIngredientsPlaceholder: 'Ej: Extra queso, sin cebolla, etc.',
+      addExtras: '+ Agregar ingredientes extras',
+      hideExtras: 'Ocultar ingredientes extras',
+      selectAdditionalIngredients: 'Selecciona ingredientes adicionales:',
     },
     // Footer
     footer: {
@@ -157,7 +160,7 @@ export const translations = {
       carratraca: 'Carratraca',
       notes: 'Notas adicionales',
       notesPlaceholder: 'Instrucciones especiales para la entrega...',
-      sendOrder: 'Enviar Pedido por WhatsApp',
+      sendOrder: 'Enviar Pedido',
       sending: 'Enviando...',
       orderSuccess: '¡Pedido enviado correctamente!',
       orderError: 'Error al enviar el pedido',
@@ -229,6 +232,9 @@ export const translations = {
       selectIngredients: 'Select the ingredients you want (all by default)',
       additionalIngredients: 'Add extra ingredients (This field is optional and subject to available stock and price increases for additional ingredients. You will receive confirmation via WhatsApp at the time of purchase.‼️)',
       additionalIngredientsPlaceholder: 'E.g: Extra cheese, no onions, etc.',
+      addExtras: '+ Add extra ingredients',
+      hideExtras: 'Hide extra ingredients',
+      selectAdditionalIngredients: 'Select additional ingredients:',
     },
     // Footer
     footer: {
@@ -328,7 +334,7 @@ export const translations = {
       carratraca: 'Carratraca',
       notes: 'Additional notes',
       notesPlaceholder: 'Special delivery instructions...',
-      sendOrder: 'Send Order via WhatsApp',
+      sendOrder: 'Send Order',
       sending: 'Sending...',
       orderSuccess: 'Order sent successfully!',
       orderError: 'Error sending order',

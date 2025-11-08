@@ -362,14 +362,14 @@ const ProductDetailPage = () => {
                       onClick={() => setShowExtras(!showExtras)}
                       className="w-full px-4 py-3 font-semibold transition-all border-2 rounded-lg font-gabarito border-pepper-orange text-pepper-orange hover:bg-pepper-orange hover:text-white"
                     >
-                      {showExtras ? 'Ocultar ingredientes extras' : '+ Agregar ingredientes extras'}
+                      {showExtras ? t('productDetail.hideExtras') : t('productDetail.addExtras')}
                     </button>
 
                     {/* Lista de ingredientes extras */}
                     {showExtras && (
                       <div className="p-4 mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                         <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Selecciona ingredientes adicionales:
+                          {t('productDetail.selectAdditionalIngredients')}
                         </p>
                         <div className="flex flex-wrap gap-3">
                           {extraIngredients.map((ingredient) => {

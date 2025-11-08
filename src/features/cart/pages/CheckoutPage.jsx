@@ -39,35 +39,29 @@ const CheckoutPage = () => {
       try {
         const response = await api.get('/company/');
         if (response.data.results && response.data.results.length > 0) {
-          setWhatsappNumber(response.data.results[0].whatsapp_phone || '+34623736566');
+          const companyData = response.data.results[0];
+          setWhatsappNumber(companyData.whatsapp_phone || '+34623736566');
+
+          // Use delivery locations from company settings
+          if (companyData.delivery_locations && companyData.delivery_locations.length > 0) {
+            setDeliveryLocations(companyData.delivery_locations.filter(loc => loc.enabled));
+          }
         }
       } catch (err) {
         console.error('Error fetching company data:', err);
-      }
-    };
-    fetchCompanyData();
-
-    // Load delivery locations from localStorage
-    const savedLocations = localStorage.getItem('deliveryLocations');
-    if (savedLocations) {
-      try {
-        const locations = JSON.parse(savedLocations);
-        setDeliveryLocations(locations.filter(loc => loc.enabled));
-      } catch (error) {
-        console.error('Error parsing delivery locations:', error);
-        // Fallback to default locations
+        // Fallback to default locations only if API fails
         setDeliveryLocations([
           { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
           { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
         ]);
       }
-    } else {
-      // Default locations if none saved
-      setDeliveryLocations([
-        { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
-        { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
-      ]);
-    }
+    };
+    fetchCompanyData();
+  }, []);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   // Redirect if not authenticated or cart is empty
