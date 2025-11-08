@@ -15,7 +15,7 @@ const DashboardPage = () => {
   const { data: ordersData, loading, error } = useFetch('/orders/');
 
   // Extract orders from paginated response (same as categories)
-  const orders = ordersData?.results || [];
+  const orders = useMemo(() => ordersData?.results || [], [ordersData]);
 
   // Calculate statistics from real orders
   const stats = useMemo(() => {

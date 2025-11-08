@@ -15,11 +15,9 @@
  * @returns {string} Formatted WhatsApp message
  */
 export const generateOrderMessage = (orderData, language, getTranslation) => {
-  const { items, deliveryInfo, user, totalPrice } = orderData;
-
   // If language is English, generate bilingual message
   if (language === 'en') {
-    return generateBilingualMessage(orderData, getTranslation);
+    return generateBilingualMessage(orderData);
   }
 
   // Otherwise, generate Spanish-only message
@@ -139,7 +137,7 @@ const generateSpanishMessage = (orderData, getTranslation) => {
  * Generate bilingual message (English + Spanish)
  * For international customers - shows order in both languages
  */
-const generateBilingualMessage = (orderData, getTranslation) => {
+const generateBilingualMessage = (orderData) => {
   const { items, deliveryInfo, user, totalPrice } = orderData;
 
   let message = '';
