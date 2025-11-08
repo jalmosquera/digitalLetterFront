@@ -8,8 +8,9 @@ import { useCart } from '@shared/contexts/CartContext';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 import { sendOrderViaWhatsApp } from '@shared/services/whatsappService';
-import { createOrder } from '@shared/services/orderService';
+import { createOrder, sendOrderConfirmationEmails } from '@shared/services/orderService';
 import api from '@shared/services/api';
+import OrderConfirmationModal from '@features/cart/components/OrderConfirmationModal';
 
 const CheckoutPage = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -29,6 +30,8 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState('+34623736566');
   const [deliveryLocations, setDeliveryLocations] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState(null);
 
   // Fetch company data for WhatsApp number and delivery locations
   useEffect(() => {
@@ -133,30 +136,19 @@ const CheckoutPage = () => {
         deliveryInfo,
       });
 
-
-      // Step 2: Prepare order data for WhatsApp
-      const orderData = {
-        items,
-        deliveryInfo,
-        user,
-        totalPrice,
-        orderId: createdOrder.id,
-      };
-
-      // Step 3: Send via WhatsApp
-      sendOrderViaWhatsApp(orderData, language, getTranslation, whatsappNumber);
-
-      // Show success notification
-      toast.success(t('checkout.orderSuccess'), {
-        icon: '✅',
-        duration: 4000,
+      // Step 2: Store order data and show confirmation modal
+      setPendingOrder({
+        createdOrder,
+        orderData: {
+          items,
+          deliveryInfo,
+          user,
+          totalPrice,
+          orderId: createdOrder.id,
+        },
       });
 
-      // Clear cart after successful order
-      setTimeout(() => {
-        clearCart();
-        navigate('/');
-      }, 1000);
+      setShowConfirmModal(true);
     } catch (error) {
       console.error('Error creating order:', error);
 
@@ -184,6 +176,98 @@ const CheckoutPage = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConfirmOrder = async () => {
+    if (!pendingOrder) return;
+
+    setLoading(true);
+
+    try {
+      const { orderData, createdOrder } = pendingOrder;
+
+      // Prepare email data
+      const emailData = {
+        order_id: createdOrder.id,
+        user_name: user.full_name || user.username,
+        user_email: user.email,
+        language: language,
+        delivery_info: {
+          street: deliveryInfo.delivery_street,
+          house_number: deliveryInfo.delivery_house_number,
+          location: deliveryInfo.delivery_location,
+          phone: deliveryInfo.phone,
+          notes: deliveryInfo.notes || '',
+        },
+        items: items.map(item => {
+          const productName = getTranslation(item.product.translations, 'name');
+          const basePrice = parseFloat(item.product.price) || 0;
+
+          let extrasPrice = 0;
+          let selectedExtras = [];
+          if (item.customization?.selectedExtras) {
+            selectedExtras = item.customization.selectedExtras.map(extra => ({
+              name: getTranslation(extra.translations, 'name'),
+              price: parseFloat(extra.price) || 0,
+            }));
+            extrasPrice = selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
+          }
+
+          const pricePerUnit = basePrice + extrasPrice;
+          const itemSubtotal = pricePerUnit * item.quantity;
+
+          return {
+            name: productName,
+            quantity: item.quantity,
+            unit_price: pricePerUnit,
+            subtotal: itemSubtotal,
+            customization: item.customization ? {
+              deselected_ingredients: item.customization.deselectedIngredients || [],
+              selected_extras: selectedExtras,
+              additional_notes: item.customization.additionalNotes || '',
+            } : null,
+          };
+        }),
+        total_price: totalPrice,
+      };
+
+      // Send confirmation emails
+      await sendOrderConfirmationEmails(emailData);
+
+      // Send WhatsApp message
+      sendOrderViaWhatsApp(orderData, language, getTranslation, whatsappNumber);
+
+      // Show success notification
+      toast.success(t('checkout.orderSuccess'), {
+        icon: '✅',
+        duration: 4000,
+      });
+
+      // Close modal and clear state
+      setShowConfirmModal(false);
+      setPendingOrder(null);
+
+      // Clear cart and navigate
+      setTimeout(() => {
+        clearCart();
+        navigate('/');
+      }, 1000);
+    } catch (error) {
+      console.error('Error confirming order:', error);
+
+      toast.error(t('checkout.orderError'), {
+        duration: 5000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (!loading) {
+      setShowConfirmModal(false);
+      setPendingOrder(null);
     }
   };
 
@@ -406,6 +490,21 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Order Confirmation Modal */}
+      {showConfirmModal && pendingOrder && (
+        <OrderConfirmationModal
+          isOpen={showConfirmModal}
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmOrder}
+          orderData={{
+            items: items,
+            deliveryInfo: deliveryInfo,
+            totalPrice: totalPrice,
+          }}
+          loading={loading}
+        />
+      )}
     </div>
   );
 };
