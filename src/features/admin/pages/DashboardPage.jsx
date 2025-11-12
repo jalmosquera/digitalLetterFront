@@ -8,8 +8,10 @@ import {
   faEuroSign,
   faArrowUp,
   faArrowDown,
+  faEye,
 } from '@fortawesome/free-solid-svg-icons';
 import useFetch from '@shared/hooks/useFetch';
+import { getVisitStats } from '@shared/services/visitTracker';
 
 const DashboardPage = () => {
   const { data: ordersData, loading, error } = useFetch('/orders/');
@@ -19,7 +21,7 @@ const DashboardPage = () => {
 
   // Calculate statistics from real orders
   const stats = useMemo(() => {
-    const totalSales = orders.reduce((sum, order) => 
+    const totalSales = orders.reduce((sum, order) =>
       sum + parseFloat(order.total_price || 0), 0
     );
 
@@ -27,11 +29,14 @@ const DashboardPage = () => {
     const confirmedOrders = orders.filter(o => o.status === 'confirmed').length;
     const activeOrders = pendingOrders + confirmedOrders;
 
-    const totalItems = orders.reduce((sum, order) => 
+    const totalItems = orders.reduce((sum, order) =>
       sum + (order.items_count || 0), 0
     );
 
     const uniqueCustomers = new Set(orders.map(o => o.user)).size;
+
+    // Get visit statistics
+    const visitStats = getVisitStats();
 
     // Calculate trends (last 7 days vs previous 7 days)
     const now = new Date();
@@ -105,6 +110,17 @@ const DashboardPage = () => {
         iconColor: 'text-purple-500',
         link: '/admin/users',
       },
+      {
+        id: 5,
+        title: 'Visitas',
+        value: visitStats.total.toString(),
+        change: `${visitStats.today} hoy • ${visitStats.thisWeek} esta semana`,
+        isPositive: true,
+        icon: faEye,
+        bgColor: 'bg-green-500/10',
+        iconColor: 'text-green-500',
+        link: '/admin/analytics',
+      },
     ];
   }, [orders]);
 
@@ -167,7 +183,7 @@ const DashboardPage = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map((stat) => (
           <Link
             key={stat.id}
