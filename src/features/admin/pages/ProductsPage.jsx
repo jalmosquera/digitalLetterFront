@@ -26,7 +26,7 @@ const ProductsPage = () => {
   const apiFilters = useMemo(() => {
     const filters = {};
     if (appliedSearchTerm) filters.search = appliedSearchTerm;
-    if (selectedCategory && selectedCategory !== 'all') filters.category = selectedCategory;
+    if (selectedCategory && selectedCategory !== 'all') filters.categories = selectedCategory;
     return filters;
   }, [appliedSearchTerm, selectedCategory]);
 
