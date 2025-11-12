@@ -3,10 +3,16 @@ import usePaginatedFetch from '@/shared/hooks/usePaginatedFetch';
 import { ProductGrid, CategoryFilter } from '../components';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import Pagination from '@shared/components/Pagination';
+import { trackVisit } from '@shared/services/visitTracker';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { t } = useLanguage();
+
+  // Track page visit
+  useEffect(() => {
+    trackVisit();
+  }, []);
 
   // Preload hero images for better performance
   useEffect(() => {
@@ -74,7 +80,7 @@ const HomePage = () => {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-start justify-center h-full px-8 lg:px-16 max-w-7xl mx-auto">
+        <div className="relative z-10 flex flex-col items-start justify-center h-full px-8 mx-auto lg:px-16 max-w-7xl">
           {/* Logo */}
           <div className="mb-8 animate-fade-in">
             <img
@@ -86,13 +92,14 @@ const HomePage = () => {
               className="w-40 h-40 lg:w-48 lg:h-48 drop-shadow-2xl"
             />
           </div>
+   
 
           {/* Text Content */}
           <div className="max-w-2xl animate-fade-in-up">
-            <h1 className="mb-6 text-5xl lg:text-6xl font-bold text-white drop-shadow-lg font-gabarito">
+            <h1 className="mb-6 text-5xl font-bold text-white lg:text-6xl drop-shadow-lg font-gabarito">
               {t('home.mobileHeroTitle')}
             </h1>
-            <p className="mb-10 text-xl lg:text-2xl text-white drop-shadow-md">
+            <p className="mb-10 text-xl text-white lg:text-2xl drop-shadow-md">
               {t('home.mobileHeroSubtitle')}
             </p>
             <a
@@ -102,9 +109,8 @@ const HomePage = () => {
               {t('home.mobileHeroCta')}
             </a>
           </div>
-
           {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="absolute -translate-x-1/2 bottom-8 left-1/2 animate-bounce">
             <svg
               className="w-8 h-8 text-white drop-shadow-lg"
               fill="none"
