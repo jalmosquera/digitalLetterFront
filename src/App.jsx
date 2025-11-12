@@ -30,6 +30,7 @@ import ProtectedRoute from '@shared/components/auth/ProtectedRoute';
 import NotFoundPage from '@pages/NotFoundPage';
 import AnalyticsPage from './features/admin/pages/AnalyticsPage';
 import SettingsPage from './features/admin/pages/SettingsPage';
+import PromotionsPage from './features/admin/pages/PromotionsPage';
 import JuanPorras from './pages/JuanPorras';
 
 
@@ -151,6 +152,7 @@ function App() {
                   <Route path="categories" element={<CategoriesPage />} />
                   <Route path="ingredients" element={<IngredientsPage />} />
                   <Route path="users" element={<UsersPage />} />
+                  <Route path="promotions" element={<PromotionsPage />} />
                   <Route path="analytics" element={<AnalyticsPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
