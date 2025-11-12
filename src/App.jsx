@@ -49,39 +49,71 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  // Manejo de loading inicial - Ocultar el loader del HTML
+  useEffect(() => {
+    const initialLoader = document.getElementById('initial-loader');
+
+    if (initialLoader) {
+      // Esperar a que React esté completamente montado
+      const timer = setTimeout(() => {
+        initialLoader.classList.add('hidden');
+
+        // Remover del DOM después de la transición
+        setTimeout(() => {
+          initialLoader.remove();
+        }, 400);
+      }, 800);
+
+      // Failsafe: asegurar que se oculte después de 5 segundos máximo
+      const failsafe = setTimeout(() => {
+        if (initialLoader && initialLoader.parentNode) {
+          initialLoader.classList.add('hidden');
+          setTimeout(() => {
+            initialLoader.remove();
+          }, 400);
+        }
+      }, 5000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(failsafe);
+      };
+    }
+  }, []);
+
 
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <CartProvider>
-            <BrowserRouter>
-              <Toaster
-                position="bottom-center"
-                reverseOrder={false}
-                toastOptions={{
-                  duration: 1500,
-                  style: {
-                    background: isDark ? '#363636' : '#ffffff',
-                    color: '#F76511',
-                    padding: '16px',
-                    borderRadius: '8px',
-                    boxShadow: isDark
-                      ? '0 4px 12px rgba(0, 0, 0, 0.3)'
-                      : '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  },
-                  success: {
+        <LanguageProvider>
+          <AuthProvider>
+            <CartProvider>
+              <BrowserRouter>
+                <Toaster
+                  position="bottom-center"
+                  reverseOrder={false}
+                  toastOptions={{
                     duration: 1500,
-                    iconTheme: {
-                      primary: '#FF6B35',
-                      secondary: '#F76511',
+                    style: {
+                      background: isDark ? '#363636' : '#ffffff',
+                      color: '#F76511',
+                      padding: '16px',
+                      borderRadius: '8px',
+                      boxShadow: isDark
+                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                        : '0 4px 12px rgba(0, 0, 0, 0.15)',
                     },
-                  },
-                  error: {
-                    duration: 1500,
-                  },
-                }}
-              />
+                    success: {
+                      duration: 1500,
+                      iconTheme: {
+                        primary: '#FF6B35',
+                        secondary: '#F76511',
+                      },
+                    },
+                    error: {
+                      duration: 1500,
+                    },
+                  }}
+                />
 
 
               <Routes>

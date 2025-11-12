@@ -129,6 +129,100 @@
   animation: fadeInUp 0.6s ease forwards;
 }
 
+/* Loading Screen Animations */
+@keyframes panTilt {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  25% {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(0) rotate(4deg);
+  }
+  75% {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+}
+
+@keyframes tossA {
+  0% {
+    transform: translate(-16px, 0) rotate(-20deg);
+  }
+  30% {
+    transform: translate(-40px, -80px) rotate(20deg);
+  }
+  65% {
+    transform: translate(-16px, -4px) rotate(60deg);
+  }
+  100% {
+    transform: translate(-16px, 0) rotate(90deg);
+  }
+}
+
+@keyframes tossB {
+  0% {
+    transform: translate(0, 0) rotate(-10deg);
+  }
+  28% {
+    transform: translate(0, -90px) rotate(10deg);
+  }
+  62% {
+    transform: translate(0, -6px) rotate(40deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(80deg);
+  }
+}
+
+@keyframes tossC {
+  0% {
+    transform: translate(16px, 0) rotate(20deg);
+  }
+  30% {
+    transform: translate(40px, -80px) rotate(-20deg);
+  }
+  65% {
+    transform: translate(16px, -4px) rotate(-60deg);
+  }
+  100% {
+    transform: translate(16px, 0) rotate(-90deg);
+  }
+}
+
+.loading-pan-svg {
+  animation: panTilt 1.6s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+.loading-ingredient {
+  animation-timing-function: cubic-bezier(0.15, 0.85, 0.25, 1);
+  animation-iteration-count: infinite;
+}
+
+.loading-i1 {
+  animation: tossA 1.6s infinite;
+  animation-delay: 0s;
+}
+
+.loading-i2 {
+  animation: tossB 1.8s infinite;
+  animation-delay: 0.25s;
+}
+
+.loading-i3 {
+  animation: tossC 1.5s infinite;
+  animation-delay: 0.45s;
+}
+
+.loading-i4 {
+  animation: tossA 1.7s infinite;
+  animation-delay: 0.6s;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
