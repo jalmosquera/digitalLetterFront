@@ -803,3 +803,6 @@ Breaking Changes (si aplica):
 **Creado:** 2025-10-28
 **Proyecto:** digitalLetterFrontEnd
 **Estado:** Análisis completo ✅ | Desarrollo pendiente ⏳
+
+
+ambos proyectos estan en produccion ya hay que hay que ser sumamente cuidadosos (siempre trabajar sobre una rama nueva y al final si apruebo todo para produccion debes limpiar todo y dejar solo la rama main con ultimos cambios en local y en gh)

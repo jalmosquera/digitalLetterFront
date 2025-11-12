@@ -70,6 +70,28 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       label: 'Configuraciones',
       icon: faCog,
       path: '/admin/settings',
+      submenu: [
+        {
+          id: 'settings-general',
+          label: 'Información General',
+          path: '/admin/settings#general',
+        },
+        {
+          id: 'settings-whatsapp',
+          label: 'Números de WhatsApp',
+          path: '/admin/settings#whatsapp',
+        },
+        {
+          id: 'settings-schedule',
+          label: 'Horarios de Atención',
+          path: '/admin/settings#horarios',
+        },
+        {
+          id: 'settings-locations',
+          label: 'Ubicaciones de Entrega',
+          path: '/admin/settings#ubicaciones',
+        },
+      ],
     },
   ];
 
@@ -137,60 +159,85 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
 
             return (
               <li key={item.id}>
-                <Link
-                  to={item.path}
-                  className={`
-                    flex items-center px-4 py-3 mx-2 rounded-lg
-                    transition-all duration-200
-                    ${active
-                      ? 'bg-pepper-orange text-white'
-                      : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
-                    }
-                    ${isCollapsed ? 'justify-center' : 'justify-between'}
-                  `}
-                  onClick={() => item.submenu && toggleSubmenu(item.id)}
-                >
-                  <div className="flex items-center">
-                    <FontAwesomeIcon
-                      icon={item.icon}
-                      className={`text-lg ${isCollapsed ? '' : 'mr-3'}`}
-                    />
+                {item.submenu ? (
+                  <div className="mx-2">
+                    <button
+                      onClick={() => toggleSubmenu(item.id)}
+                      className={`
+                        w-full flex items-center px-4 py-3 rounded-lg
+                        transition-all duration-200
+                        ${active
+                          ? 'bg-pepper-orange text-white'
+                          : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                        }
+                        ${isCollapsed ? 'justify-center' : 'justify-between'}
+                      `}
+                    >
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`text-lg ${isCollapsed ? '' : 'mr-3'}`}
+                      />
+                      {!isCollapsed && (
+                        <span className="font-medium">{item.label}</span>
+                      )}
+                    </div>
                     {!isCollapsed && (
-                      <span className="font-medium">{item.label}</span>
+                      <FontAwesomeIcon
+                        icon={faChevronRight}
+                        className={`text-sm transition-transform ${
+                          openSubmenu === item.id ? 'rotate-90' : ''
+                        }`}
+                      />
                     )}
-                  </div>
-                  {!isCollapsed && item.submenu && (
-                    <FontAwesomeIcon
-                      icon={faChevronRight}
-                      className={`text-sm transition-transform ${
-                        openSubmenu === item.id ? 'rotate-90' : ''
-                      }`}
-                    />
+                  </button>
+
+                  {/* Submenu */}
+                  {!isCollapsed && item.submenu && openSubmenu === item.id && (
+                    <ul className="mt-1 ml-2 space-y-1">
+                      {item.submenu.map((subItem) => (
+                        <li key={subItem.id}>
+                          <Link
+                            to={subItem.path}
+                            className={`
+                              flex items-center px-4 py-2 mx-0 rounded-lg
+                              transition-colors
+                              ${isActive(subItem.path)
+                                ? 'bg-gray-200 dark:bg-dark-card text-pepper-orange'
+                                : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                              }
+                            `}
+                          >
+                            <span className="text-sm">{subItem.label}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   )}
-                </Link>
-
-
-                {/* Submenu */}
-                {!isCollapsed && item.submenu && openSubmenu === item.id && (
-                  <ul className="mt-1 ml-4 space-y-1">
-                    {item.submenu.map((subItem) => (
-                      <li key={subItem.id}>
-                        <Link
-                          to={subItem.path}
-                          className={`
-                            flex items-center px-4 py-2 mx-2 rounded-lg
-                            transition-colors
-                            ${isActive(subItem.path)
-                              ? 'bg-gray-200 dark:bg-dark-card text-pepper-orange'
-                              : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
-                            }
-                          `}
-                        >
-                          <span className="text-sm">{subItem.label}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                </div>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`
+                      flex items-center px-4 py-3 mx-2 rounded-lg
+                      transition-all duration-200
+                      ${active
+                        ? 'bg-pepper-orange text-white'
+                        : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                      }
+                      ${isCollapsed ? 'justify-center' : 'justify-between'}
+                    `}
+                  >
+                    <div className="flex items-center">
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        className={`text-lg ${isCollapsed ? '' : 'mr-3'}`}
+                      />
+                      {!isCollapsed && (
+                        <span className="font-medium">{item.label}</span>
+                      )}
+                    </div>
+                  </Link>
                 )}
               </li>
             );

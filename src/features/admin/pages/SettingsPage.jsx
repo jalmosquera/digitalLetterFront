@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSave, faPlus, faTrash, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
 import toast from 'react-hot-toast';
@@ -17,6 +18,7 @@ const COUNTRY_CODES = [
 const DAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
 const SettingsPage = () => {
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [companyId, setCompanyId] = useState(null);
@@ -76,6 +78,20 @@ const SettingsPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Scroll to section when hash changes
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash && !loading) {
+      const element = document.getElementById(hash);
+      if (element) {
+        // Wait a bit for the page to render
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+  }, [location.hash, loading]);
 
   const fetchCompanyData = async () => {
     try {
@@ -263,7 +279,7 @@ const SettingsPage = () => {
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit} className="p-4 bg-white rounded-lg shadow-md dark:bg-dark-card md:p-6">
           {/* ========== SECTION 1: GENERAL INFORMATION ========== */}
-          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+          <div id="general" className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border scroll-mt-20">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Información General
             </h2>
@@ -363,7 +379,7 @@ const SettingsPage = () => {
           </div>
 
           {/* ========== SECTION 2: WHATSAPP NUMBERS ========== */}
-          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+          <div id="whatsapp" className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border scroll-mt-20">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Números de WhatsApp
             </h2>
@@ -432,7 +448,7 @@ const SettingsPage = () => {
           </div>
 
           {/* ========== SECTION 3: BUSINESS HOURS ========== */}
-          <div className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border">
+          <div id="horarios" className="pb-6 mb-6 border-b border-gray-200 dark:border-dark-border scroll-mt-20">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Horarios de Atención
             </h2>
@@ -479,7 +495,7 @@ const SettingsPage = () => {
           </div>
 
           {/* ========== SECTION 4: DELIVERY LOCATIONS ========== */}
-          <div className="mb-6">
+          <div id="ubicaciones" className="mb-6 scroll-mt-20">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-text-primary">
               Ubicaciones de Entrega
             </h2>

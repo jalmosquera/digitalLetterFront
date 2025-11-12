@@ -7,7 +7,7 @@ const translations = {
   es: {
     welcome: 'Bienvenido a',
     title: 'Juan el Porra',
-    subtitle: 'Comida casera cada día',
+    subtitle: 'Cada día preparamos comida casera diferente, hecha con cariño y sabor auténtico. ¡Escríbenos por WhatsApp y descubre el menú del día!',
     homemadeFood: 'COMIDAS',
     homemadeFoodHighlight: 'CASERAS',
     roastedChickens: 'POLLOS',
@@ -36,7 +36,7 @@ const translations = {
   en: {
     welcome: 'Welcome to',
     title: 'Juan el Porra',
-    subtitle: 'Homemade food every day',
+    subtitle: 'Every day we prepare fresh homemade dishes, crafted with care and authentic flavor. Message us on WhatsApp to see today’s menu!',
     homemadeFood: 'HOMEMADE',
     homemadeFoodHighlight: 'FOOD',
     roastedChickens: 'ROASTED',
@@ -196,7 +196,7 @@ const JuanPorras = () => {
       </div>
 
       {/* Main Content */}
-      <div className="px-4 pb-20 mx-auto max-w-7xl">
+      <div className="px-4 pb-20 mx-auto mt-8 max-w-7xl">
         
         {/* Sección Comidas Caseras */}
         <div className="relative mb-32">
