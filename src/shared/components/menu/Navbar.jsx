@@ -7,6 +7,7 @@ import { useTheme } from '@shared/contexts/ThemeContext';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 import { useCart } from '@shared/contexts/CartContext';
+import useOrderingEnabled from '@shared/hooks/useOrderingEnabled';
 
 const Navbar = ({ companyName = 'Digital Letter' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +15,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
   const { language, changeLanguage, t } = useLanguage();
   const { user, logout, isAuthenticated } = useAuth();
   const { itemCount } = useCart();
+  const { isOrderingEnabled } = useOrderingEnabled();
 
   const toggleLanguage = () => {
     changeLanguage(language === 'es' ? 'en' : 'es');
@@ -100,19 +102,21 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
             </button>
 
-            {/* Cart Button (Desktop) */}
-            <Link
-              to="/cart"
-              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
-              aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
-            >
-              <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-              {itemCount > 0 && (
-                <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
-                  {itemCount}
-                </span>
-              )}
-            </Link>
+            {/* Cart Button (Desktop) - solo mostrar si pedidos habilitados */}
+            {isOrderingEnabled && (
+              <Link
+                to="/cart"
+                className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
+                aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
+              >
+                <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+                {itemCount > 0 && (
+                  <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Auth Buttons */}
             {isAuthenticated ? (
@@ -163,19 +167,21 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
             >
               <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} size="lg" />
             </button>
-            {/* Cart Button (Mobile) */}
-            <Link
-              to="/cart"
-              className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
-              aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
-            >
-              <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-              {itemCount > 0 && (
-                <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
-                  {itemCount}
-                </span>
-              )}
-            </Link>
+            {/* Cart Button (Mobile) - solo mostrar si pedidos habilitados */}
+            {isOrderingEnabled && (
+              <Link
+                to="/cart"
+                className="relative p-2 transition-colors duration-200 text-pepper-charcoal hover:text-pepper-orange dark:text-white dark:hover:text-pepper-orange"
+                aria-label={`${t('cart.title')} - ${itemCount} ${itemCount === 1 ? t('cart.item') : t('cart.items')}`}
+              >
+                <FontAwesomeIcon icon={faShoppingCart} size="lg" />
+                {itemCount > 0 && (
+                  <span className="absolute flex items-center justify-center w-5 h-5 text-xs font-bold text-white rounded-full -top-1 -right-1 bg-pepper-orange">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+            )}
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMenu}

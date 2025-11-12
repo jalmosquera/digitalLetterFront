@@ -161,60 +161,77 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
               <li key={item.id}>
                 {item.submenu ? (
                   <div className="mx-2">
-                    <button
-                      onClick={() => toggleSubmenu(item.id)}
-                      className={`
-                        w-full flex items-center px-4 py-3 rounded-lg
-                        transition-all duration-200
-                        ${active
-                          ? 'bg-pepper-orange text-white'
-                          : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
-                        }
-                        ${isCollapsed ? 'justify-center' : 'justify-between'}
-                      `}
-                    >
-                    <div className="flex items-center">
-                      <FontAwesomeIcon
-                        icon={item.icon}
-                        className={`text-lg ${isCollapsed ? '' : 'mr-3'}`}
-                      />
-                      {!isCollapsed && (
-                        <span className="font-medium">{item.label}</span>
-                      )}
-                    </div>
-                    {!isCollapsed && (
-                      <FontAwesomeIcon
-                        icon={faChevronRight}
-                        className={`text-sm transition-transform ${
-                          openSubmenu === item.id ? 'rotate-90' : ''
-                        }`}
-                      />
-                    )}
-                  </button>
+                    {/* En mobile/collapsed: Link directo. En desktop: botón con submenu */}
+                    {isCollapsed ? (
+                      <Link
+                        to={item.path}
+                        className={`
+                          flex items-center px-4 py-3 rounded-lg justify-center
+                          transition-all duration-200
+                          ${active
+                            ? 'bg-pepper-orange text-white'
+                            : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                          }
+                        `}
+                      >
+                        <FontAwesomeIcon
+                          icon={item.icon}
+                          className="text-lg"
+                        />
+                      </Link>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => toggleSubmenu(item.id)}
+                          className={`
+                            w-full flex items-center px-4 py-3 rounded-lg
+                            transition-all duration-200 justify-between
+                            ${active
+                              ? 'bg-pepper-orange text-white'
+                              : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                            }
+                          `}
+                        >
+                          <div className="flex items-center">
+                            <FontAwesomeIcon
+                              icon={item.icon}
+                              className="mr-3 text-lg"
+                            />
+                            <span className="font-medium">{item.label}</span>
+                          </div>
+                          <FontAwesomeIcon
+                            icon={faChevronRight}
+                            className={`text-sm transition-transform ${
+                              openSubmenu === item.id ? 'rotate-90' : ''
+                            }`}
+                          />
+                        </button>
 
-                  {/* Submenu */}
-                  {!isCollapsed && item.submenu && openSubmenu === item.id && (
-                    <ul className="mt-1 ml-2 space-y-1">
-                      {item.submenu.map((subItem) => (
-                        <li key={subItem.id}>
-                          <Link
-                            to={subItem.path}
-                            className={`
-                              flex items-center px-4 py-2 mx-0 rounded-lg
-                              transition-colors
-                              ${isActive(subItem.path)
-                                ? 'bg-gray-200 dark:bg-dark-card text-pepper-orange'
-                                : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
-                              }
-                            `}
-                          >
-                            <span className="text-sm">{subItem.label}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                        {/* Submenu */}
+                        {item.submenu && openSubmenu === item.id && (
+                          <ul className="mt-1 ml-2 space-y-1">
+                            {item.submenu.map((subItem) => (
+                              <li key={subItem.id}>
+                                <Link
+                                  to={subItem.path}
+                                  className={`
+                                    flex items-center px-4 py-2 mx-0 rounded-lg
+                                    transition-colors
+                                    ${isActive(subItem.path)
+                                      ? 'bg-gray-200 dark:bg-dark-card text-pepper-orange'
+                                      : 'text-gray-600 dark:text-text-secondary hover:bg-gray-200 dark:hover:bg-dark-card hover:text-gray-900 dark:hover:text-text-primary'
+                                    }
+                                  `}
+                                >
+                                  <span className="text-sm">{subItem.label}</span>
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </>
+                    )}
+                  </div>
                 ) : (
                   <Link
                     to={item.path}

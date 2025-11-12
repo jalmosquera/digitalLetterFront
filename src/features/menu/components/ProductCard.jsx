@@ -5,11 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faFire } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useCart } from '@shared/contexts/CartContext';
+import useOrderingEnabled from '@shared/hooks/useOrderingEnabled';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { getTranslation, t } = useLanguage();
   const { addToCart } = useCart();
+  const { isOrderingEnabled } = useOrderingEnabled();
   const {
     id,
     translations,
@@ -131,8 +133,8 @@ const ProductCard = ({ product }) => {
             {formattedPrice}
           </span>
 
-          {/* Botón de acción */}
-          {available && (
+          {/* Botón de acción - solo mostrar si pedidos están habilitados */}
+          {available && isOrderingEnabled && (
             <button
               onClick={handleAddToCart}
               className="px-4 py-2 bg-pepper-orange text-white rounded-lg font-gabarito font-semibold text-sm hover:bg-opacity-90 transition-all duration-200 hover:-translate-y-0.5 shadow-md"
