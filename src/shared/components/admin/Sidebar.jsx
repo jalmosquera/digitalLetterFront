@@ -13,6 +13,7 @@ import {
   faChevronRight,
   faStore,
   faCog,
+  faImage,
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
@@ -58,6 +59,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       label: 'Usuarios',
       icon: faUsers,
       path: '/admin/users',
+    },
+    {
+      id: 'promotions',
+      label: 'Promociones',
+      icon: faImage,
+      path: '/admin/promotions',
     },
     {
       id: 'analytics',

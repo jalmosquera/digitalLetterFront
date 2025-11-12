@@ -1,17 +1,54 @@
 import { useState, useMemo, useEffect } from 'react';
 import usePaginatedFetch from '@/shared/hooks/usePaginatedFetch';
 import { ProductGrid, CategoryFilter } from '../components';
+import PromotionsModal from '../components/PromotionsModal';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import Pagination from '@shared/components/Pagination';
 import { trackVisit } from '@shared/services/visitTracker';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showPromotionsModal, setShowPromotionsModal] = useState(false);
+  const [activePromotions, setActivePromotions] = useState([]);
   const { t } = useLanguage();
 
   // Track page visit
   useEffect(() => {
     trackVisit();
+  }, []);
+
+  // Fetch active promotions on mount
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        // Check if modal was already shown this session
+        const promotionsShown = sessionStorage.getItem('promotionsModalShown');
+
+        if (promotionsShown === 'true') {
+          return; // Don't show modal again this session
+        }
+
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/promotions/active/`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+
+          if (data && data.length > 0) {
+            setActivePromotions(data);
+            setShowPromotionsModal(true);
+            // Mark as shown for this session
+            sessionStorage.setItem('promotionsModalShown', 'true');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching promotions:', error);
+        // Fail silently - promotions are not critical
+      }
+    };
+
+    fetchPromotions();
   }, []);
 
   // Preload hero images for better performance
@@ -57,6 +94,11 @@ const HomePage = () => {
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
     setPage(1); // Resetear a página 1 cuando cambia la categoría
+  };
+
+  // Handler to close promotions modal
+  const handleClosePromotions = () => {
+    setShowPromotionsModal(false);
   };
 
   // Scroll al inicio de la sección de categorías cuando cambia la página
@@ -221,6 +263,13 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* Promotions Modal */}
+      {showPromotionsModal && activePromotions.length > 0 && (
+        <PromotionsModal
+          promotions={activePromotions}
+          onClose={handleClosePromotions}
+        />
+      )}
     </div>
   );
 };

@@ -176,6 +176,14 @@ export const translations = {
       ordersNotAvailableToday: 'Lo sentimos, no aceptamos pedidos hoy',
       ordersAvailableOn: 'Pedidos disponibles',
     },
+    // Promotions Modal
+    promotions: {
+      close: 'Cerrar',
+      previous: 'Anterior',
+      next: 'Siguiente',
+      goToPromotion: 'Ir a promoción',
+      noImage: 'Sin imagen',
+    },
   },
   en: {
     // Common
@@ -352,6 +360,14 @@ export const translations = {
       phone: 'Phone',
       ordersNotAvailableToday: 'Sorry, we are not accepting orders today',
       ordersAvailableOn: 'Orders available on',
+    },
+    // Promotions Modal
+    promotions: {
+      close: 'Close',
+      previous: 'Previous',
+      next: 'Next',
+      goToPromotion: 'Go to promotion',
+      noImage: 'No image',
     },
   },
 };
