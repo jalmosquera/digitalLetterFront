@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import useFetch from '@/shared/hooks/useFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useCart } from '@shared/contexts/CartContext';
+import useOrderingEnabled from '@shared/hooks/useOrderingEnabled';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -25,6 +26,7 @@ const ProductDetailPage = () => {
   const [showExtras, setShowExtras] = useState(false);
   const { getTranslation, t } = useLanguage();
   const { addToCart } = useCart();
+  const { isOrderingEnabled } = useOrderingEnabled();
 
   // Fetch del producto
   const {
@@ -316,21 +318,23 @@ const ProductDetailPage = () => {
               </p>
             )}
 
-            {/* Ingredientes con checkboxes */}
+            {/* Ingredientes - con checkboxes si pedidos habilitados, lista simple si no */}
             {ingredients && ingredients.length > 0 && (
               <div className="mb-6">
                 <h3 className="mb-3 text-xl font-bold font-gabarito text-pepper-charcoal dark:text-white">
                   {t('productDetail.ingredients')}:
                 </h3>
-                <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
-                  {t('productDetail.selectIngredients')}
-                </p>
+                {isOrderingEnabled && (
+                  <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+                    {t('productDetail.selectIngredients')}
+                  </p>
+                )}
                 <div className="flex flex-wrap gap-3">
                   {ingredients.map((ingredient, index) => {
                     const ingredientName = getTranslation(ingredient.translations, 'name') || 'Ingrediente';
                     const isSelected = selectedIngredients.includes(ingredient.id);
 
-                    return (
+                    return isOrderingEnabled ? (
                       <label
                         key={ingredient.id || index}
                         className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-all ${
@@ -350,12 +354,22 @@ const ProductDetailPage = () => {
                           {ingredientName}
                         </span>
                       </label>
+                    ) : (
+                      <div
+                        key={ingredient.id || index}
+                        className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800"
+                      >
+                        <span className="text-2xl">{ingredient.icon}</span>
+                        <span className="font-semibold font-gabarito text-pepper-charcoal dark:text-white">
+                          {ingredientName}
+                        </span>
+                      </div>
                     );
                   })}
                 </div>
 
-                {/* Botón para agregar extras */}
-                {extraIngredients.length > 0 && (
+                {/* Botón para agregar extras - solo si pedidos habilitados */}
+                {isOrderingEnabled && extraIngredients.length > 0 && (
                   <div className="mt-6">
                     <button
                       type="button"
@@ -405,22 +419,24 @@ const ProductDetailPage = () => {
                   </div>
                 )}
 
-                {/* Campo para ingredientes adicionales */}
-                <div className="mt-4">
-                  <label htmlFor="additionalNotes" className="block mb-2 text-sm font-medium">
-                    <span className="inline-block px-3 py-2 leading-relaxed text-justify text-gray-800 bg-yellow-200 rounded-lg dark:bg-yellow-500/30 dark:text-gray-200">
-                      {t('productDetail.additionalIngredients')}
-                    </span>
-                  </label>
-                  <input
-                    id="additionalNotes"
-                    type="text"
-                    value={additionalNotes}
-                    onChange={(e) => setAdditionalNotes(e.target.value)}
-                    placeholder={t('productDetail.additionalIngredientsPlaceholder')}
-                    className="w-full px-4 py-2 transition-colors border-2 rounded-lg border-pepper-gray-light dark:border-gray-600 focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white "
-                  />
-                </div>
+                {/* Campo para ingredientes adicionales - solo si pedidos habilitados */}
+                {isOrderingEnabled && (
+                  <div className="mt-4">
+                    <label htmlFor="additionalNotes" className="block mb-2 text-sm font-medium">
+                      <span className="inline-block px-3 py-2 leading-relaxed text-justify text-gray-800 bg-yellow-200 rounded-lg dark:bg-yellow-500/30 dark:text-gray-200">
+                        {t('productDetail.additionalIngredients')}
+                      </span>
+                    </label>
+                    <input
+                      id="additionalNotes"
+                      type="text"
+                      value={additionalNotes}
+                      onChange={(e) => setAdditionalNotes(e.target.value)}
+                      placeholder={t('productDetail.additionalIngredientsPlaceholder')}
+                      className="w-full px-4 py-2 transition-colors border-2 rounded-lg border-pepper-gray-light dark:border-gray-600 focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white "
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -431,8 +447,8 @@ const ProductDetailPage = () => {
               </span>
             </div>
 
-            {/* Selector de cantidad y botón agregar */}
-            {available ? (
+            {/* Selector de cantidad y botón agregar - solo mostrar si pedidos habilitados */}
+            {available && isOrderingEnabled && (
               <div className="space-y-4">
                 {/* Selector de cantidad */}
                 <div className="flex items-center space-x-4">
@@ -478,7 +494,10 @@ const ProductDetailPage = () => {
                   <span>Agregar al carrito</span>
                 </button>
               </div>
-            ) : (
+            )}
+
+            {/* Mensaje de producto no disponible - solo si producto no está available */}
+            {!available && (
               <div className="px-8 py-6 text-center bg-gray-100 rounded-lg dark:bg-gray-800">
                 <p className="text-xl font-bold text-gray-600 font-gabarito dark:text-gray-300">
                   Este producto no está disponible en este momento

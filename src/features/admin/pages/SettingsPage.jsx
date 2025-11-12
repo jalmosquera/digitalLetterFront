@@ -37,7 +37,7 @@ const SettingsPage = () => {
 
   // Business Hours
   const [schedule, setSchedule] = useState(
-    DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false }))
+    DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false, deliveryEnabled: true }))
   );
 
   // Juan Porras WhatsApp (frontend only)
@@ -121,7 +121,7 @@ const SettingsPage = () => {
 
         // Parse business hours
         if (company.business_hours) {
-          const parsedSchedule = parseBusinessHours(company.business_hours);
+          const parsedSchedule = parseBusinessHours(company.business_hours, company.delivery_enabled_days || {});
           setSchedule(parsedSchedule);
         }
 
@@ -140,19 +140,26 @@ const SettingsPage = () => {
     }
   };
 
-  const parseBusinessHours = (hoursString) => {
+  const parseBusinessHours = (hoursString, deliveryEnabledDays = {}) => {
     // Simple parser: "Lun: 08:00 - 23:00" per day
     const lines = hoursString.split('\n');
-    const newSchedule = DAYS.map(day => ({ day, open: '08:00', close: '23:00', closed: false }));
+    const newSchedule = DAYS.map(day => ({
+      day,
+      open: '08:00',
+      close: '23:00',
+      closed: false,
+      deliveryEnabled: deliveryEnabledDays[day] !== undefined ? deliveryEnabledDays[day] : true
+    }));
 
     lines.forEach(line => {
       DAYS.forEach((day, idx) => {
         if (line.includes(day)) {
           const timeMatch = line.match(/(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/);
+          const deliveryEnabled = deliveryEnabledDays[day] !== undefined ? deliveryEnabledDays[day] : true;
           if (timeMatch) {
-            newSchedule[idx] = { day, open: timeMatch[1], close: timeMatch[2], closed: false };
+            newSchedule[idx] = { day, open: timeMatch[1], close: timeMatch[2], closed: false, deliveryEnabled };
           } else if (line.toLowerCase().includes('cerrado')) {
-            newSchedule[idx] = { day, open: '08:00', close: '23:00', closed: true };
+            newSchedule[idx] = { day, open: '08:00', close: '23:00', closed: true, deliveryEnabled };
           }
         }
       });
@@ -213,6 +220,12 @@ const SettingsPage = () => {
         )
         .join('\n');
 
+      // Generate delivery_enabled_days object
+      const deliveryEnabledDays = schedule.reduce((acc, { day, deliveryEnabled }) => {
+        acc[day] = deliveryEnabled;
+        return acc;
+      }, {});
+
       // Generate whatsapp_phone
       const whatsappPhone = `${countryCode}${phoneNumber}`;
 
@@ -220,7 +233,7 @@ const SettingsPage = () => {
       const juanWhatsappPhone = `${juanCountryCode}${juanPhoneNumber}`;
       localStorage.setItem('juanPorrasWhatsapp', juanWhatsappPhone);
 
-      // Save to backend (delivery locations included)
+      // Save to backend (delivery locations and enabled days included)
       await api.patch(`/company/${companyId}/`, {
         translations: {
           es: {
@@ -237,6 +250,7 @@ const SettingsPage = () => {
         whatsapp_phone: whatsappPhone,
         business_hours: businessHours,
         delivery_locations: deliveryLocations,
+        delivery_enabled_days: deliveryEnabledDays,
       });
 
       // Also save to localStorage as backup
@@ -454,8 +468,8 @@ const SettingsPage = () => {
             </h2>
             <div className="space-y-2 sm:space-y-3">
               {schedule.map((item, index) => (
-                <div key={item.day} className="flex flex-col gap-2 p-2 rounded-lg sm:flex-row sm:items-center sm:gap-3 sm:p-0 bg-gray-50 dark:bg-dark-bg sm:bg-transparent">
-                  <div className="flex items-center gap-3 sm:gap-2">
+                <div key={item.day} className="flex flex-col gap-2 p-2 rounded-lg sm:flex-row sm:items-center sm:gap-4 sm:p-2 bg-gray-50 dark:bg-dark-bg sm:bg-transparent">
+                  <div className="flex items-center gap-3 sm:gap-3">
                     <div className="w-10 text-sm font-semibold text-gray-700 sm:w-12 dark:text-text-secondary">
                       {item.day}
                     </div>
@@ -470,21 +484,35 @@ const SettingsPage = () => {
                     </span>
                   </div>
                   {!item.closed && (
-                    <div className="flex items-center gap-2 pl-0 sm:gap-3 sm:pl-2">
-                      <input
-                        type="time"
-                        value={item.open}
-                        onChange={(e) => handleScheduleChange(index, 'open', e.target.value)}
-                        className="px-2 py-1 text-sm border border-gray-300 rounded-lg sm:px-3 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
-                      />
-                      <span className="text-sm text-gray-500">-</span>
-                      <input
-                        type="time"
-                        value={item.close}
-                        onChange={(e) => handleScheduleChange(index, 'close', e.target.value)}
-                        className="px-2 py-1 text-sm border border-gray-300 rounded-lg sm:px-3 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
-                      />
-                    </div>
+                    <>
+                      <div className="flex items-center gap-2 pl-0 sm:gap-3 sm:pl-2">
+                        <input
+                          type="time"
+                          value={item.open}
+                          onChange={(e) => handleScheduleChange(index, 'open', e.target.value)}
+                          className="px-2 py-1 text-sm border border-gray-300 rounded-lg sm:px-3 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                        />
+                        <span className="text-sm text-gray-500">-</span>
+                        <input
+                          type="time"
+                          value={item.close}
+                          onChange={(e) => handleScheduleChange(index, 'close', e.target.value)}
+                          className="px-2 py-1 text-sm border border-gray-300 rounded-lg sm:px-3 dark:border-dark-border focus:ring-2 focus:ring-pepper-orange focus:border-transparent dark:bg-dark-bg dark:text-text-primary"
+                        />
+                      </div>
+                      {/* Delivery Enabled Checkbox */}
+                      <div className="flex items-center gap-2 pl-0 sm:gap-2 sm:pl-4">
+                        <input
+                          type="checkbox"
+                          checked={item.deliveryEnabled}
+                          onChange={(e) => handleScheduleChange(index, 'deliveryEnabled', e.target.checked)}
+                          className="w-4 h-4 text-green-600 focus:ring-green-500"
+                        />
+                        <span className="text-xs font-medium text-gray-600 sm:text-sm dark:text-text-secondary whitespace-nowrap">
+                          Habilitar pedidos
+                        </span>
+                      </div>
+                    </>
                   )}
                 </div>
               ))}

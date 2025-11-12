@@ -12,6 +12,13 @@ import { createOrder, sendOrderConfirmationEmails } from '@shared/services/order
 import api from '@shared/services/api';
 import OrderConfirmationModal from '@features/cart/components/OrderConfirmationModal';
 
+// Utility function to get current day in Spanish format matching backend
+const getCurrentDayInSpanish = () => {
+  const daysMap = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const today = new Date().getDay();
+  return daysMap[today];
+};
+
 const CheckoutPage = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { t, getTranslation, language } = useLanguage();
@@ -32,8 +39,10 @@ const CheckoutPage = () => {
   const [deliveryLocations, setDeliveryLocations] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingOrder, setPendingOrder] = useState(null);
+  const [deliveryEnabledDays, setDeliveryEnabledDays] = useState({});
+  const [isOrderingEnabled, setIsOrderingEnabled] = useState(true);
 
-  // Fetch company data for WhatsApp number and delivery locations
+  // Fetch company data for WhatsApp number, delivery locations, and enabled days
   useEffect(() => {
     const fetchCompanyData = async () => {
       try {
@@ -46,6 +55,14 @@ const CheckoutPage = () => {
           if (companyData.delivery_locations && companyData.delivery_locations.length > 0) {
             setDeliveryLocations(companyData.delivery_locations.filter(loc => loc.enabled));
           }
+
+          // Check if ordering is enabled for today
+          if (companyData.delivery_enabled_days) {
+            setDeliveryEnabledDays(companyData.delivery_enabled_days);
+            const currentDay = getCurrentDayInSpanish();
+            const isEnabled = companyData.delivery_enabled_days[currentDay] !== false;
+            setIsOrderingEnabled(isEnabled);
+          }
         }
       } catch (err) {
         console.error('Error fetching company data:', err);
@@ -54,6 +71,8 @@ const CheckoutPage = () => {
           { id: 1, name: 'Ardales', value: 'ardales', enabled: true },
           { id: 2, name: 'Carratraca', value: 'carratraca', enabled: true },
         ]);
+        // Default to enabled if API fails
+        setIsOrderingEnabled(true);
       }
     };
     fetchCompanyData();
@@ -74,6 +93,15 @@ const CheckoutPage = () => {
   }, [isAuthenticated, items.length, navigate]);
 
   const totalPrice = getTotalPrice();
+
+  // Get list of enabled days for user message
+  const getEnabledDaysMessage = () => {
+    const enabledDays = Object.keys(deliveryEnabledDays).filter(
+      day => deliveryEnabledDays[day] === true
+    );
+    if (enabledDays.length === 0) return '';
+    return enabledDays.join(', ');
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -420,11 +448,23 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
+              {/* Warning Message - Orders Disabled */}
+              {!isOrderingEnabled && (
+                <div className="p-4 mt-6 text-sm bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-900/20 dark:border-yellow-800">
+                  <p className="font-semibold text-yellow-800 dark:text-yellow-300">
+                    ⚠️ {t('checkout.ordersNotAvailableToday')}
+                  </p>
+                  <p className="mt-1 text-yellow-700 dark:text-yellow-400">
+                    {t('checkout.ordersAvailableOn')}: {getEnabledDaysMessage()}
+                  </p>
+                </div>
+              )}
+
               {/* Submit Button */}
               <div className="mt-6">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !isOrderingEnabled}
                   className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition-colors bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (

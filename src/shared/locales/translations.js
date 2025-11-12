@@ -40,6 +40,7 @@ export const translations = {
       without: 'Sin',
       extras: 'Extras',
       note: 'Nota',
+      ordersDisabled: 'Sin servicio de pedido hoy',
     },
     // ProductDetailPage
     productDetail: {
@@ -172,6 +173,8 @@ export const translations = {
       address: 'Dirección',
       location: 'Localidad',
       phone: 'Teléfono',
+      ordersNotAvailableToday: 'Lo sentimos, no aceptamos pedidos hoy',
+      ordersAvailableOn: 'Pedidos disponibles',
     },
   },
   en: {
@@ -214,6 +217,7 @@ export const translations = {
       without: 'Without',
       extras: 'Extras',
       note: 'Note',
+      ordersDisabled: 'Not available today',
     },
     // ProductDetailPage
     productDetail: {
@@ -346,6 +350,8 @@ export const translations = {
       address: 'Address',
       location: 'Location',
       phone: 'Phone',
+      ordersNotAvailableToday: 'Sorry, we are not accepting orders today',
+      ordersAvailableOn: 'Orders available on',
     },
   },
 };
