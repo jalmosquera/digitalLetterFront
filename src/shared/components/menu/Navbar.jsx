@@ -39,6 +39,7 @@ const Navbar = ({ companyName = 'Digital Letter' }) => {
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
+    ...(isAuthenticated ? [{ to: '/my-orders', label: t('nav.myOrders') }] : []),
     ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
     { to: '/contact', label: t('nav.contact') },
   ];

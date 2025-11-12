@@ -16,6 +16,7 @@ import AdminLayout from '@shared/components/layout/AdminLayout';
 import HomePage from '@features/menu/pages/HomePage';
 import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
 import ContactPage from '@features/menu/pages/ContactPage';
+import MyOrdersPage from '@features/menu/pages/MyOrdersPage';
 import { LoginPage, RegisterPage } from '@features/auth/pages';
 import CartPage from '@features/cart/pages/CartPage';
 import CheckoutPage from '@features/cart/pages/CheckoutPage';
@@ -131,6 +132,7 @@ function App() {
                   <Route path="contact" element={<ContactPage />} />
                   <Route path="cart" element={<CartPage />} />
                   <Route path="checkout" element={<CheckoutPage />} />
+                  <Route path="my-orders" element={<MyOrdersPage />} />
                 </Route>
 
                 {/* Juan landing */}
