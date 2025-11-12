@@ -9,10 +9,45 @@ export const translations = {
     // Navbar
     nav: {
       home: 'Inicio',
+      myOrders: 'Mis Pedidos',
       contact: 'Contacto',
       privacy: 'Privacidad',
       orderNow: 'Ordenar Ahora',
       changeLanguage: 'Cambiar a inglés',
+    },
+    // My Orders Page
+    myOrders: {
+      title: 'Mis Pedidos',
+      subtitle: 'Historial de todos tus pedidos',
+      loginRequired: 'Inicia sesión para ver tus pedidos',
+      loginMessage: 'Necesitas iniciar sesión para ver el historial de tus pedidos',
+      loginButton: 'Iniciar Sesión',
+      noOrders: 'No tienes pedidos aún',
+      noOrdersMessage: 'Cuando realices un pedido, aparecerá aquí',
+      viewMenu: 'Ver Menú',
+      orderNumber: 'Pedido',
+      products: 'Productos',
+      deliveryInfo: 'Información de entrega',
+      notes: 'Notas',
+      total: 'Total',
+      cancelOrder: 'Cancelar Pedido',
+      cancelling: 'Cancelando...',
+      cancelConfirm: '¿Estás seguro de que quieres cancelar este pedido?',
+      cancelSuccess: 'Pedido cancelado exitosamente',
+      cancelError: 'Error al cancelar el pedido',
+      loadingError: 'Error al cargar tus pedidos',
+      // Order status
+      status: {
+        pending: 'Pendiente',
+        confirmed: 'Confirmado',
+        completed: 'Completado',
+        cancelled: 'Cancelado',
+      },
+      // Customization
+      without: 'SIN',
+      extras: 'EXTRAS',
+      note: 'NOTA',
+      unitPrice: 'c/u',
     },
     // HomePage
     home: {
@@ -186,10 +221,45 @@ export const translations = {
     // Navbar
     nav: {
       home: 'Home',
+      myOrders: 'My Orders',
       contact: 'Contact',
       privacy: 'Privacy',
       orderNow: 'Order Now',
       changeLanguage: 'Switch to Spanish',
+    },
+    // My Orders Page
+    myOrders: {
+      title: 'My Orders',
+      subtitle: 'History of all your orders',
+      loginRequired: 'Login to view your orders',
+      loginMessage: 'You need to login to view your order history',
+      loginButton: 'Login',
+      noOrders: 'No orders yet',
+      noOrdersMessage: 'When you place an order, it will appear here',
+      viewMenu: 'View Menu',
+      orderNumber: 'Order',
+      products: 'Products',
+      deliveryInfo: 'Delivery information',
+      notes: 'Notes',
+      total: 'Total',
+      cancelOrder: 'Cancel Order',
+      cancelling: 'Cancelling...',
+      cancelConfirm: 'Are you sure you want to cancel this order?',
+      cancelSuccess: 'Order cancelled successfully',
+      cancelError: 'Error cancelling order',
+      loadingError: 'Error loading your orders',
+      // Order status
+      status: {
+        pending: 'Pending',
+        confirmed: 'Confirmed',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+      },
+      // Customization
+      without: 'WITHOUT',
+      extras: 'EXTRAS',
+      note: 'NOTE',
+      unitPrice: 'each',
     },
     // HomePage
     home: {
