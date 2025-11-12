@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import usePaginatedFetch from '@/shared/hooks/usePaginatedFetch';
 import { ProductGrid, CategoryFilter } from '../components';
 import PromotionsModal from '../components/PromotionsModal';
+import PromotionsCarousel from '../components/PromotionsCarousel';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import Pagination from '@shared/components/Pagination';
 import { trackVisit } from '@shared/services/visitTracker';
@@ -10,6 +11,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showPromotionsModal, setShowPromotionsModal] = useState(false);
   const [activePromotions, setActivePromotions] = useState([]);
+  const [carouselCards, setCarouselCards] = useState([]);
   const { t } = useLanguage();
 
   // Track page visit
@@ -49,6 +51,27 @@ const HomePage = () => {
     };
 
     fetchPromotions();
+  }, []);
+
+  // Fetch carousel cards on mount
+  useEffect(() => {
+    const fetchCarouselCards = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/carousel-cards/active/`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setCarouselCards(data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching carousel cards:', error);
+        // Fail silently - carousel cards are not critical
+      }
+    };
+
+    fetchCarouselCards();
   }, []);
 
   // Preload hero images for better performance
@@ -222,6 +245,11 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Promotions Carousel */}
+      {carouselCards.length > 0 && (
+        <PromotionsCarousel cards={carouselCards} />
+      )}
 
       {/* Menu Section */}
       <section
