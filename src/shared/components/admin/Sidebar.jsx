@@ -14,6 +14,7 @@ import {
   faStore,
   faCog,
   faImage,
+  faRectangleAd,
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
@@ -65,6 +66,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       label: 'Promociones',
       icon: faImage,
       path: '/admin/promotions',
+    },
+    {
+      id: 'carousel-cards',
+      label: 'Carrusel',
+      icon: faRectangleAd,
+      path: '/admin/carousel-cards',
     },
     {
       id: 'analytics',
