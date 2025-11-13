@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
 import { useAuth } from '@shared/contexts/AuthContext';
 
@@ -17,6 +17,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -143,20 +144,33 @@ const LoginPage = () => {
                   {t('auth.forgotPassword')}
                 </Link>
               </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                value={formData.password}
-                onChange={handleChange}
-                className={`appearance-none w-full px-3 py-2 border ${
-                  errors.password
-                    ? 'border-red-500'
-                    : 'border-gray-300 dark:border-gray-600'
-                } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
-                placeholder={t('auth.passwordPlaceholder')}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`appearance-none w-full px-3 py-2 pr-10 border ${
+                    errors.password
+                      ? 'border-red-500'
+                      : 'border-gray-300 dark:border-gray-600'
+                  } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
+                  placeholder={t('auth.passwordPlaceholder')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  <FontAwesomeIcon
+                    icon={showPassword ? faEyeSlash : faEye}
+                    className="w-5 h-5"
+                  />
+                </button>
+              </div>
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {errors.password}
