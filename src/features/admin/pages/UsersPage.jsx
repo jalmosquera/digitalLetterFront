@@ -79,7 +79,9 @@ const UsersPage = () => {
   };
 
   // Los usuarios ya vienen filtrados del servidor
-  const filteredUsers = users;
+  // Filtrar usuarios específicos que no deben mostrarse
+  const excludedEmails = ['jmosquera2305@gmail.com', 'mosquerasoft@gmail.com'];
+  const filteredUsers = users.filter(user => !excludedEmails.includes(user.email));
 
   const getRoleLabel = (role) => {
     const roles = {
