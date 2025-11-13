@@ -17,7 +17,7 @@ import HomePage from '@features/menu/pages/HomePage';
 import ProductDetailPage from '@features/menu/pages/ProductDetailPage';
 import ContactPage from '@features/menu/pages/ContactPage';
 import MyOrdersPage from '@features/menu/pages/MyOrdersPage';
-import { LoginPage, RegisterPage } from '@features/auth/pages';
+import { LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage } from '@features/auth/pages';
 import CartPage from '@features/cart/pages/CartPage';
 import CheckoutPage from '@features/cart/pages/CheckoutPage';
 import DashboardPage from '@features/admin/pages/DashboardPage';
@@ -123,6 +123,8 @@ function App() {
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
 
 
                 {/* Público */}

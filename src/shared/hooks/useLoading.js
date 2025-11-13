@@ -91,8 +91,6 @@ const useLoading = (threshold = 3000) => {
         try {
           const result = await asyncFn(...args);
           return result;
-        } catch (error) {
-          throw error;
         } finally {
           stopLoading();
         }

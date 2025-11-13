@@ -15,6 +15,7 @@ const RegisterPage = () => {
     email: '',
     name: '',
     password: '',
+    password_confirm: '',
     phone: '',
   });
   const [errors, setErrors] = useState({});
@@ -60,6 +61,12 @@ const RegisterPage = () => {
       newErrors.password = 'Mínimo 6 caracteres / Minimum 6 characters';
     }
 
+    if (!formData.password_confirm) {
+      newErrors.password_confirm = t('auth.requiredField');
+    } else if (formData.password !== formData.password_confirm) {
+      newErrors.password_confirm = t('auth.passwordsDoNotMatch');
+    }
+
     if (!formData.phone.trim()) {
       newErrors.phone = t('auth.requiredField');
     }
@@ -80,7 +87,10 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      await register(formData);
+      // Remove password_confirm before sending to backend
+      // eslint-disable-next-line no-unused-vars
+      const { password_confirm, ...registrationData } = formData;
+      await register(registrationData);
       setSuccessMessage(t('auth.successfulRegistration'));
       // Redirect to login after 2 seconds
       setTimeout(() => {
@@ -254,6 +264,30 @@ const RegisterPage = () => {
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {errors.password}
+                </p>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label htmlFor="password_confirm" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('auth.confirmPassword')}
+              </label>
+              <input
+                id="password_confirm"
+                name="password_confirm"
+                type="password"
+                autoComplete="new-password"
+                value={formData.password_confirm}
+                onChange={handleChange}
+                className={`appearance-none relative block w-full px-3 py-2 border ${
+                  errors.password_confirm ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                } placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-800 transition-colors`}
+                placeholder={t('auth.confirmPasswordPlaceholder')}
+              />
+              {errors.password_confirm && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.password_confirm}
                 </p>
               )}
             </div>

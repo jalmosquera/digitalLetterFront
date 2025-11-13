@@ -1,48 +1,69 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useLanguage } from '@shared/contexts/LanguageContext';
-import { useAuth } from '@shared/contexts/AuthContext';
+import axios from 'axios';
+import { env } from '@/config/env';
 
-const LoginPage = () => {
+const ResetPasswordPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    token: '',
+    new_password: '',
+    new_password_confirm: '',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = e => {
+  // Get token from URL on mount
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      setFormData((prev) => ({ ...prev, token }));
+    } else {
+      setErrorMessage(t('auth.noTokenProvided'));
+    }
+  }, [searchParams, t]);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.email.trim()) {
-      newErrors.email = t('auth.requiredField');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = t('auth.invalidEmail');
+
+    if (!formData.new_password) {
+      newErrors.new_password = t('auth.requiredField');
+    } else if (formData.new_password.length < 6) {
+      newErrors.new_password = t('auth.passwordTooShort');
     }
-    if (!formData.password) newErrors.password = t('auth.requiredField');
+
+    if (!formData.new_password_confirm) {
+      newErrors.new_password_confirm = t('auth.requiredField');
+    } else if (formData.new_password !== formData.new_password_confirm) {
+      newErrors.new_password_confirm = t('auth.passwordsDoNotMatch');
+    }
+
     return newErrors;
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setSuccessMessage('');
 
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
@@ -50,20 +71,31 @@ const LoginPage = () => {
       return;
     }
 
+    if (!formData.token) {
+      setErrorMessage(t('auth.noTokenProvided'));
+      return;
+    }
+
     setLoading(true);
     try {
-      // 👇 Usamos el login del contexto con email
-      const loggedUser = await login(formData.email, formData.password);
+      await axios.post(`${env.apiBaseUrl}/password-reset/confirm/`, {
+        token: formData.token,
+        new_password: formData.new_password,
+        new_password_confirm: formData.new_password_confirm,
+      });
 
-      if (loggedUser.role === 'boss' || loggedUser.role === 'employee') {
-        navigate('/admin');
-      } else {
-        console.log('navegando a /');
-        navigate('/');
-      }
+      setSuccessMessage(t('auth.passwordResetSuccess'));
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (error) {
-      console.error('Error en login:', error);
-      setErrorMessage(error.message || t('auth.loginError'));
+      const message =
+        error.response?.data?.detail ||
+        error.response?.data?.new_password_confirm?.[0] ||
+        t('auth.passwordResetError');
+      setErrorMessage(message);
     } finally {
       setLoading(false);
     }
@@ -75,24 +107,32 @@ const LoginPage = () => {
         {/* Back button */}
         <div>
           <Link
-            to="/"
+            to="/login"
             className="inline-flex items-center text-sm font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark"
           >
             <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-            Volver al menú
+            {t('auth.backToLogin')}
           </Link>
         </div>
 
         <div>
           <h2 className="mt-6 text-3xl font-extrabold text-center text-gray-900 dark:text-white">
-            {t('auth.loginTitle')}
+            {t('auth.resetPasswordTitle')}
           </h2>
           <p className="mt-2 text-sm text-center text-gray-600 dark:text-gray-400">
-            {t('auth.loginDescription')}
+            {t('auth.resetPasswordDescription')}
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {successMessage && (
+            <div className="p-4 rounded-md bg-green-50 dark:bg-green-900/20">
+              <p className="text-sm text-green-800 dark:text-green-400">
+                {successMessage}
+              </p>
+            </div>
+          )}
+
           {errorMessage && (
             <div className="p-4 rounded-md bg-red-50 dark:bg-red-900/20">
               <p className="text-sm text-red-800 dark:text-red-400">
@@ -104,64 +144,56 @@ const LoginPage = () => {
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="new_password"
                 className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {t('auth.email')}
+                {t('auth.newPassword')}
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`appearance-none w-full px-3 py-2 border ${
-                  errors.email
-                    ? 'border-red-500'
-                    : 'border-gray-300 dark:border-gray-600'
-                } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
-                placeholder={t('auth.emailPlaceholder')}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  {t('auth.password')}
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark"
-                >
-                  {t('auth.forgotPassword')}
-                </Link>
-              </div>
-              <input
-                id="password"
-                name="password"
+                id="new_password"
+                name="new_password"
                 type="password"
-                autoComplete="current-password"
-                value={formData.password}
+                autoComplete="new-password"
+                value={formData.new_password}
                 onChange={handleChange}
                 className={`appearance-none w-full px-3 py-2 border ${
-                  errors.password
+                  errors.new_password
                     ? 'border-red-500'
                     : 'border-gray-300 dark:border-gray-600'
                 } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
                 placeholder={t('auth.passwordPlaceholder')}
               />
-              {errors.password && (
+              {errors.new_password && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.password}
+                  {errors.new_password}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="new_password_confirm"
+                className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                {t('auth.confirmPassword')}
+              </label>
+              <input
+                id="new_password_confirm"
+                name="new_password_confirm"
+                type="password"
+                autoComplete="new-password"
+                value={formData.new_password_confirm}
+                onChange={handleChange}
+                className={`appearance-none w-full px-3 py-2 border ${
+                  errors.new_password_confirm
+                    ? 'border-red-500'
+                    : 'border-gray-300 dark:border-gray-600'
+                } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
+                placeholder={t('auth.confirmPasswordPlaceholder')}
+              />
+              {errors.new_password_confirm && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {errors.new_password_confirm}
                 </p>
               )}
             </div>
@@ -170,8 +202,8 @@ const LoginPage = () => {
           <div>
             <button
               type="submit"
-              disabled={loading}
-              className="relative flex justify-center w-full px-4 py-3 text-sm font-semibold text-white transition-all border border-transparent rounded-lg group bg-pepper-orange hover:bg-opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-pepper-orange disabled:opacity-50"
+              disabled={loading || !formData.token}
+              className="relative flex justify-center w-full px-4 py-3 text-sm font-semibold text-white transition-all border border-transparent rounded-lg group bg-pepper-orange hover:bg-opacity-90 focus:ring-2 focus:ring-offset-2 focus:ring-pepper-orange disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center">
@@ -193,22 +225,22 @@ const LoginPage = () => {
                       d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"
                     />
                   </svg>
-                  {t('auth.loginButton')}...
+                  {t('auth.resettingPassword')}...
                 </span>
               ) : (
-                t('auth.loginButton')
+                t('auth.resetPassword')
               )}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {t('auth.noAccount')}{' '}
+              {t('auth.rememberPassword')}{' '}
               <Link
-                to="/register"
+                to="/login"
                 className="font-medium transition-colors text-pepper-orange hover:text-pepper-orange-dark"
               >
-                {t('auth.registerHere')}
+                {t('auth.loginHere')}
               </Link>
             </p>
           </div>
@@ -218,4 +250,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ResetPasswordPage;
