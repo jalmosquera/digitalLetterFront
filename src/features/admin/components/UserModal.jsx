@@ -209,7 +209,7 @@ const UserModal = ({ isOpen, onClose, user, onSuccess }) => {
                 >
                   <option value="client">Cliente</option>
                   <option value="employe">Empleado</option>
-                  <option value="boss">Jefe</option>
+                  <option value="boss">Propietario</option>
                 </select>
               </div>
             </div>
