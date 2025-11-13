@@ -11,7 +11,7 @@ const LoginPage = () => {
   const { login } = useAuth();
 
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   });
   const [errors, setErrors] = useState({});
@@ -31,10 +31,8 @@ const LoginPage = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.email.trim()) {
-      newErrors.email = t('auth.requiredField');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = t('auth.invalidEmail');
+    if (!formData.username.trim()) {
+      newErrors.username = t('auth.requiredField');
     }
     if (!formData.password) newErrors.password = t('auth.requiredField');
     return newErrors;
@@ -52,8 +50,8 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      // 👇 Usamos el login del contexto con email
-      const loggedUser = await login(formData.email, formData.password);
+      // 👇 Usamos el login del contexto con username
+      const loggedUser = await login(formData.username, formData.password);
 
       if (loggedUser.role === 'boss' || loggedUser.role === 'employee') {
         navigate('/admin');
@@ -104,28 +102,28 @@ const LoginPage = () => {
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {t('auth.email')}
+                Usuario
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={formData.email}
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                value={formData.username}
                 onChange={handleChange}
                 className={`appearance-none w-full px-3 py-2 border ${
-                  errors.email
+                  errors.username
                     ? 'border-red-500'
                     : 'border-gray-300 dark:border-gray-600'
                 } rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-800 dark:text-white transition-colors`}
-                placeholder={t('auth.emailPlaceholder')}
+                placeholder="Ingrese su usuario"
               />
-              {errors.email && (
+              {errors.username && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
+                  {errors.username}
                 </p>
               )}
             </div>

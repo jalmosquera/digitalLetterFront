@@ -15,12 +15,12 @@ const authService = {
   },
 
   /**
-   * Login user with email and password
+   * Login user with username and password
    */
-  async login(email, password) {
+  async login(username, password) {
     // Get JWT tokens
     const tokenResponse = await axios.post(`${env.apiBaseUrl}/token/`, {
-      email,
+      username,
       password,
     });
 
