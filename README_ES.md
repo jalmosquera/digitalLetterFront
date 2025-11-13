@@ -378,6 +378,190 @@ theme: {
 }
 ```
 
+## 📦 Servicios Implementados
+
+Esta sección proporciona una visión general completa de todos los servicios frontend que se han implementado en este proyecto, organizados por categoría.
+
+### ⚙️ Configuración Base
+
+| Servicio | Descripción |
+|---------|-------------|
+| Setup de proyecto (Vite + React) | Configuración inicial, estructura de carpetas |
+| Configuración de Tailwind CSS | Tema personalizado, plugins |
+| Configuración de React Router | Rutas públicas y protegidas |
+| Configuración de path aliases | @shared, @features, etc. |
+| Configuración de ESLint/Prettier | Herramientas de calidad de código |
+| Setup de hot-reload y HMR | Optimización de experiencia de desarrollo |
+
+### 🎨 UI/UX Base
+
+| Servicio | Descripción |
+|---------|-------------|
+| Sistema de diseño (Design Tokens) | Colores, tipografías, espaciados personalizados |
+| Tema oscuro / personalización de UI | Dark mode completo con toggle |
+| Componentes base reutilizables | Botones, inputs, cards, modals |
+| Navbar responsive | Con menú móvil y carrito |
+| Footer completo | Links, redes sociales, info |
+| Loading states y skeletons | Placeholders durante carga |
+| Animaciones y transiciones | Smooth UX con CSS/Framer Motion |
+| Toasts y notificaciones | React-hot-toast configurado |
+| Responsive design completo | Mobile-first approach |
+
+### 🌍 Internacionalización
+
+| Servicio | Descripción |
+|---------|-------------|
+| Multi-idioma (2 idiomas: ES/EN) | Textos y componentes traducidos |
+| Context de idioma | LanguageContext con toggle |
+| Persistencia de preferencia | Integración con LocalStorage |
+| Traducción de formularios | Validaciones y mensajes |
+| Traducción de emails | Si aplica en frontend |
+
+### 🔐 Autenticación
+
+| Servicio | Descripción |
+|---------|-------------|
+| Context de autenticación | AuthContext con login/logout |
+| Páginas de login y registro | Formularios completos |
+| Protección de rutas (ProtectedRoute) | HOC para rutas privadas |
+| Gestión de tokens | LocalStorage/cookies |
+| Redirect automático | Navegación post-login |
+| Persistencia de sesión | Auto-login con token |
+
+### 📄 Páginas Públicas
+
+| Servicio | Descripción |
+|---------|-------------|
+| Landing/Home page | Hero section responsive (desktop/mobile) |
+| Integración de carrusel en home | Componente PromotionsCarousel |
+| Preload de imágenes hero | Optimización de rendimiento |
+| Scroll indicator | Animación bounce |
+| Página de productos/menú | Grid con filtros y paginación |
+| Filtro por categorías | Componente CategoryFilter |
+| Búsqueda de productos | Barra de búsqueda con debounce |
+| Vista de detalle de producto | Página individual con info completa |
+| Página de contacto | Formulario con validaciones |
+| Integración WhatsApp | Botón flotante y links |
+
+### 🛒 Carrito y Checkout
+
+| Servicio | Descripción |
+|---------|-------------|
+| Context de carrito | CartContext con add/remove/update |
+| Componente de carrito en navbar | Badge con cantidad |
+| Página de carrito | Lista de items con totales |
+| Actualización de cantidades | Botones increase/decrease |
+| Eliminación de items | Con confirmación |
+| Cálculo de totales en tiempo real | Subtotal, impuestos, total |
+| Página de checkout | Formulario de datos de entrega |
+| Validaciones de checkout | Validación completa de formulario |
+| Selección de ubicación de entrega | Dropdown con opciones |
+| Confirmación de pedido | Modal o página de éxito |
+| Integración con backend | API POST de pedidos |
+
+### 📦 Gestión de Pedidos
+
+| Servicio | Descripción |
+|---------|-------------|
+| Página "Mis Pedidos" (MyOrdersPage) | Historial de pedidos del usuario |
+| Componente de tarjeta de pedido | OrderCard con detalles |
+| Tracking de estado de pedido | Timeline visual |
+| Botón de cancelar pedido | Con confirmación |
+| Filtros de pedidos | Por estado, fecha |
+| Vista de detalle de pedido | Modal o página expandida |
+| Actualización en tiempo real | Polling o WebSockets |
+
+### 🎁 Promociones y Carrusel
+
+| Servicio | Descripción |
+|---------|-------------|
+| Modal de promociones automático | PromotionsModal con carousel interno |
+| Carrusel de imágenes en modal | Integración Swiper/embla |
+| Control de "mostrar solo una vez" | SessionStorage |
+| Componente PromotionsCarousel | Scroll infinito animado |
+| Animación de scroll continuo | Animaciones CSS (5s configurable) |
+| Pause on hover | Interacción UX |
+| Cards personalizables | Emoji, texto, color de fondo |
+| Gradientes de fade en bordes | Overlays w-8 |
+| Border radius redondeado | Estilo rounded-3xl |
+| Responsive carousel | Mobile/tablet/desktop |
+
+### 👨‍💼 Panel Administrativo
+
+| Servicio | Descripción |
+|---------|-------------|
+| Layout de admin | AdminLayout con sidebar y header |
+| Sidebar colapsable | Toggle con iconos |
+| Dashboard principal | DashboardPage con métricas |
+| Tarjetas de estadísticas | Stats cards con iconos |
+| Gráficos y charts | Integración Chart.js o Recharts |
+| Página de gestión de productos | ProductsPage con tabla y CRUD |
+| Modal de crear/editar producto | ProductModal con upload |
+| Página de gestión de categorías | CategoriesPage |
+| Modal de categorías | CategoryModal |
+| Página de gestión de ingredientes | IngredientsPage |
+| Modal de ingredientes | IngredientModal |
+| Página de gestión de pedidos | OrdersPage con filtros |
+| Vista de detalle de pedido admin | OrderDetailModal |
+| Cambio de estado de pedido | Dropdown con actualización |
+| Página de gestión de usuarios | UsersPage |
+| Edición de roles de usuario | RoleModal |
+| Página de promociones admin | PromotionsPage con CRUD |
+| Modal de promociones | PromotionModal con upload |
+| Página de carousel cards admin | CarouselCardsPage con CRUD |
+| Modal de carousel cards | CarouselCardModal con pickers |
+| Color picker en modal | Paleta + input hex personalizado |
+| Emoji picker en modal | Sugerencias clickables |
+| Live preview en modal | Preview card en tiempo real |
+| Página de analytics | AnalyticsPage con estadísticas |
+| Página de settings | SettingsPage con tabs |
+| Gestión de horarios | Editor de horarios |
+| Gestión de ubicaciones | CRUD de ubicaciones |
+| Gestión de WhatsApp numbers | Lista de números de teléfono |
+
+### 🔌 Integración con Backend
+
+| Servicio | Descripción |
+|---------|-------------|
+| Hook personalizado useFetch | Hook personalizado para llamadas API |
+| Hook usePaginatedFetch | Paginación automática |
+| Gestión de estado de carga | Estados de carga |
+| Gestión de errores | Manejo y visualización de errores |
+| Retry logic | Auto-retry en peticiones fallidas |
+| Interceptors de Axios/Fetch | Headers, auth, errores |
+| Upload de imágenes | Carga de archivos con preview |
+| Optimización de peticiones | Debounce, throttle |
+
+### ⚡ Optimizaciones y Performance
+
+| Servicio | Descripción |
+|---------|-------------|
+| Code splitting | Lazy loading de rutas |
+| Optimización de imágenes | Lazy loading, WebP |
+| Memoización de componentes | React.memo, useMemo |
+| Virtual scrolling | Para listas largas |
+| Service Worker / PWA | Soporte offline |
+| Compresión de assets | Gzip, minificación |
+| Bundle optimization | Tree shaking, chunks |
+
+### 🧪 Testing
+
+| Servicio | Descripción |
+|---------|-------------|
+| Setup de testing | Jest + React Testing Library |
+| Tests unitarios de componentes | Cobertura básica |
+| Tests de integración | Flujos de usuario |
+| Tests de hooks | Testing de hooks personalizados |
+
+### 📱 Responsive y Accesibilidad
+
+| Servicio | Descripción |
+|---------|-------------|
+| Breakpoints personalizados | Mobile/tablet/desktop |
+| Touch gestures | Optimizaciones swipe, tap |
+| Accesibilidad (a11y) | ARIA labels, navegación por teclado |
+| SEO básico | Meta tags, sitemap |
+
 ## 🤝 Contribuir
 
 ¡Bienvenidas las contribuciones! Por favor sigue estas pautas:
