@@ -542,14 +542,14 @@ const JuanPorras = () => {
           <p className={`mt-4 text-sm ${
             darkMode ? 'text-gray-500' : 'text-gray-600'
           }`}>
-            <span className={`font-bold ${
-              darkMode ? 'text-orange-500' : 'text-orange-600'
-            }`}>{t.addressLabel}</span>{' '}
+            {t.addressLabel}{' '}
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.location2)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:underline"
+              className={`font-bold transition-colors hover:underline ${
+                darkMode ? 'text-orange-500' : 'text-orange-600'
+              }`}
             >
               {t.location2}
             </a>
