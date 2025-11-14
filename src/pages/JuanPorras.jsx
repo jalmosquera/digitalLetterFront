@@ -31,7 +31,12 @@ const translations = {
     openWithReservation: 'Abrimos con reserva',
     checkAvailability: 'Consulte disponibilidad y haga su reserva',
     contactUs: 'Contáctanos',
-    callForOrders: 'Llámenos para pedidos especiales y más información',
+    callForOrders: 'Llámenos al teléfono',
+    phoneNumber: '+34652411939',
+    phoneDisplay: '+34 652 41 19 39',
+    callForOrdersExtra: 'para pedidos especiales y más información',
+    addressLabel: 'Dirección:',
+    location2: 'Calle Huelva 7, Ardales',
     whatsappMessage: 'Hola, me gustaría recibir la variedad de los platos del día'
   },
   en: {
@@ -61,8 +66,13 @@ const translations = {
     openWithReservation: 'Open with reservation',
     checkAvailability: 'Check availability and make your reservation',
     contactUs: 'Contact Us',
-    callForOrders: 'Call us for special orders and more information',
-    whatsappMessage: 'Hi, I’d like to receive today’s selection of dishes.'
+    callForOrders: 'Call us at',
+    phoneNumber: '+34652411939',
+    phoneDisplay: '+34 652 41 19 39',
+    callForOrdersExtra: 'for special orders and more information',
+    addressLabel: 'Address:',
+    location2: '7 Huelva Street, Ardales',
+    whatsappMessage: "Hi, I'd like to receive today's selection of dishes."
   }
 };
 
@@ -518,7 +528,31 @@ const JuanPorras = () => {
           <p className={`mt-4 text-sm ${
             darkMode ? 'text-gray-500' : 'text-gray-600'
           }`}>
-            {t.callForOrders}
+            {t.callForOrders}{' '}
+            <a
+              href={`tel:${t.phoneNumber}`}
+              className={`font-bold transition-colors hover:opacity-80 ${
+                darkMode ? 'text-orange-500' : 'text-orange-600'
+              }`}
+            >
+              {t.phoneDisplay}
+            </a>{' '}
+            {t.callForOrdersExtra}
+          </p>
+          <p className={`mt-4 text-sm ${
+            darkMode ? 'text-gray-500' : 'text-gray-600'
+          }`}>
+            <span className={`font-bold ${
+              darkMode ? 'text-orange-500' : 'text-orange-600'
+            }`}>{t.addressLabel}</span>{' '}
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.location2)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:underline"
+            >
+              {t.location2}
+            </a>
           </p>
         </div>
       </footer>
