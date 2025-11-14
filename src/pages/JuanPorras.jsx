@@ -17,6 +17,7 @@ const translations = {
     orderLabel: ' Por Encargo',
     consultLabel: 'Consultar',
     paellaDesc: 'Receta tradicional preparada con amor',
+    paellaNegraDesc: 'Receta de siempre elaborada con dedicación.',
     codilloDesc: 'Tierno, jugoso y delicioso',
     conejoDesc: 'Receta casera auténtica',
     chickensSchedule: 'Viernes, Sábados y Domingos',
@@ -46,6 +47,7 @@ const translations = {
     orderLabel: 'By Order',
     consultLabel: 'Inquire',
     paellaDesc: 'Traditional recipe prepared with love',
+    paellaNegraDesc: 'Traditional recipe crafted with care.”',
     codilloDesc: 'Tender, juicy and delicious',
     conejoDesc: 'Authentic homemade recipe',
     chickensSchedule: 'Friday, Saturday and Sunday',
@@ -99,6 +101,13 @@ const JuanPorras = () => {
       price: t.orderLabel,
       description: t.paellaDesc,
       image: '/paella.jpeg'
+    },
+    {
+      section: 'todos',
+      name: 'PAELLA NEGRA',
+      price: t.orderLabel,
+      description: t.paellaNegraDesc,
+      image: '/paella_negra.jpeg'
     },
     {
       section: 'todos',
@@ -216,8 +225,8 @@ const JuanPorras = () => {
             </div>
 
             {/* Grid de Items */}
-            <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
-              {menuItems.slice(0, 3).map((item, index) => (
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+              {menuItems.filter(item => item.section === 'todos').map((item, index) => (
                 <div key={index} className="relative group">
                   {/* Fondo flotante con hover */}
                   <div className={`absolute w-40 h-40 transition-all duration-500 -top-6 -right-6 rounded-3xl group-hover:-top-10 group-hover:-right-10 group-hover:w-56 group-hover:h-56 blur-xl ${
@@ -227,7 +236,7 @@ const JuanPorras = () => {
                   }`}></div>
                   
                   {/* Card */}
-                  <div className={`relative h-full p-8 transition-all duration-500 border rounded-3xl backdrop-blur-sm transform group-hover:scale-105 group-hover:-translate-y-2 ${
+                  <div className={`relative h-full p-8 transition-all duration-500 border rounded-3xl backdrop-blur-sm transform group-hover:scale-105 group-hover:-translate-y-2 flex flex-col ${
                     darkMode
                       ? 'bg-gray-800/80 border-orange-500/20 group-hover:border-orange-500/60 group-hover:shadow-2xl group-hover:shadow-orange-500/20'
                       : 'bg-white border-orange-500/30 group-hover:border-orange-500/60 shadow-md group-hover:shadow-2xl group-hover:shadow-orange-500/15'
@@ -248,19 +257,21 @@ const JuanPorras = () => {
                     </div>
 
                     {/* Contenido */}
-                    <h3 className={`mb-1 text-3xl font-black tracking-tight transition-colors duration-300 group-hover:text-orange-500 ${
-                      darkMode ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {item.name}
-                    </h3>
-                    <p className={`mb-4 font-bold transition-colors duration-300 ${
-                      darkMode ? 'text-orange-500 group-hover:text-orange-400' : 'text-orange-600 group-hover:text-orange-500'
-                    }`}>{item.price}</p>
-                    <p className={`text-sm leading-relaxed transition-colors duration-300 ${
-                      darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-700'
-                    }`}>
-                      {item.description}
-                    </p>
+                    <div className="flex flex-col flex-grow text-center">
+                      <h3 className={`mb-1 text-3xl font-black tracking-tight transition-colors duration-300 group-hover:text-orange-500 ${
+                        darkMode ? 'text-white' : 'text-gray-900'
+                      }`}>
+                        {item.name}
+                      </h3>
+                      <p className={`mb-4 font-bold transition-colors duration-300 ${
+                        darkMode ? 'text-orange-500 group-hover:text-orange-400' : 'text-orange-600 group-hover:text-orange-500'
+                      }`}>{item.price}</p>
+                      <p className={`text-sm leading-relaxed transition-colors duration-300 mt-auto ${
+                        darkMode ? 'text-gray-400 group-hover:text-gray-300' : 'text-gray-600 group-hover:text-gray-700'
+                      }`}>
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
