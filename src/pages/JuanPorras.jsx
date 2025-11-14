@@ -7,14 +7,14 @@ const translations = {
   es: {
     welcome: 'Bienvenido a',
     title: 'Juan el Porra',
-    subtitle: 'Cada día preparamos comida casera diferente, hecha con cariño y sabor auténtico. ¡Escríbenos por WhatsApp y descubre el menú del día!',
+    subtitle: 'Cada día preparamos comida casera diferente, hecha con cariño y sabor auténtico. ¡Escríbenos por WhatsApp y descubre la variedad del día de hoy!',
     homemadeFood: 'COMIDAS',
     homemadeFoodHighlight: 'CASERAS',
     roastedChickens: 'POLLOS',
     roastedChickensHighlight: 'ASADOS',
     sundaysOrder: 'LOS DOMINGOS',
     sundaysOrderHighlight: 'POR ENCARGO',
-    orderLabel: 'Encargo',
+    orderLabel: ' Por Encargo',
     consultLabel: 'Consultar',
     paellaDesc: 'Receta tradicional preparada con amor',
     codilloDesc: 'Tierno, jugoso y delicioso',
@@ -25,25 +25,25 @@ const translations = {
     chooseFavorite: 'Elige tu especialidad favorita:',
     delivery: 'DOMICILIO',
     location: 'Ubicación:',
-    locationValue: 'Ardales - Carratraca',
+    locationValue: 'Ardales ',
     holidays: 'DÍAS FESTIVOS',
     openWithReservation: 'Abrimos con reserva',
     checkAvailability: 'Consulte disponibilidad y haga su reserva',
     contactUs: 'Contáctanos',
     callForOrders: 'Llámenos para pedidos especiales y más información',
-    whatsappMessage: 'Hola, me gustaría información sobre los servicios de Juan el Porra'
+    whatsappMessage: 'Hola, me gustaría recibir la variedad de los platos del día'
   },
   en: {
     welcome: 'Welcome to',
     title: 'Juan el Porra',
-    subtitle: 'Every day we prepare fresh homemade dishes, crafted with care and authentic flavor. Message us on WhatsApp to see today’s menu!',
+    subtitle: 'Every day we prepare different homemade food, made with love and authentic flavor. Write to us on WhatsApp and discover today’s variety!',
     homemadeFood: 'HOMEMADE',
     homemadeFoodHighlight: 'FOOD',
     roastedChickens: 'ROASTED',
     roastedChickensHighlight: 'CHICKENS',
     sundaysOrder: 'SUNDAYS',
     sundaysOrderHighlight: 'BY ORDER',
-    orderLabel: 'Order',
+    orderLabel: 'By Order',
     consultLabel: 'Inquire',
     paellaDesc: 'Traditional recipe prepared with love',
     codilloDesc: 'Tender, juicy and delicious',
@@ -54,13 +54,13 @@ const translations = {
     chooseFavorite: 'Choose your favorite specialty:',
     delivery: 'DELIVERY',
     location: 'Location:',
-    locationValue: 'Ardales - Carratraca',
+    locationValue: 'Ardales ',
     holidays: 'HOLIDAYS',
     openWithReservation: 'Open with reservation',
     checkAvailability: 'Check availability and make your reservation',
     contactUs: 'Contact Us',
     callForOrders: 'Call us for special orders and more information',
-    whatsappMessage: 'Hello, I would like information about Juan el Porra services'
+    whatsappMessage: 'Hi, I’d like to receive today’s selection of dishes.'
   }
 };
 
@@ -98,28 +98,28 @@ const JuanPorras = () => {
       name: 'PAELLA',
       price: t.orderLabel,
       description: t.paellaDesc,
-      image: '🥘'
+      image: '/paella.jpeg'
     },
     {
       section: 'todos',
       name: 'CODILLO',
       price: t.orderLabel,
       description: t.codilloDesc,
-      image: '🍖'
+      image: '/codillo.jpeg'
     },
     {
       section: 'todos',
-      name: 'CONEJO',
+      name: 'PIERNA DE CORDERO',
       price: t.orderLabel,
       description: t.conejoDesc,
-      image: '🍗'
+      image: '/pierna_de_cordero.jpeg'
     },
     {
       section: 'pollos',
       name: language === 'es' ? 'POLLOS ASADOS' : 'ROASTED CHICKENS',
       price: t.consultLabel,
       description: t.chickensSchedule,
-      image: '🐔'
+      image: '/pollo.jpeg'
     }
   ];
 
@@ -183,12 +183,12 @@ const JuanPorras = () => {
         <img className='w-auto mx-auto h-96' src="/logoJuanPorra.png" alt="" />
 
         <div className="relative z-10">
-          <p className={`mb-2 text-lg font-bold tracking-widest ${
+          {/* <p className={`mb-2 text-lg font-bold tracking-widest ${
             darkMode ? 'text-orange-500' : 'text-orange-600'
-          }`}>{t.welcome}</p>
-          <h1 className="mb-2 font-black tracking-tight text-7xl">
+          }`}>{t.welcome}</p> */}
+          {/* <h1 className="mb-2 font-black tracking-tight text-7xl">
             {t.title}
-          </h1>
+          </h1> */}
           <p className={`text-xl font-light ${
             darkMode ? 'text-gray-300' : 'text-gray-600'
           }`}>{t.subtitle}</p>
@@ -232,17 +232,18 @@ const JuanPorras = () => {
                       ? 'bg-gray-800/80 border-orange-500/20 group-hover:border-orange-500/60 group-hover:shadow-2xl group-hover:shadow-orange-500/20'
                       : 'bg-white border-orange-500/30 group-hover:border-orange-500/60 shadow-md group-hover:shadow-2xl group-hover:shadow-orange-500/15'
                   }`}>
-                    {/* Imagen circular decorativa */}
+                    {/* Imagen cuadrada decorativa */}
                     <div className="relative mb-8">
-                      <div className={`absolute w-32 h-32 rounded-full -top-4 -right-4 blur-2xl transition-all duration-500 group-hover:scale-125 ${
+                      <div className={`absolute w-48 h-48 rounded-3xl -top-4 -right-4 blur-2xl transition-all duration-500 group-hover:scale-125 ${
                         darkMode ? 'bg-orange-500/10' : 'bg-orange-500/5'
                       }`}></div>
-                      <div className={`relative flex items-center justify-center mx-auto transition-all duration-500 border-2 rounded-full w-28 h-28 transform group-hover:scale-110 ${
+                      <div className={`relative flex items-center justify-center mx-auto transition-all duration-500 border-4 rounded-3xl w-48 h-48 transform group-hover:scale-110 overflow-hidden ${
                         darkMode
                           ? 'bg-orange-500/20 border-orange-500/30 group-hover:bg-orange-500/40 group-hover:border-orange-500/80'
                           : 'bg-orange-500/10 border-orange-500/40 group-hover:bg-orange-500/20 group-hover:border-orange-500/80'
                       }`}>
-                        <span className="text-6xl">{item.image}</span>
+                        {/* <span className="text-6xl">{item.image}</span> */}
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-2xl" />
                       </div>
                     </div>
 
@@ -302,15 +303,16 @@ const JuanPorras = () => {
                   
                   {/* Imagen Izquierda */}
                   <div className="relative order-2 md:order-1">
-                    <div className={`absolute rounded-full -top-8 -left-8 w-80 h-80 blur-3xl transition-all duration-500 group-hover:scale-125 ${
+                    <div className={`absolute rounded-3xl -top-8 -left-8 w-80 h-80 blur-3xl transition-all duration-500 group-hover:scale-125 ${
                       darkMode ? 'bg-orange-500/10' : 'bg-orange-500/5'
                     }`}></div>
-                    <div className={`relative flex items-center justify-center w-64 h-64 mx-auto transition-all duration-500 border-4 rounded-full transform group-hover:scale-110 ${
+                    <div className={`relative flex items-center justify-center w-64 h-64 mx-auto transition-all duration-500 border-4 rounded-3xl transform group-hover:scale-110 overflow-hidden ${
                       darkMode
                         ? 'bg-orange-500/30 border-orange-500/40 group-hover:bg-orange-500/50 group-hover:border-orange-500/80'
                         : 'bg-orange-500/10 border-orange-500/40 group-hover:bg-orange-500/20 group-hover:border-orange-500/80'
                     }`}>
-                      <span className="text-8xl">🐔</span>
+                      {/* <span className="text-8xl">🐔</span> */}
+                      <img src="/pollo.jpeg" alt="Pollo Asado" className="w-full h-full object-cover rounded-2xl" />
                     </div>
                   </div>
 
@@ -370,9 +372,9 @@ const JuanPorras = () => {
                 ? 'bg-orange-500 shadow-orange-500/20 hover:shadow-orange-500/40'
                 : 'bg-orange-600 shadow-orange-600/20 hover:shadow-orange-600/40'
             }`}>
-              <p className="mb-6 text-lg font-semibold text-white/90">{t.chooseFavorite}</p>
+              {/* <p className="mb-6 text-lg font-semibold text-white/90">{t.chooseFavorite}</p> */}
               <div className="flex flex-wrap justify-center gap-4">
-                {['PAELLA', 'CODILLO', 'CONEJO'].map((item, idx) => (
+                {['PAELLA', 'CODILLO', 'PIERNA DE CORDERO'].map((item, idx) => (
                   <div key={idx} className="px-8 py-3 transition-all duration-300 transform border rounded-full cursor-pointer bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/60 hover:bg-white/30 hover:scale-110">
                     <span className="text-lg font-bold text-white">{item}</span>
                   </div>
@@ -417,7 +419,7 @@ const JuanPorras = () => {
                     }`}>{t.locationValue}</p>
                   </div>
 
-                  <a
+                  {/* <a
                     href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -429,7 +431,7 @@ const JuanPorras = () => {
                   >
                     <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5" />
                     WhatsApp
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>
@@ -459,7 +461,7 @@ const JuanPorras = () => {
                     darkMode ? 'text-gray-300 group-hover:text-gray-200' : 'text-gray-700 group-hover:text-gray-800'
                   }`}>{t.checkAvailability}</p>
                   
-                  <a
+                  {/* <a
                     href={whatsappLink}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -471,7 +473,7 @@ const JuanPorras = () => {
                   >
                     <FontAwesomeIcon icon={faWhatsapp} className="w-5 h-5" />
                     WhatsApp
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>
