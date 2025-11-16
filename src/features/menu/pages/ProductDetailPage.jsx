@@ -317,6 +317,23 @@ const ProductDetailPage = () => {
                 {description}
               </p>
             )}
+            {isOrderingEnabled && (
+                  <div className="mt-4">
+                    <label htmlFor="additionalNotes" className="block mb-2 text-sm font-medium">
+                      <span className="inline-block px-3 py-2 leading-relaxed text-justify text-gray-800 bg-yellow-200 rounded-lg dark:bg-yellow-500/30 dark:text-gray-200">
+                        {t('productDetail.additionalIngredients')}
+                      </span>
+                    </label>
+                    <input
+                      id="additionalNotes"
+                      type="text"
+                      value={additionalNotes}
+                      onChange={(e) => setAdditionalNotes(e.target.value)}
+                      placeholder={t('productDetail.additionalIngredientsPlaceholder')}
+                      className="w-full px-4 py-2 transition-colors border-2 rounded-lg border-pepper-gray-light dark:border-gray-600 focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white "
+                    />
+                  </div>
+                )}
 
             {/* Ingredientes - con checkboxes si pedidos habilitados, lista simple si no */}
             {ingredients && ingredients.length > 0 && (
@@ -420,23 +437,7 @@ const ProductDetailPage = () => {
                 )}
 
                 {/* Campo para ingredientes adicionales - solo si pedidos habilitados */}
-                {isOrderingEnabled && (
-                  <div className="mt-4">
-                    <label htmlFor="additionalNotes" className="block mb-2 text-sm font-medium">
-                      <span className="inline-block px-3 py-2 leading-relaxed text-justify text-gray-800 bg-yellow-200 rounded-lg dark:bg-yellow-500/30 dark:text-gray-200">
-                        {t('productDetail.additionalIngredients')}
-                      </span>
-                    </label>
-                    <input
-                      id="additionalNotes"
-                      type="text"
-                      value={additionalNotes}
-                      onChange={(e) => setAdditionalNotes(e.target.value)}
-                      placeholder={t('productDetail.additionalIngredientsPlaceholder')}
-                      className="w-full px-4 py-2 transition-colors border-2 rounded-lg border-pepper-gray-light dark:border-gray-600 focus:border-pepper-orange focus:outline-none dark:bg-gray-800 dark:text-white "
-                    />
-                  </div>
-                )}
+                
               </div>
             )}
 
