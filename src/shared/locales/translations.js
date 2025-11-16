@@ -80,7 +80,7 @@ export const translations = {
     // ProductDetailPage
     productDetail: {
       back: 'Volver',
-      ingredients: 'Ingredientes',
+      ingredients: 'Su plato se compone de',
       quantity: 'Cantidad',
       total: 'Total',
       addToCart: 'Agregar al carrito',
@@ -325,7 +325,7 @@ export const translations = {
     // ProductDetailPage
     productDetail: {
       back: 'Back',
-      ingredients: 'Ingredients',
+      ingredients: 'Your dish is composed of',
       quantity: 'Quantity',
       total: 'Total',
       addToCart: 'Add to cart',
