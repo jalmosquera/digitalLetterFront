@@ -317,6 +317,7 @@ const ProductDetailPage = () => {
                 {description}
               </p>
             )}
+            {/* Campo para ingredientes adicionales - solo si pedidos habilitados */}
             {isOrderingEnabled && (
                   <div className="mt-4">
                     <label htmlFor="additionalNotes" className="block mb-2 text-sm font-medium">
@@ -436,7 +437,6 @@ const ProductDetailPage = () => {
                   </div>
                 )}
 
-                {/* Campo para ingredientes adicionales - solo si pedidos habilitados */}
                 
               </div>
             )}
