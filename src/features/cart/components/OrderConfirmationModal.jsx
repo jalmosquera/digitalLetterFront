@@ -116,12 +116,16 @@ const OrderConfirmationModal = ({ isOpen, onClose, onConfirm, orderData, loading
                       {/* Customizations */}
                       {item.customization && (
                         <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600 space-y-1 text-sm">
+                          {/* ============================================
+                              COMENTADO: Ingredientes deseleccionados
+                              ============================================
                           {item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0 && (
                             <p className="text-red-600 dark:text-red-400">
                               ❌ <span className="font-medium">{t('product.without')}:</span>{' '}
                               {item.customization.deselectedIngredients.join(', ')}
                             </p>
                           )}
+                          */}
                           {item.customization.selectedExtras && item.customization.selectedExtras.length > 0 && (
                             <p className="text-green-600 dark:text-green-400">
                               🌟 <span className="font-medium">{t('product.extras')}:</span>{' '}

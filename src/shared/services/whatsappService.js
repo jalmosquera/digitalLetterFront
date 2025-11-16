@@ -103,12 +103,23 @@ const generateSpanishMessage = (orderData, getTranslation) => {
 
     // Add ingredient customization if customer deselected any
     if (item.customization) {
-      const { deselectedIngredients, selectedExtras, additionalNotes } = item.customization;
+      const {
+        /* ============================================
+           COMENTADO: Ingredientes deseleccionados
+           ============================================ */
+        // deselectedIngredients,
+        selectedExtras,
+        additionalNotes
+      } = item.customization;
 
+      /* ============================================
+         COMENTADO: Mostrar ingredientes deseleccionados
+         ============================================
       // Show deselected ingredients (ingredients that were removed)
       if (deselectedIngredients && deselectedIngredients.length > 0) {
         message += `   ❌ Sin: ${deselectedIngredients.join(', ')}\n`;
       }
+      */
 
       // Add extra ingredients if selected
       if (selectedExtras && selectedExtras.length > 0) {
@@ -176,9 +187,13 @@ const generateBilingualMessage = (orderData) => {
 
     // Show customizations
     if (item.customization) {
+      /* ============================================
+         COMENTADO: Ingredientes deseleccionados (EN)
+         ============================================
       if (item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0) {
         message += `   ❌ Without: ${item.customization.deselectedIngredients.join(', ')}\n`;
       }
+      */
       if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
         const extrasText = item.customization.selectedExtras
           .map(extra => `${extra.translations?.en?.name || extra.translations?.es?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
@@ -226,9 +241,13 @@ const generateBilingualMessage = (orderData) => {
 
     // Show customizations
     if (item.customization) {
+      /* ============================================
+         COMENTADO: Ingredientes deseleccionados (ES)
+         ============================================
       if (item.customization.deselectedIngredients && item.customization.deselectedIngredients.length > 0) {
         message += `   ❌ Sin: ${item.customization.deselectedIngredients.join(', ')}\n`;
       }
+      */
       if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
         const extrasText = item.customization.selectedExtras
           .map(extra => `${extra.translations?.es?.name || extra.translations?.en?.name} (+€${parseFloat(extra.price).toFixed(2)})`)

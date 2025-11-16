@@ -245,7 +245,10 @@ const CheckoutPage = () => {
             unit_price: pricePerUnit,
             subtotal: itemSubtotal,
             customization: item.customization ? {
-              deselected_ingredients: item.customization.deselectedIngredients || [],
+              /* ============================================
+                 COMENTADO: Ingredientes deseleccionados
+                 ============================================ */
+              // deselected_ingredients: item.customization.deselectedIngredients || [],
               selected_extras: selectedExtras,
               additional_notes: item.customization.additionalNotes || '',
             } : null,

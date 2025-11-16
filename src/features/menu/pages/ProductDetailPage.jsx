@@ -19,7 +19,12 @@ const ProductDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  /* ============================================
+     COMENTADO: Ocultar ingredientes según petición cliente
+     Fecha: 2025-01-16
+     Se puede reactivar eliminando este comentario
+     ============================================ */
+  // const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -43,13 +48,16 @@ const ProductDetailPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id]);
 
-  // Initialize selected ingredients when product loads (all selected by default)
-  useEffect(() => {
-    if (productData && productData.ingredients) {
-      const allIngredientIds = productData.ingredients.map(ing => ing.id);
-      setSelectedIngredients(allIngredientIds);
-    }
-  }, [productData]);
+  /* ============================================
+     COMENTADO: Inicialización de ingredientes
+     ============================================ */
+  // // Initialize selected ingredients when product loads (all selected by default)
+  // useEffect(() => {
+  //   if (productData && productData.ingredients) {
+  //     const allIngredientIds = productData.ingredients.map(ing => ing.id);
+  //     setSelectedIngredients(allIngredientIds);
+  //   }
+  // }, [productData]);
 
   // Manejar incremento de cantidad
   const handleIncrement = () => {
@@ -63,16 +71,19 @@ const ProductDetailPage = () => {
     }
   };
 
-  // Toggle ingredient selection (base ingredients)
-  const toggleIngredient = (ingredientId) => {
-    setSelectedIngredients(prev => {
-      if (prev.includes(ingredientId)) {
-        return prev.filter(id => id !== ingredientId);
-      } else {
-        return [...prev, ingredientId];
-      }
-    });
-  };
+  /* ============================================
+     COMENTADO: Función toggle ingredientes
+     ============================================ */
+  // // Toggle ingredient selection (base ingredients)
+  // const toggleIngredient = (ingredientId) => {
+  //   setSelectedIngredients(prev => {
+  //     if (prev.includes(ingredientId)) {
+  //       return prev.filter(id => id !== ingredientId);
+  //     } else {
+  //       return [...prev, ingredientId];
+  //     }
+  //   });
+  // };
 
   // Toggle extra ingredient selection
   const toggleExtraIngredient = (ingredientId) => {
@@ -93,16 +104,22 @@ const ProductDetailPage = () => {
       return extra;
     }).filter(Boolean);
 
-    // Calculate deselected ingredients (ingredients that were removed)
-    const allIngredientIds = productData.ingredients.map(ing => ing.id);
-    const deselectedIngredientIds = allIngredientIds.filter(id => !selectedIngredients.includes(id));
-    const deselectedIngredientNames = productData.ingredients
-      .filter(ing => deselectedIngredientIds.includes(ing.id))
-      .map(ing => getTranslation(ing.translations, 'name'));
+    /* ============================================
+       COMENTADO: Cálculo de ingredientes deseleccionados
+       ============================================ */
+    // // Calculate deselected ingredients (ingredients that were removed)
+    // const allIngredientIds = productData.ingredients.map(ing => ing.id);
+    // const deselectedIngredientIds = allIngredientIds.filter(id => !selectedIngredients.includes(id));
+    // const deselectedIngredientNames = productData.ingredients
+    //   .filter(ing => deselectedIngredientIds.includes(ing.id))
+    //   .map(ing => getTranslation(ing.translations, 'name'));
 
     const customization = {
-      selectedIngredients,
-      deselectedIngredients: deselectedIngredientNames,
+      /* ============================================
+         COMENTADO: Ingredientes en customization
+         ============================================ */
+      // selectedIngredients,
+      // deselectedIngredients: deselectedIngredientNames,
       selectedExtras: extrasWithPrices,
       additionalNotes: additionalNotes.trim(),
     };
@@ -118,10 +135,13 @@ const ProductDetailPage = () => {
     setAdditionalNotes('');
     setSelectedExtras([]);
     setShowExtras(false);
-    if (productData && productData.ingredients) {
-      const allIngredientIds = productData.ingredients.map(ing => ing.id);
-      setSelectedIngredients(allIngredientIds);
-    }
+    /* ============================================
+       COMENTADO: Reset de ingredientes seleccionados
+       ============================================ */
+    // if (productData && productData.ingredients) {
+    //   const allIngredientIds = productData.ingredients.map(ing => ing.id);
+    //   setSelectedIngredients(allIngredientIds);
+    // }
   };
 
   // Estado de carga
@@ -336,7 +356,11 @@ const ProductDetailPage = () => {
                   </div>
                 )}
 
-            {/* Ingredientes - con checkboxes si pedidos habilitados, lista simple si no */}
+            {/* ============================================
+                COMENTADO: Sección de ingredientes base
+                Se oculta según petición del cliente
+                Fecha: 2025-01-16
+                ============================================
             {ingredients && ingredients.length > 0 && (
               <div className="mb-6">
                 <h3 className="mb-3 text-xl font-bold font-gabarito text-pepper-charcoal dark:text-white">
@@ -386,7 +410,7 @@ const ProductDetailPage = () => {
                   })}
                 </div>
 
-                {/* Botón para agregar extras - solo si pedidos habilitados */}
+                Botón para agregar extras
                 {isOrderingEnabled && extraIngredients.length > 0 && (
                   <div className="mt-6">
                     <button
@@ -397,7 +421,7 @@ const ProductDetailPage = () => {
                       {showExtras ? t('productDetail.hideExtras') : t('productDetail.addExtras')}
                     </button>
 
-                    {/* Lista de ingredientes extras */}
+                    Lista de ingredientes extras
                     {showExtras && (
                       <div className="p-4 mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                         <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -436,8 +460,58 @@ const ProductDetailPage = () => {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+            */}
 
-                
+            {/* Sección de extras - mantener funcionalidad activa */}
+            {isOrderingEnabled && extraIngredients.length > 0 && (
+              <div className="mb-6">
+                <button
+                  type="button"
+                  onClick={() => setShowExtras(!showExtras)}
+                  className="w-full px-4 py-3 font-semibold transition-all border-2 rounded-lg font-gabarito border-pepper-orange text-pepper-orange hover:bg-pepper-orange hover:text-white"
+                >
+                  {showExtras ? t('productDetail.hideExtras') : t('productDetail.addExtras')}
+                </button>
+
+                {/* Lista de ingredientes extras */}
+                {showExtras && (
+                  <div className="p-4 mt-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                    <p className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-400">
+                      {t('productDetail.selectAdditionalIngredients')}
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {extraIngredients.map((ingredient) => {
+                        const ingredientName = getTranslation(ingredient.translations, 'name') || 'Ingrediente';
+                        const ingredientPrice = parseFloat(ingredient.price || 0).toFixed(2);
+                        const isSelected = selectedExtras.includes(ingredient.id);
+
+                        return (
+                          <label
+                            key={ingredient.id}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-all ${
+                              isSelected
+                                ? 'bg-green-500 border-green-500 text-white'
+                                : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-pepper-charcoal dark:text-white hover:border-green-500'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleExtraIngredient(ingredient.id)}
+                              className="w-4 h-4 border-gray-300 rounded text-green-500 focus:ring-green-500"
+                            />
+                            <span className="text-2xl">{ingredient.icon}</span>
+                            <span className="font-semibold font-gabarito">
+                              {ingredientName} <span className="text-xs">(+{ingredientPrice}€)</span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

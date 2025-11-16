@@ -90,7 +90,10 @@ const CartPage = () => {
 
               // Get customized ingredients if any
               const hasCustomization = customization && (
-                (customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0)) ||
+                /* ============================================
+                   COMENTADO: Verificación de ingredientes seleccionados
+                   ============================================ */
+                // (customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0)) ||
                 customization.selectedExtras?.length > 0 ||
                 customization.additionalNotes
               );
@@ -171,6 +174,9 @@ const CartPage = () => {
                   {/* Show customization details if any */}
                   {hasCustomization && (
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-3 text-sm">
+                      {/* ============================================
+                          COMENTADO: Mostrar ingredientes customizados
+                          ============================================
                       {customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0) && (
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700 dark:text-gray-300">
@@ -184,6 +190,7 @@ const CartPage = () => {
                           </span>
                         </div>
                       )}
+                      */}
                       {customization.selectedExtras && customization.selectedExtras.length > 0 && (
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700 dark:text-gray-300">
