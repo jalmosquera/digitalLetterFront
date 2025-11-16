@@ -207,14 +207,14 @@ const CategoriesPage = () => {
                         className="text-pepper-orange hover:text-pepper-orange/80 transition-colors p-2"
                         title="Editar"
                       >
-                        <FontAwesomeIcon icon={faEdit} />
+                        <FontAwesomeIcon icon={faEdit} className="text-lg" />
                       </button>
                       <button
                         onClick={() => handleDelete(category.id)}
                         className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-2"
                         title="Eliminar"
                       >
-                        <FontAwesomeIcon icon={faTrash} />
+                        <FontAwesomeIcon icon={faTrash} className="text-lg" />
                       </button>
                     </td>
                   </tr>

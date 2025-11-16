@@ -108,6 +108,7 @@ const generateSpanishMessage = (orderData, getTranslation) => {
            COMENTADO: Ingredientes deseleccionados
            ============================================ */
         // deselectedIngredients,
+        selectedOptions,
         selectedExtras,
         additionalNotes
       } = item.customization;
@@ -120,6 +121,13 @@ const generateSpanishMessage = (orderData, getTranslation) => {
         message += `   ❌ Sin: ${deselectedIngredients.join(', ')}\n`;
       }
       */
+
+      // Show selected options (Meat Type, Sauce Type, etc.)
+      if (selectedOptions && Object.keys(selectedOptions).length > 0) {
+        Object.values(selectedOptions).forEach(option => {
+          message += `   ✓ ${option.optionName}: ${option.icon ? option.icon + ' ' : ''}${option.choiceName}\n`;
+        });
+      }
 
       // Add extra ingredients if selected
       if (selectedExtras && selectedExtras.length > 0) {
@@ -194,6 +202,12 @@ const generateBilingualMessage = (orderData) => {
         message += `   ❌ Without: ${item.customization.deselectedIngredients.join(', ')}\n`;
       }
       */
+      // Show selected options (EN)
+      if (item.customization.selectedOptions && Object.keys(item.customization.selectedOptions).length > 0) {
+        Object.values(item.customization.selectedOptions).forEach(option => {
+          message += `   ✓ ${option.optionName}: ${option.icon ? option.icon + ' ' : ''}${option.choiceName}\n`;
+        });
+      }
       if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
         const extrasText = item.customization.selectedExtras
           .map(extra => `${extra.translations?.en?.name || extra.translations?.es?.name} (+€${parseFloat(extra.price).toFixed(2)})`)
@@ -248,6 +262,12 @@ const generateBilingualMessage = (orderData) => {
         message += `   ❌ Sin: ${item.customization.deselectedIngredients.join(', ')}\n`;
       }
       */
+      // Show selected options (ES)
+      if (item.customization.selectedOptions && Object.keys(item.customization.selectedOptions).length > 0) {
+        Object.values(item.customization.selectedOptions).forEach(option => {
+          message += `   ✓ ${option.optionName}: ${option.icon ? option.icon + ' ' : ''}${option.choiceName}\n`;
+        });
+      }
       if (item.customization.selectedExtras && item.customization.selectedExtras.length > 0) {
         const extrasText = item.customization.selectedExtras
           .map(extra => `${extra.translations?.es?.name || extra.translations?.en?.name} (+€${parseFloat(extra.price).toFixed(2)})`)

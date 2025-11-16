@@ -56,6 +56,12 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
       path: '/admin/ingredients',
     },
     {
+      id: 'product-options',
+      label: 'Opciones',
+      icon: faCog,
+      path: '/admin/product-options',
+    },
+    {
       id: 'users',
       label: 'Usuarios',
       icon: faUsers,

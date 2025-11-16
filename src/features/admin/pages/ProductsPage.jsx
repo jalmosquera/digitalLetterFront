@@ -444,7 +444,9 @@ const ProductsPage = () => {
                         <img
                           src={product.image || '/placeholder-product.jpg'}
                           alt={nameES}
-                          className="object-cover w-12 h-12 rounded-lg"
+                          onClick={() => handleOpenModal(product)}
+                          className="object-cover w-12 h-12 rounded-lg cursor-pointer hover:opacity-75 transition-opacity"
+                          title="Click para editar producto completo"
                         />
                       </td>
 
@@ -629,24 +631,24 @@ const ProductsPage = () => {
                               <>
                                 <button
                                   onClick={() => handleStartEdit(product)}
-                                  className="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                  className="p-2 text-blue-600 transition-colors rounded hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
                                   title="Editar inline"
                                 >
-                                  <FontAwesomeIcon icon={faEdit} />
+                                  <FontAwesomeIcon icon={faEdit} className="text-lg" />
                                 </button>
                                 <button
                                   onClick={() => handleOpenModal(product)}
-                                  className="ml-3 transition-colors text-pepper-orange hover:text-pepper-orange/80"
+                                  className="p-2 ml-2 transition-colors rounded text-pepper-orange hover:bg-orange-50 dark:hover:bg-orange-900/20"
                                   title="Editar completo (ingredientes, imagen, etc)"
                                 >
-                                  <FontAwesomeIcon icon={faPlus} />
+                                  <FontAwesomeIcon icon={faPlus} className="text-lg" />
                                 </button>
                                 <button
                                   onClick={() => handleDelete(product.id)}
-                                  className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  className="p-2 ml-2 text-red-500 transition-colors rounded hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                                   title="Eliminar"
                                 >
-                                  <FontAwesomeIcon icon={faTrash} />
+                                  <FontAwesomeIcon icon={faTrash} className="text-lg" />
                                 </button>
                               </>
                             )}

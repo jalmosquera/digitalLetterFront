@@ -11,9 +11,11 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   const { getTranslation } = useLanguage();
   const { data: categoriesData } = useFetch('/categories/');
   const { data: ingredientsData } = useFetch('/ingredients/');
+  const { data: optionsData } = useFetch('/product-options/');
 
   const categories = categoriesData?.results || [];
   const ingredients = ingredientsData || []; // Ingredients endpoint returns array directly (no pagination)
+  const productOptions = optionsData?.results || [];
 
   const [formData, setFormData] = useState({
     name_es: '',
@@ -26,6 +28,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     available: true,
     image: null,
     ingredients: [],
+    options: [],
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -43,6 +46,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         available: product.available ?? true,
         image: null,
         ingredients: product.ingredients?.map(ing => ing.id) || [],
+        options: product.options?.map(opt => opt.id) || [],
       });
       setImagePreview(product.image);
     } else {
@@ -57,6 +61,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         available: true,
         image: null,
         ingredients: [],
+        options: [],
       });
       setImagePreview(null);
     }
@@ -81,6 +86,15 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       ingredients: prev.ingredients.includes(ingredientId)
         ? prev.ingredients.filter(id => id !== ingredientId)
         : [...prev.ingredients, ingredientId]
+    }));
+  };
+
+  const handleOptionToggle = (optionId) => {
+    setFormData(prev => ({
+      ...prev,
+      options: prev.options.includes(optionId)
+        ? prev.options.filter(id => id !== optionId)
+        : [...prev.options, optionId]
     }));
   };
 
@@ -117,6 +131,11 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     // Ingredientes (cada uno por separado)
     (formData.ingredients || []).forEach((id) => {
       formDataToSend.append('ingredients', id);
+    });
+
+    // Opciones (cada una por separado)
+    (formData.options || []).forEach((id) => {
+      formDataToSend.append('options', id);
     });
 
     // Imagen (solo si se seleccionó una nueva)
@@ -323,6 +342,41 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                   ) : (
                     <p className="col-span-2 text-sm text-gray-500 dark:text-gray-400">
                       No hay ingredientes disponibles
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Opciones de Productos */}
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Opciones Personalizables
+                  <span className="block text-xs font-normal text-gray-500 dark:text-gray-400">
+                    (Tipo de Carne, Tipo de Salsa, etc.)
+                  </span>
+                </label>
+                <div className="grid grid-cols-2 gap-3 p-3 border border-gray-200 rounded-lg dark:border-dark-border bg-gray-50 dark:bg-dark-bg/50">
+                  {productOptions.length > 0 ? (
+                    productOptions.map(option => (
+                      <label key={option.id} className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.options.includes(option.id)}
+                          onChange={() => handleOptionToggle(option.id)}
+                          className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
+                        />
+                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                          {getTranslation(option.translations, 'name')}
+                          {option.is_required && <span className="ml-1 text-xs text-red-500">*</span>}
+                          <span className="block text-xs text-gray-500 dark:text-gray-400">
+                            {option.choices?.length || 0} {(option.choices?.length || 0) !== 1 ? 'opciones' : 'opción'}
+                          </span>
+                        </span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="col-span-2 text-sm text-gray-500 dark:text-gray-400">
+                      No hay opciones disponibles
                     </p>
                   )}
                 </div>

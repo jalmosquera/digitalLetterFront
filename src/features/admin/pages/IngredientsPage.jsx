@@ -435,7 +435,13 @@ const IngredientsPage = () => {
                             placeholder="🍅"
                           />
                         ) : (
-                          <span className="text-2xl">{ingredient.icon || '📦'}</span>
+                          <span
+                            onClick={() => handleOpenModal(ingredient)}
+                            className="text-2xl cursor-pointer hover:scale-110 transition-transform"
+                            title="Click para editar ingrediente"
+                          >
+                            {ingredient.icon || '📦'}
+                          </span>
                         )}
                       </td>
 
@@ -573,7 +579,7 @@ const IngredientsPage = () => {
                                   className="text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                                   title="Editar inline"
                                 >
-                                  <FontAwesomeIcon icon={faEdit} />
+                                  <FontAwesomeIcon icon={faEdit} className="text-lg" />
                                 </button>
                                 <button
                                   onClick={() => handleOpenModal(ingredient)}
@@ -587,7 +593,7 @@ const IngredientsPage = () => {
                                   className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                                   title="Eliminar"
                                 >
-                                  <FontAwesomeIcon icon={faTrash} />
+                                  <FontAwesomeIcon icon={faTrash} className="text-lg" />
                                 </button>
                               </>
                             )}

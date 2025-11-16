@@ -126,6 +126,17 @@ const OrderConfirmationModal = ({ isOpen, onClose, onConfirm, orderData, loading
                             </p>
                           )}
                           */}
+                          {/* Selected Options (Meat Type, Sauce Type, etc.) */}
+                          {item.customization.selectedOptions && Object.keys(item.customization.selectedOptions).length > 0 && (
+                            <div className="space-y-1">
+                              {Object.values(item.customization.selectedOptions).map((option) => (
+                                <p key={option.optionId} className="text-pepper-orange dark:text-orange-400">
+                                  ✓ <span className="font-medium">{option.optionName}:</span>{' '}
+                                  {option.icon && `${option.icon} `}{option.choiceName}
+                                </p>
+                              ))}
+                            </div>
+                          )}
                           {item.customization.selectedExtras && item.customization.selectedExtras.length > 0 && (
                             <p className="text-green-600 dark:text-green-400">
                               🌟 <span className="font-medium">{t('product.extras')}:</span>{' '}

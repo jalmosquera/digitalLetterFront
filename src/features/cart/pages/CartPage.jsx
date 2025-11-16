@@ -95,6 +95,7 @@ const CartPage = () => {
                    ============================================ */
                 // (customization.selectedIngredients && customization.selectedIngredients.length < (product.ingredients?.length || 0)) ||
                 customization.selectedExtras?.length > 0 ||
+                customization.selectedOptions ||
                 customization.additionalNotes
               );
 
@@ -191,6 +192,21 @@ const CartPage = () => {
                         </div>
                       )}
                       */}
+                      {/* Show selected options (Meat Type, Sauce Type, etc.) */}
+                      {customization.selectedOptions && Object.keys(customization.selectedOptions).length > 0 && (
+                        <div className="mb-2 space-y-1">
+                          {Object.values(customization.selectedOptions).map((option) => (
+                            <div key={option.optionId}>
+                              <span className="font-semibold text-gray-700 dark:text-gray-300">
+                                {option.optionName}:
+                              </span>
+                              <span className="text-gray-600 dark:text-gray-400 ml-2">
+                                {option.icon && `${option.icon} `}{option.choiceName}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       {customization.selectedExtras && customization.selectedExtras.length > 0 && (
                         <div className="mb-2">
                           <span className="font-semibold text-gray-700 dark:text-gray-300">

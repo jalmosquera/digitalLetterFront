@@ -26,6 +26,7 @@ const ProductDetailPage = () => {
      ============================================ */
   // const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [selectedExtras, setSelectedExtras] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState({}); // { optionId: choiceId }
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [showExtras, setShowExtras] = useState(false);
@@ -58,6 +59,20 @@ const ProductDetailPage = () => {
   //     setSelectedIngredients(allIngredientIds);
   //   }
   // }, [productData]);
+
+  // Initialize selected options when product loads (first choice selected by default)
+  useEffect(() => {
+    if (productData && productData.options && productData.options.length > 0) {
+      const defaultOptions = {};
+      productData.options.forEach(option => {
+        if (option.choices && option.choices.length > 0) {
+          // Select first choice by default
+          defaultOptions[option.id] = option.choices[0].id;
+        }
+      });
+      setSelectedOptions(defaultOptions);
+    }
+  }, [productData]);
 
   // Manejar incremento de cantidad
   const handleIncrement = () => {
@@ -96,6 +111,14 @@ const ProductDetailPage = () => {
     });
   };
 
+  // Handle option selection (radio button)
+  const handleOptionChange = (optionId, choiceId) => {
+    setSelectedOptions(prev => ({
+      ...prev,
+      [optionId]: choiceId
+    }));
+  };
+
   // Manejar agregar al carrito
   const handleAddToCart = () => {
     // Get full extra ingredient objects with prices
@@ -114,6 +137,24 @@ const ProductDetailPage = () => {
     //   .filter(ing => deselectedIngredientIds.includes(ing.id))
     //   .map(ing => getTranslation(ing.translations, 'name'));
 
+    // Get selected option details for customization
+    const selectedOptionsDetails = {};
+    if (productData.options) {
+      productData.options.forEach(option => {
+        const selectedChoiceId = selectedOptions[option.id];
+        const selectedChoice = option.choices?.find(choice => choice.id === selectedChoiceId);
+        if (selectedChoice) {
+          selectedOptionsDetails[option.id] = {
+            optionId: option.id,
+            optionName: getTranslation(option.translations, 'name'),
+            choiceId: selectedChoice.id,
+            choiceName: getTranslation(selectedChoice.translations, 'name'),
+            icon: selectedChoice.icon,
+          };
+        }
+      });
+    }
+
     const customization = {
       /* ============================================
          COMENTADO: Ingredientes en customization
@@ -121,6 +162,7 @@ const ProductDetailPage = () => {
       // selectedIngredients,
       // deselectedIngredients: deselectedIngredientNames,
       selectedExtras: extrasWithPrices,
+      selectedOptions: selectedOptionsDetails,
       additionalNotes: additionalNotes.trim(),
     };
     addToCart(productData, quantity, customization);
@@ -135,6 +177,18 @@ const ProductDetailPage = () => {
     setAdditionalNotes('');
     setSelectedExtras([]);
     setShowExtras(false);
+
+    // Reset options to first choice
+    if (productData && productData.options && productData.options.length > 0) {
+      const defaultOptions = {};
+      productData.options.forEach(option => {
+        if (option.choices && option.choices.length > 0) {
+          defaultOptions[option.id] = option.choices[0].id;
+        }
+      });
+      setSelectedOptions(defaultOptions);
+    }
+
     /* ============================================
        COMENTADO: Reset de ingredientes seleccionados
        ============================================ */
@@ -204,6 +258,7 @@ const ProductDetailPage = () => {
     available = true,
     categories = [],
     ingredients = [],
+    options = [],
   } = productData;
 
   // Extraer datos de traducción usando el idioma actual
@@ -337,6 +392,54 @@ const ProductDetailPage = () => {
                 {description}
               </p>
             )}
+            {/* Product Options (Meat Type, Sauce Type) - solo si pedidos habilitados */}
+            {isOrderingEnabled && options && options.length > 0 && (
+              <div className="mb-6">
+                {options.map((option) => {
+                  const optionName = getTranslation(option.translations, 'name') || 'Opción';
+                  const isRequired = option.is_required;
+
+                  return (
+                    <div key={option.id} className="mb-6">
+                      <h3 className="mb-3 text-xl font-bold font-gabarito text-pepper-charcoal dark:text-white">
+                        {optionName}
+                        {isRequired && <span className="ml-2 text-sm text-pepper-orange">*</span>}
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {option.choices && option.choices.map((choice) => {
+                          const choiceName = getTranslation(choice.translations, 'name') || 'Opción';
+                          const isSelected = selectedOptions[option.id] === choice.id;
+
+                          return (
+                            <label
+                              key={choice.id}
+                              className={`flex items-center space-x-2 px-4 py-3 rounded-lg border-2 cursor-pointer transition-all ${
+                                isSelected
+                                  ? 'bg-pepper-orange border-pepper-orange text-white shadow-md'
+                                  : 'bg-white dark:bg-gray-800 border-pepper-gray-light dark:border-gray-600 text-pepper-charcoal dark:text-white hover:border-pepper-orange'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`option-${option.id}`}
+                                checked={isSelected}
+                                onChange={() => handleOptionChange(option.id, choice.id)}
+                                className="w-4 h-4 border-gray-300 text-pepper-orange focus:ring-pepper-orange"
+                              />
+                              {choice.icon && <span className="text-2xl">{choice.icon}</span>}
+                              <span className="font-semibold font-gabarito">
+                                {choiceName}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Campo para ingredientes adicionales - solo si pedidos habilitados */}
             {isOrderingEnabled && (
                   <div className="mt-4">

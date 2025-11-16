@@ -245,14 +245,14 @@ const UsersPage = () => {
                         className="transition-colors text-pepper-orange hover:text-pepper-orange/80"
                         title="Editar"
                       >
-                        <FontAwesomeIcon icon={faEdit} />
+                        <FontAwesomeIcon icon={faEdit} className="text-lg" />
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
                         className="ml-3 text-red-500 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                         title="Eliminar"
                       >
-                        <FontAwesomeIcon icon={faTrash} />
+                        <FontAwesomeIcon icon={faTrash} className="text-lg" />
                       </button>
                     </td>
                   </tr>

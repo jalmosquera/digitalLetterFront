@@ -239,6 +239,15 @@ const CheckoutPage = () => {
           const pricePerUnit = basePrice + extrasPrice;
           const itemSubtotal = pricePerUnit * item.quantity;
 
+          // Get selected options details
+          let selectedOptions = {};
+          if (item.customization?.selectedOptions) {
+            selectedOptions = Object.values(item.customization.selectedOptions).reduce((acc, option) => {
+              acc[option.optionName] = option.choiceName;
+              return acc;
+            }, {});
+          }
+
           return {
             name: productName,
             quantity: item.quantity,
@@ -249,6 +258,7 @@ const CheckoutPage = () => {
                  COMENTADO: Ingredientes deseleccionados
                  ============================================ */
               // deselected_ingredients: item.customization.deselectedIngredients || [],
+              selected_options: selectedOptions,
               selected_extras: selectedExtras,
               additional_notes: item.customization.additionalNotes || '',
             } : null,

@@ -177,7 +177,7 @@ const PromotionsPage = () => {
                       className="px-3 py-1.5 text-sm bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                       title="Editar"
                     >
-                      <FontAwesomeIcon icon={faEdit} />
+                      <FontAwesomeIcon icon={faEdit} className="text-lg" />
                     </button>
                     <button
                       onClick={() => handleToggleActive(promotion)}
@@ -195,7 +195,7 @@ const PromotionsPage = () => {
                       className="px-3 py-1.5 text-sm bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                       title="Eliminar"
                     >
-                      <FontAwesomeIcon icon={faTrash} />
+                      <FontAwesomeIcon icon={faTrash} className="text-lg" />
                     </button>
                   </div>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
