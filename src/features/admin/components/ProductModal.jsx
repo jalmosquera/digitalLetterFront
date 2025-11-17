@@ -151,13 +151,30 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     const headers = getAuthHeaders();
     delete headers['Content-Type'];
 
+    // Debug: log what we're sending
+    console.log('=== Sending Product Data ===');
+    console.log('Method:', method);
+    console.log('URL:', url);
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value);
+    }
+
     const response = await fetch(url, {
       method,
       headers,
       body: formDataToSend,
     });
 
-    const responseData = await response.json();
+    let responseData;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json();
+    } else {
+      // Si no es JSON, probablemente es HTML (error 500)
+      const text = await response.text();
+      console.error('Non-JSON response:', text.substring(0, 500));
+      throw new Error('El servidor devolvió un error. Revisa la consola del backend.');
+    }
 
     if (response.ok) {
       toast.success(product ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
