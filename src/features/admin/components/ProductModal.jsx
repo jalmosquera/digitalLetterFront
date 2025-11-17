@@ -26,6 +26,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     category: '',
     stock: 0,
     available: true,
+    allows_extra_ingredients: true,
     image: null,
     ingredients: [],
     options: [],
@@ -44,6 +45,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         category: product.categories?.[0]?.id || '',
         stock: product.stock || 0,
         available: product.available ?? true,
+        allows_extra_ingredients: product.allows_extra_ingredients ?? true,
         image: null,
         ingredients: product.ingredients?.map(ing => ing.id) || [],
         options: product.options?.map(opt => opt.id) || [],
@@ -59,6 +61,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         category: '',
         stock: 0,
         available: true,
+        allows_extra_ingredients: true,
         image: null,
         ingredients: [],
         options: [],
@@ -124,6 +127,7 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
 
     // Boolean
     formDataToSend.append('available', formData.available);
+    formDataToSend.append('allows_extra_ingredients', formData.allows_extra_ingredients);
 
     // Categorías (como string separado por comas)
     formDataToSend.append('categories', formData.category);
@@ -414,6 +418,23 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
                 />
                 <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Disponible
+                </label>
+              </div>
+
+              {/* Permite Ingredientes Extra */}
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="allows_extra_ingredients"
+                  checked={formData.allows_extra_ingredients}
+                  onChange={handleChange}
+                  className="w-4 h-4 border-gray-300 rounded text-pepper-orange focus:ring-pepper-orange"
+                />
+                <label className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Permite ingredientes extra
+                  <span className="block text-xs font-normal text-gray-500 dark:text-gray-400">
+                    Los clientes pueden agregar ingredientes adicionales al producto
+                  </span>
                 </label>
               </div>
             </div>

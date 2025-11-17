@@ -256,6 +256,7 @@ const ProductDetailPage = () => {
     is_popular = false,
     is_new = false,
     available = true,
+    allows_extra_ingredients = true,
     categories = [],
     ingredients = [],
     options = [],
@@ -567,8 +568,8 @@ const ProductDetailPage = () => {
             )}
             */}
 
-            {/* Sección de extras - mantener funcionalidad activa */}
-            {isOrderingEnabled && extraIngredients.length > 0 && (
+            {/* Sección de extras - solo si el producto permite ingredientes extra */}
+            {isOrderingEnabled && allows_extra_ingredients && extraIngredients.length > 0 && (
               <div className="mb-6">
                 <button
                   type="button"
