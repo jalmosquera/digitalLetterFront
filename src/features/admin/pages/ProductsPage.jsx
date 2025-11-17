@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faEdit, faTrash, faSearch, faCheck, faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faEdit, faTrash, faSearch, faCheck, faX, faPenToSquare, faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import usePaginatedFetch from '@shared/hooks/usePaginatedFetch';
 import { useLanguage } from '@shared/contexts/LanguageContext';
@@ -253,6 +253,61 @@ const ProductsPage = () => {
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al eliminar el producto');
+    }
+  };
+
+  const handleDuplicate = async (product) => {
+    try {
+      // Preparar los datos del producto duplicado
+      const duplicatedData = {
+        translations: {
+          es: {
+            name: `${product.translations?.es?.name || 'Producto'} (Copia)`,
+            description: product.translations?.es?.description || '',
+          },
+          en: {
+            name: `${product.translations?.en?.name || 'Product'} (Copy)`,
+            description: product.translations?.en?.description || '',
+          },
+        },
+        price: parseFloat(typeof product.price === 'string' ? product.price.replace(' €', '') : product.price),
+        stock: product.stock || 0,
+        available: product.available ?? true,
+        allows_extra_ingredients: product.allows_extra_ingredients ?? true,
+        categories: product.categories?.map(cat => cat.id) || [],
+        ingredients: product.ingredients?.map(ing => ing.id) || [],
+        options: product.options?.map(opt => opt.id) || [],
+      };
+
+      // Crear el producto duplicado
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/products/`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders({
+            'Content-Type': 'application/json',
+          }),
+          body: JSON.stringify(duplicatedData),
+        }
+      );
+
+      if (response.ok) {
+        const newProduct = await response.json();
+        toast.success('Producto duplicado exitosamente');
+
+        // Refrescar la lista
+        await refetch();
+
+        // Abrir el modal con el producto duplicado para editarlo
+        handleOpenModal(newProduct);
+      } else {
+        const error = await response.json();
+        toast.error('Error al duplicar el producto');
+        console.error('Error:', error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al conectar con el servidor');
     }
   };
 
@@ -642,6 +697,13 @@ const ProductsPage = () => {
                                   title="Editar completo (ingredientes, imagen, etc)"
                                 >
                                   <FontAwesomeIcon icon={faPlus} className="text-lg" />
+                                </button>
+                                <button
+                                  onClick={() => handleDuplicate(product)}
+                                  className="p-2 ml-2 text-teal-600 transition-colors rounded hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-900/20"
+                                  title="Duplicar producto"
+                                >
+                                  <FontAwesomeIcon icon={faCopy} className="text-lg" />
                                 </button>
                                 <button
                                   onClick={() => handleDelete(product.id)}
