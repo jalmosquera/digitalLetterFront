@@ -132,15 +132,19 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     // Categorías (como string separado por comas)
     formDataToSend.append('categories', formData.category);
 
-    // Ingredientes (cada uno por separado)
-    (formData.ingredients || []).forEach((id) => {
-      formDataToSend.append('ingredients', id);
-    });
+    // Ingredientes (cada uno por separado, filtrando undefined/null)
+    (formData.ingredients || [])
+      .filter(id => id !== undefined && id !== null && id !== 'undefined')
+      .forEach((id) => {
+        formDataToSend.append('ingredients', id);
+      });
 
-    // Opciones (cada una por separado)
-    (formData.options || []).forEach((id) => {
-      formDataToSend.append('options', id);
-    });
+    // Opciones (cada una por separado, filtrando undefined/null)
+    (formData.options || [])
+      .filter(id => id !== undefined && id !== null && id !== 'undefined')
+      .forEach((id) => {
+        formDataToSend.append('options', id);
+      });
 
     // Imagen (solo si se seleccionó una nueva)
     if (formData.image instanceof File) {
