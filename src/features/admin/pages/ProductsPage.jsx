@@ -278,9 +278,8 @@ const ProductsPage = () => {
       categories: product.categories || [],
       ingredients: product.ingredients || [],
       options: product.options || [],
-      image: product.image, // URL de la imagen original para preview
-      _isDuplicate: true, // Flag para que el modal sepa que debe duplicar la imagen
-      _originalImageUrl: product.image, // URL de la imagen a duplicar
+      // NO incluir imagen - el usuario debe subir una nueva
+      _isDuplicate: true, // Flag para que el modal sepa que es un duplicado
     };
 
     // Abrir el modal con los datos prellenados
