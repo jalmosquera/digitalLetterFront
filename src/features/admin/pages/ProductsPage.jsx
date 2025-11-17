@@ -258,36 +258,54 @@ const ProductsPage = () => {
 
   const handleDuplicate = async (product) => {
     try {
-      // Preparar los datos del producto duplicado
-      const duplicatedData = {
-        translations: {
-          es: {
-            name: `${product.translations?.es?.name || 'Producto'} (Copia)`,
-            description: product.translations?.es?.description || '',
-          },
-          en: {
-            name: `${product.translations?.en?.name || 'Product'} (Copy)`,
-            description: product.translations?.en?.description || '',
-          },
-        },
-        price: parseFloat(typeof product.price === 'string' ? product.price.replace(' €', '') : product.price),
-        stock: product.stock || 0,
-        available: product.available ?? true,
-        allows_extra_ingredients: product.allows_extra_ingredients ?? true,
-        categories: product.categories?.map(cat => cat.id) || [],
-        ingredients: product.ingredients?.map(ing => ing.id) || [],
-        options: product.options?.map(opt => opt.id) || [],
-      };
+      // Preparar FormData igual que ProductModal
+      const formDataToSend = new FormData();
+
+      // Traducciones como campos planos con (Copia)/(Copy)
+      formDataToSend.append('name_es', `${product.translations?.es?.name || 'Producto'} (Copia)`);
+      formDataToSend.append('description_es', product.translations?.es?.description || '');
+      formDataToSend.append('name_en', `${product.translations?.en?.name || 'Product'} (Copy)`);
+      formDataToSend.append('description_en', product.translations?.en?.description || '');
+
+      // Numéricos
+      const price = typeof product.price === 'string' ? product.price.replace(' €', '') : product.price;
+      formDataToSend.append('price', parseFloat(price) || 0);
+      formDataToSend.append('stock', parseInt(product.stock) || 0);
+
+      // Boolean
+      formDataToSend.append('available', product.available ?? true);
+      formDataToSend.append('allows_extra_ingredients', product.allows_extra_ingredients ?? true);
+
+      // Categorías (solo la primera como string, igual que ProductModal)
+      if (product.categories && product.categories.length > 0) {
+        formDataToSend.append('categories', product.categories[0].id);
+      }
+
+      // Ingredientes (cada uno por separado)
+      if (product.ingredients && product.ingredients.length > 0) {
+        product.ingredients.forEach((ing) => {
+          formDataToSend.append('ingredients', ing.id);
+        });
+      }
+
+      // Opciones (cada una por separado)
+      if (product.options && product.options.length > 0) {
+        product.options.forEach((opt) => {
+          formDataToSend.append('options', opt.id);
+        });
+      }
+
+      // Headers sin Content-Type (el navegador lo establece con boundary correcto)
+      const headers = getAuthHeaders();
+      delete headers['Content-Type'];
 
       // Crear el producto duplicado
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/products/`,
         {
           method: 'POST',
-          headers: getAuthHeaders({
-            'Content-Type': 'application/json',
-          }),
-          body: JSON.stringify(duplicatedData),
+          headers,
+          body: formDataToSend,
         }
       );
 
