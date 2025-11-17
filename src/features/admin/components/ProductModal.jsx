@@ -51,6 +51,11 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
         options: product.options?.map(opt => opt.id) || [],
       });
       setImagePreview(product.image);
+
+      // Si es un producto duplicado, descargar la imagen para incluirla en el nuevo producto
+      if (product._isDuplicate && product._originalImageUrl) {
+        downloadAndSetImage(product._originalImageUrl);
+      }
     } else {
       setFormData({
         name_es: '',
@@ -69,6 +74,24 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
       setImagePreview(null);
     }
   }, [product, isOpen]);
+
+  // Función para descargar la imagen del producto original y convertirla a File
+  const downloadAndSetImage = async (imageUrl) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const filename = imageUrl.split('/').pop() || 'product-image.jpg';
+      const file = new File([blob], filename, { type: blob.type });
+
+      setFormData(prev => ({
+        ...prev,
+        image: file
+      }));
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      // No mostramos error al usuario, simplemente el producto duplicado no tendrá imagen
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -106,11 +129,14 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
   setLoading(true);
 
   try {
-    const url = product
-      ? `${import.meta.env.VITE_API_URL}/api/products/${product.id}/`
-      : `${import.meta.env.VITE_API_URL}/api/products/`;
+    // Si es un producto duplicado (tiene _isDuplicate pero no ID), tratarlo como nuevo
+    const isNewProduct = !product || product._isDuplicate || !product.id;
 
-    const method = product ? 'PATCH' : 'POST';
+    const url = isNewProduct
+      ? `${import.meta.env.VITE_API_URL}/api/products/`
+      : `${import.meta.env.VITE_API_URL}/api/products/${product.id}/`;
+
+    const method = isNewProduct ? 'POST' : 'PATCH';
 
     // Siempre usar FormData (el serializer del backend lo maneja correctamente)
     const formDataToSend = new FormData();
@@ -181,7 +207,10 @@ const ProductModal = ({ isOpen, onClose, product, onSuccess }) => {
     }
 
     if (response.ok) {
-      toast.success(product ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente');
+      const successMessage = isNewProduct
+        ? 'Producto creado exitosamente'
+        : 'Producto actualizado exitosamente';
+      toast.success(successMessage);
       onSuccess();
       onClose();
     } else {

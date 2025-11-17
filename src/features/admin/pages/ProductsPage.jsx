@@ -257,76 +257,35 @@ const ProductsPage = () => {
   };
 
   const handleDuplicate = async (product) => {
-    try {
-      // Preparar FormData igual que ProductModal
-      const formDataToSend = new FormData();
+    // Crear un objeto "producto duplicado" temporal para el modal
+    // NO creamos el producto todavía, solo abrimos el modal con los datos prellenados
+    const duplicatedProduct = {
+      // NO incluir ID - esto indica que es un nuevo producto
+      translations: {
+        es: {
+          name: `${product.translations?.es?.name || 'Producto'} (Copia)`,
+          description: product.translations?.es?.description || '',
+        },
+        en: {
+          name: `${product.translations?.en?.name || 'Product'} (Copy)`,
+          description: product.translations?.en?.description || '',
+        },
+      },
+      price: product.price,
+      stock: product.stock,
+      available: product.available ?? true,
+      allows_extra_ingredients: product.allows_extra_ingredients ?? true,
+      categories: product.categories || [],
+      ingredients: product.ingredients || [],
+      options: product.options || [],
+      image: product.image, // URL de la imagen original para preview
+      _isDuplicate: true, // Flag para que el modal sepa que debe duplicar la imagen
+      _originalImageUrl: product.image, // URL de la imagen a duplicar
+    };
 
-      // Traducciones como campos planos con (Copia)/(Copy)
-      formDataToSend.append('name_es', `${product.translations?.es?.name || 'Producto'} (Copia)`);
-      formDataToSend.append('description_es', product.translations?.es?.description || '');
-      formDataToSend.append('name_en', `${product.translations?.en?.name || 'Product'} (Copy)`);
-      formDataToSend.append('description_en', product.translations?.en?.description || '');
-
-      // Numéricos
-      const price = typeof product.price === 'string' ? product.price.replace(' €', '') : product.price;
-      formDataToSend.append('price', parseFloat(price) || 0);
-      formDataToSend.append('stock', parseInt(product.stock) || 0);
-
-      // Boolean
-      formDataToSend.append('available', product.available ?? true);
-      formDataToSend.append('allows_extra_ingredients', product.allows_extra_ingredients ?? true);
-
-      // Categorías (solo la primera como string, igual que ProductModal)
-      if (product.categories && product.categories.length > 0) {
-        formDataToSend.append('categories', product.categories[0].id);
-      }
-
-      // Ingredientes (cada uno por separado)
-      if (product.ingredients && product.ingredients.length > 0) {
-        product.ingredients.forEach((ing) => {
-          formDataToSend.append('ingredients', ing.id);
-        });
-      }
-
-      // Opciones (cada una por separado)
-      if (product.options && product.options.length > 0) {
-        product.options.forEach((opt) => {
-          formDataToSend.append('options', opt.id);
-        });
-      }
-
-      // Headers sin Content-Type (el navegador lo establece con boundary correcto)
-      const headers = getAuthHeaders();
-      delete headers['Content-Type'];
-
-      // Crear el producto duplicado
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/products/`,
-        {
-          method: 'POST',
-          headers,
-          body: formDataToSend,
-        }
-      );
-
-      if (response.ok) {
-        const newProduct = await response.json();
-        toast.success('Producto duplicado exitosamente');
-
-        // Refrescar la lista
-        await refetch();
-
-        // Abrir el modal con el producto duplicado para editarlo
-        handleOpenModal(newProduct);
-      } else {
-        const error = await response.json();
-        toast.error('Error al duplicar el producto');
-        console.error('Error:', error);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error al conectar con el servidor');
-    }
+    // Abrir el modal con los datos prellenados
+    // El usuario puede editar antes de guardar
+    handleOpenModal(duplicatedProduct);
   };
 
   // Los productos ya vienen filtrados del servidor
