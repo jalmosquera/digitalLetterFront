@@ -2,13 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 
-
 // Context providers
 import { AuthProvider } from '@shared/contexts/AuthContext';
 import { ThemeProvider } from '@shared/contexts/ThemeContext';
 import { LanguageProvider } from '@shared/contexts/LanguageContext';
 import { CartProvider } from '@shared/contexts/CartContext';
-
 
 // Layouts y páginas
 import MenuLayout from '@shared/components/layout/MenuLayout';
@@ -35,10 +33,8 @@ import PromotionsPage from './features/admin/pages/PromotionsPage';
 import CarouselCardsPage from './features/admin/pages/CarouselCardsPage';
 import JuanPorras from './pages/JuanPorras';
 
-
 function App() {
   const [isDark, setIsDark] = useState(false);
-
 
   useEffect(() => {
     const checkTheme = () => {
@@ -58,17 +54,14 @@ function App() {
     const initialLoader = document.getElementById('initial-loader');
 
     if (initialLoader) {
-      // Esperar a que React esté completamente montado
       const timer = setTimeout(() => {
         initialLoader.classList.add('hidden');
 
-        // Remover del DOM después de la transición
         setTimeout(() => {
           initialLoader.remove();
         }, 400);
       }, 800);
 
-      // Failsafe: asegurar que se oculte después de 5 segundos máximo
       const failsafe = setTimeout(() => {
         if (initialLoader && initialLoader.parentNode) {
           initialLoader.classList.add('hidden');
@@ -85,40 +78,55 @@ function App() {
     }
   }, []);
 
+  // 🔥 Keep-alive para Railway
+  useEffect(() => {
+    const pingBackend = () => {
+      fetch("https://digitalletter-production-d688.up.railway.app/api") // 👈 CAMBIA ESTA URL
+        .then(() => {})
+        .catch(() => {});
+    };
+
+    // Primer ping
+    pingBackend();
+
+    // Cada 5 minutos
+    const interval = setInterval(pingBackend, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <ThemeProvider>
-        <LanguageProvider>
-          <AuthProvider>
-            <CartProvider>
-              <BrowserRouter>
-                <Toaster
-                  position="bottom-center"
-                  reverseOrder={false}
-                  toastOptions={{
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <Toaster
+                position="bottom-center"
+                reverseOrder={false}
+                toastOptions={{
+                  duration: 1500,
+                  style: {
+                    background: isDark ? '#363636' : '#ffffff',
+                    color: '#F76511',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    boxShadow: isDark
+                      ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                      : '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  },
+                  success: {
                     duration: 1500,
-                    style: {
-                      background: isDark ? '#363636' : '#ffffff',
-                      color: '#F76511',
-                      padding: '16px',
-                      borderRadius: '8px',
-                      boxShadow: isDark
-                        ? '0 4px 12px rgba(0, 0, 0, 0.3)'
-                        : '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    iconTheme: {
+                      primary: '#FF6B35',
+                      secondary: '#F76511',
                     },
-                    success: {
-                      duration: 1500,
-                      iconTheme: {
-                        primary: '#FF6B35',
-                        secondary: '#F76511',
-                      },
-                    },
-                    error: {
-                      duration: 1500,
-                    },
-                  }}
-                />
-
+                  },
+                  error: {
+                    duration: 1500,
+                  },
+                }}
+              />
 
               <Routes>
                 {/* Auth */}
@@ -126,7 +134,6 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
-
 
                 {/* Público */}
                 <Route path="/" element={<MenuLayout />}>
@@ -141,7 +148,7 @@ function App() {
                 {/* Juan landing */}
                 <Route path="juanporras" element={<JuanPorras />} />
 
-                {/* Admin (protegido) */}
+                {/* Admin */}
                 <Route
                   path="/admin"
                   element={
@@ -163,7 +170,6 @@ function App() {
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
 
-
                 {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
@@ -174,6 +180,5 @@ function App() {
     </ThemeProvider>
   );
 }
-
 
 export default App;
