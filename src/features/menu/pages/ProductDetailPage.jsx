@@ -620,10 +620,25 @@ const ProductDetailPage = () => {
             )}
 
             {/* Precio */}
-            <div className="mb-8">
+            <div className="mb-4">
               <span className="text-4xl font-black font-gabarito text-pepper-orange">
                 {formattedPrice}
               </span>
+            </div>
+
+            {/* Aviso pedido por teléfono */}
+            <div className="flex items-start gap-3 px-4 py-3 mb-8 border-2 rounded-xl border-pepper-orange bg-pepper-orange/10 dark:bg-pepper-orange/5">
+              <span className="text-xl leading-none mt-0.5">📞</span>
+              <p className="text-sm font-medium leading-relaxed font-inter text-pepper-charcoal dark:text-gray-200">
+                {t('productDetail.phoneOrderNotice')}{' '}
+                <a
+                  href="tel:682290535"
+                  className="font-bold underline text-pepper-orange hover:opacity-80"
+                >
+                  {t('productDetail.phoneOrderPhone')}
+                </a>
+                {t('productDetail.phoneOrderSuffix')}
+              </p>
             </div>
 
             {/* Selector de cantidad y botón agregar - solo mostrar si pedidos habilitados */}
