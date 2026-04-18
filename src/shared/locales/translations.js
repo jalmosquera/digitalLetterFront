@@ -97,6 +97,9 @@ export const translations = {
       addExtras: '+ Agregar ingredientes extras',
       hideExtras: 'Ocultar ingredientes extras',
       selectAdditionalIngredients: 'Selecciona ingredientes adicionales:',
+      phoneOrderNotice: 'Para realizar tu pedido, llámanos al',
+      phoneOrderPhone: '682 290 535',
+      phoneOrderSuffix: '. Estaremos encantados de atenderte.',
     },
     // Footer
     footer: {
@@ -342,6 +345,9 @@ export const translations = {
       addExtras: '+ Add extra ingredients',
       hideExtras: 'Hide extra ingredients',
       selectAdditionalIngredients: 'Select additional ingredients:',
+      phoneOrderNotice: 'To place your order, call us at',
+      phoneOrderPhone: '682 290 535',
+      phoneOrderSuffix: '. We will be happy to assist you.',
     },
     // Footer
     footer: {
