@@ -147,6 +147,7 @@ function App() {
 
                 {/* Juan landing */}
                 <Route path="juanporras" element={<JuanPorras />} />
+                <Route path="juan-porras" element={<JuanPorras />} />
 
                 {/* Admin */}
                 <Route
