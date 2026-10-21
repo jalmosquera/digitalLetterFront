@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
 
-    <title>Equus Pub | Carta Digital | Comida y Bebidas</title>
+    <title>Equus Pub | Carta de comida en Ardales, Málaga</title>
 
     <meta
       name="description"
-      content="Explora la carta digital oficial de Equus Pub. Descubre nuestros platos, bebidas, promociones y especialidades desde cualquier dispositivo."
+      content="Consulta la carta de Equus Pub en Ardales, Málaga: aperitivos, hamburguesas, camperos, bocadillos y combinados."
     />
 
     <meta
       name="keywords"
-      content="Equus Pub, carta digital, menú digital, restaurante, pub, comida, bebidas, menú online, código QR, Málaga"
+      content="Equus Pub, carta, Ardales, Málaga, hamburguesas, camperos, bocadillos, combinados"
     />
 
     <meta name="author" content="Equus Pub" />
@@ -28,37 +28,41 @@
     <meta property="og:site_name" content="Equus Pub" />
     <meta
       property="og:title"
-      content="Equus Pub | Carta Digital | Comida y Bebidas"
+      content="Equus Pub | Carta de comida en Ardales, Málaga"
     />
     <meta
       property="og:description"
-      content="Consulta la carta digital oficial de Equus Pub con platos, bebidas, promociones y especialidades."
+      content="Consulta la carta de Equus Pub en Ardales, Málaga: aperitivos, hamburguesas, camperos, bocadillos y combinados."
     />
     <meta property="og:url" content="https://equuspub.vercel.app/" />
     <meta
       property="og:image"
-      content="https://equuspub.vercel.app/social-preview.jpg"
+      content="https://equuspub.vercel.app/logoEquss.png"
     />
-    <meta property="og:image:alt" content="Carta digital de Equus Pub" />
+    <meta property="og:image:alt" content="Logotipo de Equus Pub" />
+    <meta property="og:locale" content="es_ES" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Equus Pub | Carta Digital" />
+    <meta
+      name="twitter:title"
+      content="Equus Pub | Carta de comida en Ardales, Málaga"
+    />
     <meta
       name="twitter:description"
-      content="Explora la carta digital oficial de Equus Pub."
+      content="Consulta la carta de Equus Pub en Ardales, Málaga."
     />
     <meta
       name="twitter:image"
-      content="https://equuspub.vercel.app/social-preview.jpg"
+      content="https://equuspub.vercel.app/logoEquss.png"
     />
 
     <!-- Theme -->
     <meta name="theme-color" content="#f76511" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/logoEquus.ico" />
-    <link rel="apple-touch-icon" href="/logoEquus.png" />
+    <link rel="icon" type="image/x-icon" href="/logoEquss.ico" />
+    <link rel="apple-touch-icon" href="/logoEquss.png" />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -67,14 +71,50 @@
         "@type": "Restaurant",
         "name": "Equus Pub",
         "url": "https://equuspub.vercel.app",
-        "image": "https://equuspub.vercel.app/social-preview.jpg",
-        "description": "Carta digital oficial de Equus Pub con platos, bebidas, promociones y especialidades.",
-        "servesCuisine": ["Spanish", "Mediterranean", "Pub Food"],
-        "priceRange": "$$",
-        "acceptsReservations": false,
+        "image": "https://equuspub.vercel.app/logoEquss.png",
+        "description": "Carta de Equus Pub en Ardales, Málaga.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Calle Real, 12",
+          "postalCode": "29550",
+          "addressLocality": "Ardales",
+          "addressRegion": "Málaga",
+          "addressCountry": "ES"
+        },
+        "telephone": "+34682290535",
+        "email": "yolytruji@hotmail.com",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Monday",
+            "opens": "19:00",
+            "closes": "23:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Wednesday",
+            "opens": "19:00",
+            "closes": "23:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Thursday",
+            "opens": "19:00",
+            "closes": "23:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Friday", "Saturday", "Sunday"],
+            "opens": "17:00",
+            "closes": "23:00"
+          }
+        ],
         "hasMenu": "https://equuspub.vercel.app",
         "inLanguage": "es",
-        "sameAs": []
+        "sameAs": [
+          "https://www.facebook.com/equus.ardales/?locale=es_ES",
+          "https://www.instagram.com/equuspubardales/?hl=es"
+        ]
       }
     </script>
 
@@ -232,6 +272,22 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <noscript>
+      <main>
+        <h1>Equus Pub: carta de comida en Ardales, Málaga</h1>
+        <p>
+          Consulta la carta de aperitivos, hamburguesas, camperos, bocadillos y
+          combinados.
+        </p>
+        <address>Calle Real, 12, 29550 Ardales, Málaga</address>
+        <p>Teléfono: <a href="tel:+34682290535">682 290 535</a></p>
+        <p>
+          Horario: lunes, miércoles y jueves de 19:00 a 23:00; viernes, sábado y
+          domingo de 17:00 a 23:00. Martes cerrado.
+        </p>
+      </main>
+    </noscript>
 
     <script type="module" src="/src/main.jsx"></script>
   </body>
