@@ -9,7 +9,7 @@ import { useAuth } from '@shared/contexts/AuthContext';
 import { useCart } from '@shared/contexts/CartContext';
 import useOrderingEnabled from '@shared/hooks/useOrderingEnabled';
 
-const Navbar = ({ companyName = 'Digital Letter' }) => {
+const Navbar = ({ companyName = 'Equus Pub' }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage, t } = useLanguage();

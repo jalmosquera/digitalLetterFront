@@ -55,15 +55,15 @@ export const translations = {
       heroDescription: 'Experimenta el futuro de la gastronomía con nuestro menú digital. Explora deliciosos platillos y ordena con facilidad.',
       exploreMenu: 'Explorar Menú',
       ourMenu: 'Nuestro Menú',
-      menuDescription: 'Descubre nuestra selección de platillos deliciosos',
+      menuDescription: 'Aperitivos, hamburguesas, camperos, bocadillos y combinados',
       all: 'Todos',
       categories: 'Categorías',
       loading: 'Cargando productos...',
       noProducts: 'No hay productos disponibles',
       // Mobile Hero
-      mobileHeroTitle: 'Sabores que Enamoran',
-      mobileHeroSubtitle: 'Come en el restaurante o pide a domicilio',
-      mobileHeroCta: 'Ver Menú',
+      mobileHeroTitle: 'Equus Pub en Ardales',
+      mobileHeroSubtitle: 'Consulta nuestra carta de comida y bebidas',
+      mobileHeroCta: 'Ver carta',
     },
     // ProductCard
     product: {
@@ -113,14 +113,12 @@ export const translations = {
     // ContactPage
     contact: {
       title: 'Ponte en Contacto',
-      description: '¿Tienes preguntas? Nos encantaría saber de ti. Envíanos un mensaje y te responderemos lo antes posible.',
+      description: 'Consulta nuestra ubicación, horario y datos de contacto.',
       contactInfo: 'Información de Contacto',
       address: 'Dirección',
       phone: 'Teléfono',
       email: 'Correo',
       hours: 'Horario de Atención',
-      weekdays: 'Lunes - Viernes: 10:00 AM - 10:00 PM',
-      weekends: 'Sábado - Domingo: 11:00 AM - 11:00 PM',
       formTitle: 'Envíanos un Mensaje',
       yourName: 'Tu Nombre',
       namePlaceholder: 'Juan Pérez',
@@ -303,15 +301,15 @@ export const translations = {
       heroDescription: 'Experience the future of dining with our digital menu. Browse delicious dishes and order with ease.',
       exploreMenu: 'Explore Menu',
       ourMenu: 'Our Menu',
-      menuDescription: 'Discover our selection of delicious dishes',
+      menuDescription: 'Appetizers, burgers, camperos, sandwiches and combo plates',
       all: 'All',
       categories: 'Categories',
       loading: 'Loading products...',
       noProducts: 'No products available',
       // Mobile Hero
-      mobileHeroTitle: 'Flavors that Captivate',
-      mobileHeroSubtitle: 'Dine in or order for delivery',
-      mobileHeroCta: 'View Menu',
+      mobileHeroTitle: 'Equus Pub in Ardales',
+      mobileHeroSubtitle: 'Browse our food and drinks menu',
+      mobileHeroCta: 'View menu',
     },
     // ProductCard
     product: {
@@ -361,14 +359,12 @@ export const translations = {
     // ContactPage
     contact: {
       title: 'Get in Touch',
-      description: 'Have questions? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.',
+      description: 'Find our location, opening hours and contact details.',
       contactInfo: 'Contact Information',
       address: 'Address',
       phone: 'Phone',
       email: 'Email',
       hours: 'Business Hours',
-      weekdays: 'Monday - Friday: 10:00 AM - 10:00 PM',
-      weekends: 'Saturday - Sunday: 11:00 AM - 11:00 PM',
       formTitle: 'Send us a Message',
       yourName: 'Your Name',
       namePlaceholder: 'John Doe',

@@ -17,10 +17,11 @@ const ContactPage = () => {
   const { data: companyData } = useFetch('/company/');
   const company = companyData?.results?.[0];
 
-  // Extract company information with fallbacks
-  const companyAddress = getTranslation(company?.translations, 'address') || '123 Food Street, Restaurant City, RC 12345';
-  const companyEmail = company?.email || 'hello@digitalletter.com';
-  const companyPhone = company?.phone || '+1 (555) 123-4567';
+  // Contact details are managed from the company settings.
+  const companyAddress = getTranslation(company?.translations, 'address');
+  const companyEmail = company?.email;
+  const companyPhone = company?.phone;
+  const businessHours = company?.business_hours;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -89,93 +90,98 @@ const ContactPage = () => {
               {t('contact.contactInfo')}
             </h2>
             <div className="space-y-6">
-              {/* Address */}
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-pepper-orange rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FontAwesomeIcon
-                    icon={faLocationDot}
-                    className="text-white"
-                    size="lg"
-                  />
+              {companyAddress && (
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-pepper-orange rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FontAwesomeIcon
+                      icon={faLocationDot}
+                      className="text-white"
+                      size="lg"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                      {t('contact.address')}
+                    </h3>
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
+                    >
+                      {companyAddress}
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
-                    {t('contact.address')}
-                  </h3>
-                  <a
-                    href={googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
-                  >
-                    {companyAddress}
-                  </a>
-                </div>
-              </div>
+              )}
 
-              {/* Phone */}
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-pepper-yellow rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FontAwesomeIcon
-                    icon={faPhone}
-                    className="text-white"
-                    size="lg"
-                  />
+              {companyPhone && (
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-pepper-yellow rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FontAwesomeIcon
+                      icon={faPhone}
+                      className="text-white"
+                      size="lg"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                      {t('contact.phone')}
+                    </h3>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
+                    >
+                      {companyPhone}
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
-                    {t('contact.phone')}
-                  </h3>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
-                  >
-                    {companyPhone}
-                  </a>
-                </div>
-              </div>
+              )}
 
-              {/* Email */}
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-pepper-green rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FontAwesomeIcon
-                    icon={faEnvelope}
-                    className="text-white"
-                    size="lg"
-                  />
+              {companyEmail && (
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-pepper-green rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FontAwesomeIcon
+                      icon={faEnvelope}
+                      className="text-white"
+                      size="lg"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                      {t('contact.email')}
+                    </h3>
+                    <a
+                      href={mailtoUrl}
+                      className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
+                    >
+                      {companyEmail}
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
-                    {t('contact.email')}
-                  </h3>
-                  <a
-                    href={mailtoUrl}
-                    className="text-gray-600 dark:text-gray-300 hover:text-pepper-orange dark:hover:text-pepper-orange transition-colors cursor-pointer"
-                  >
-                    {companyEmail}
-                  </a>
-                </div>
-              </div>
+              )}
 
-              {/* Hours */}
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-pepper-blue rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FontAwesomeIcon
-                    icon={faClock}
-                    className="text-white"
-                    size="lg"
-                  />
+              {businessHours && (
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-pepper-blue rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FontAwesomeIcon
+                      icon={faClock}
+                      className="text-white"
+                      size="lg"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
+                      {t('contact.hours')}
+                    </h3>
+                    <p className="text-gray-600 whitespace-pre-line dark:text-gray-300">
+                      {businessHours}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-gabarito font-semibold text-lg text-pepper-charcoal dark:text-white mb-1">
-                    {t('contact.hours')}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">{t('contact.weekdays')}</p>
-                  <p className="text-gray-600 dark:text-gray-300">{t('contact.weekends')}</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 

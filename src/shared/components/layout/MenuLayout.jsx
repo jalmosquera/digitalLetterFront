@@ -12,7 +12,7 @@ const MenuLayout = () => {
 
   // Extract company info from paginated response
   const company = companyData?.results?.[0];
-  const companyName = getTranslation(company?.translations, 'name') || 'Digital Letter';
+  const companyName = getTranslation(company?.translations, 'name') || 'Equus Pub';
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-200">
