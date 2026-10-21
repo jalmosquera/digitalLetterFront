@@ -111,7 +111,7 @@ describe('WhatsApp Service', () => {
       expect(message).toContain('€12.50');
     });
 
-    it('should include customized ingredients when customer deselected some', () => {
+    it('should not include deselected ingredients when that customization is disabled', () => {
       const orderData = {
         items: [
           {
@@ -132,7 +132,7 @@ describe('WhatsApp Service', () => {
 
       const message = generateOrderMessage(orderData, 'es', mockGetTranslation);
 
-      expect(message).toContain('❌ Sin: Albahaca');
+      expect(message).not.toContain('❌ Sin:');
     });
 
     it('should NOT include ingredients when none are deselected', () => {
@@ -213,7 +213,7 @@ describe('WhatsApp Service', () => {
 
       expect(message).toContain('1. *Pizza Margherita*');
       expect(message).toContain('2. *Pizza Margherita*');
-      expect(message).toContain('❌ Sin: Albahaca');
+      expect(message).not.toContain('❌ Sin:');
       expect(message).toContain('Extra cheese');
       expect(message).toContain('€37.50');
     });

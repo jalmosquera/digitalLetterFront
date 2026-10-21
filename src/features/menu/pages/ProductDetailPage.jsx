@@ -258,7 +258,6 @@ const ProductDetailPage = () => {
     available = true,
     allows_extra_ingredients = true,
     categories = [],
-    ingredients = [],
     options = [],
   } = productData;
 
