@@ -17,10 +17,10 @@ const Footer = ({ company }) => {
   const { getTranslation, t } = useLanguage();
 
   // Extract company data
-  const companyName = getTranslation(company?.translations, 'name') || 'Digital Letter';
-  const companyAddress = getTranslation(company?.translations, 'address') || '123 Food Street, Restaurant City, RC 12345';
-  const companyEmail = company?.email || 'hello@digitalletter.com';
-  const companyPhone = company?.phone || '+1 (555) 123-4567';
+  const companyName = getTranslation(company?.translations, 'name') || 'Equus Pub';
+  const companyAddress = getTranslation(company?.translations, 'address');
+  const companyEmail = company?.email;
+  const companyPhone = company?.phone;
 
   // Generate interactive links
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyAddress)}`;
@@ -28,21 +28,22 @@ const Footer = ({ company }) => {
   const mailtoUrl = `mailto:${companyEmail}`;
 
   // Get business hours
-  const businessHours = company?.business_hours || 'Consultar horarios';
+  const businessHours = company?.business_hours;
 
   return (
     <footer className="text-white bg-pepper-charcoal">
       <div className="py-12 container-pepper">
         <div className="grid max-w-5xl grid-cols-1 gap-8 mx-auto md:grid-cols-3">
-          {/* Horario Section */}
-          <div className="flex flex-col items-center justify-start">
-            <h4 className="mb-4 text-lg font-bold font-gabarito text-pepper-orange">
-              {t('footer.businessHours')}
-            </h4>
-            <div className="text-sm leading-relaxed text-center text-gray-300 whitespace-pre-line">
-              {businessHours}
+          {businessHours && (
+            <div className="flex flex-col items-center justify-start">
+              <h4 className="mb-4 text-lg font-bold font-gabarito text-pepper-orange">
+                {t('footer.businessHours')}
+              </h4>
+              <div className="text-sm leading-relaxed text-center text-gray-300 whitespace-pre-line">
+                {businessHours}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Contactanos Section */}
           <div className="flex flex-col items-center justify-start">
@@ -50,40 +51,46 @@ const Footer = ({ company }) => {
               {t('footer.contactUs')}
             </h4>
             <ul className="flex flex-col items-center space-y-3">
-              <li className="flex items-center space-x-3">
-                <FontAwesomeIcon
-                  icon={faLocationDot}
-                  className="text-pepper-orange"
-                />
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
-                >
-                  {companyAddress}
-                </a>
-              </li>
-              <li className="flex items-center space-x-3">
-                <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
-                >
-                  {companyPhone}
-                </a>
-              </li>
-              <li className="flex items-center space-x-3">
-                <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
-                <a
-                  href={mailtoUrl}
-                  className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
-                >
-                  {companyEmail}
-                </a>
-              </li>
+              {companyAddress && (
+                <li className="flex items-center space-x-3">
+                  <FontAwesomeIcon
+                    icon={faLocationDot}
+                    className="text-pepper-orange"
+                  />
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
+                  >
+                    {companyAddress}
+                  </a>
+                </li>
+              )}
+              {companyPhone && (
+                <li className="flex items-center space-x-3">
+                  <FontAwesomeIcon icon={faPhone} className="text-pepper-orange" />
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
+                  >
+                    {companyPhone}
+                  </a>
+                </li>
+              )}
+              {companyEmail && (
+                <li className="flex items-center space-x-3">
+                  <FontAwesomeIcon icon={faEnvelope} className="text-pepper-orange" />
+                  <a
+                    href={mailtoUrl}
+                    className="text-sm text-gray-300 transition-colors cursor-pointer hover:text-pepper-orange"
+                  >
+                    {companyEmail}
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
 

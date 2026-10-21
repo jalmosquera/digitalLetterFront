@@ -150,7 +150,7 @@ const HomePage = () => {
           <div className="mb-8 animate-fade-in">
             <img
               src="/logoEquss.png"
-              alt="Logo"
+              alt="Equus Pub"
               width="192"
               height="192"
               loading="eager"
@@ -205,7 +205,7 @@ const HomePage = () => {
           <div className="mb-8 animate-fade-in">
             <img
               src="/logoEquss.png"
-              alt="Logo"
+              alt="Equus Pub"
               width="256"
               height="256"
               loading="eager"
@@ -303,4 +303,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
- 
